@@ -1,0 +1,22 @@
+{
+
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "name": "midoks/oursphp",
+    "description": "oursphp",
+    "type": "project",
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "license": "3.0.0",
+    "authors": [
+        {
+            "name": "midoks",
+            "email": "627293072@qq.com"
+        }
+    ]
+}
