@@ -21,6 +21,8 @@ class Mysql {
 	//单例对象
 	private static $_instance  = NULL;
 
+    public $transTimes = 0;
+
 	/**
 	 * 构造函数
 	 */

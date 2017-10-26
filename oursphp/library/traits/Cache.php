@@ -14,24 +14,35 @@ use frame\Config;
 
 trait Cache {
 
-
     /**
      * 清空缓存
-     *
+     * @param string $key 键值
+     * @param string $node 节点名称
+     * @return bool
      */
-    public function clear($key){
-
+    public function clear($key, $node = 'default'){
+        return true;
     }
 
-    public function cache($key, $time){
+    /**
+     * 缓存
+     * @param string $key 键值
+     * @param int 缓存时间
+     * @param string $node 节点名称
+     * @return bool
+     */
+    public function cache($key, $time, $node = 'default'){
 
         $this->__cache_key = $key;
 
-        $mem = new \Memcached;
+        $mem = new \Memcache;
         $mem->addServer("127.0.0.1", 11211);
 
         $cacheV = $mem->get($key);
-        var_dump('cache:'.$key,$cacheV);
+        if ($cacheV){
+            return $cacheV;
+        }
+        var_dump('cache:'.$key, $cacheV);
         return $this;
     }
 
@@ -39,15 +50,18 @@ trait Cache {
      *
      */
     private function cacheEnd($sql, $bind, $result){
-        $mem = new \Memcached;
+        $mem = new \Memcache;
         $mem->addServer("127.0.0.1", 11211);
 
-        if ($this->__cache_key){
-            $cache = $mem->add($this->__cache_key, $result);
+        if (isset($this->__cache_key)){
+            var_dump($this->__cache_key,$sql, $bind, $result);
         }
 
-        var_dump($result);
+        $cache = $mem->add($this->__cache_key, $result);
+        var_dump($cache);
     }
+
+        
 
 
     /**
@@ -61,7 +75,7 @@ trait Cache {
         $this->our_cache_time   = 0;
         //return false;
 
-        $options = Config::getConfig('withcache', WEB_NAMESPACE);   
+        $options = Config::get('withcache', WEB_NAMESPACE);   
 
 
         $cache_time     = $options['cachetime'];

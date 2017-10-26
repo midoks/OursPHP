@@ -19,55 +19,65 @@ class Cookie {
     private $_domain    = '';
     private $_secure    = false;
 
+    private static $_instance  = NULL;
 
     /** 初始化
-     * CookieManage constructor.
+     * Cookie constructor.
      * @param string $prefix
      * @param int $expire
      */
     public function __construct($prefix='', $expire=0){
 
-        if(is_string($prefix) && $prefix!=''){
+        if(is_string($prefix) && $prefix!='' ){
             $this->_prefix = $prefix;
         }
 
-        if(is_int($expire))
-        {
+        if(is_int($expire)) {
             $this->_expire = $expire;
         }
     }
+
+    /**
+     * 单例
+     */
+    public static function getInstance(){
+        if (!self::$_instance){
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
+
     /**
      * 设置加密KEY
      * @param string $securekey  加密字符串
      * @return $this 返回类本身实现链式操作
      */
-    public function setSecureKey($securekey)
-    {
+    public function setSecureKey($securekey) {
         if(is_string($securekey) && empty($securekey)){
             $this->_securekey = $securekey;
         }
         return $this;
     }
+
     /**
      * 是否强制启用https
      * @param bool $secure  true | false
      * @return $this 返回类本身实现链式操作
      */
-    public function setSecure($secure)
-    {
+    public function setSecure($secure) {
         if(is_bool($secure)){
             $this->_secure = $secure;
         }
         return $this;
 
     }
+
     /**
      * 设置作用域
      * @param string $domain 域名
      * @return $this 返回类本身实现链式操作
      */
-    public function setDomain($domain)
-    {
+    public function setDomain($domain) {
         if(is_string($domain) && empty($domain)){
             $this->_domain = $domain;
         }
@@ -78,20 +88,19 @@ class Cookie {
      * @param string $path 路径
      * @return $this 返回类本身实现链式操作
      */
-    public function setPath($path)
-    {
+    public function setPath($path) {
         if(is_string($path) && empty($path)){
             $this->_path = $path;
         }
         return $this;
     }
+
     /**
      * 设置前缀
      * @param string $prefix 前缀
      * @return $this 返回类本身实现链式操作
      */
-    public function setPrefix($prefix)
-    {
+    public function setPrefix($prefix) {
         if(is_string($prefix) && empty($prefix)){
             $this->_prefix = $prefix;
         }
@@ -103,8 +112,7 @@ class Cookie {
      * @param int $expire 过期时间（秒）
      * @return $this 返回类本身实现链式操作
      */
-    public function setExpire($expire)
-    {
+    public function setExpire($expire) {
         if(is_int($expire))
         {
             $this->_expire = $expire;
@@ -256,7 +264,7 @@ class Cookie {
      * @param string $operation ENCODE or DECODE
      * @return string 根据设置返回明文活密文
      */
-    private function authcode($string, $operation = 'DECODE'){
+    private function authcode($string, $operation = 'DECODE' ) {
 
         $ckey_length = 4;  // 随机密钥长度 取值 0-32;
 

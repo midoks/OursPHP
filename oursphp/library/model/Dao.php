@@ -1,11 +1,9 @@
 <?php
-namespace oursphp\core\mvc\model;
+namespace frame\model;
 
-use oursphp\core\common\Config;
-use oursphp\core\common\Assert;
-use oursphp\core\common\BizException;
+use frame\Config;
 
-use oursphp\core\mvc\model\Model;
+use frame\model\Model;
 
 
 //abstract class Model implements ConnectionInterface 

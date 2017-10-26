@@ -10,9 +10,9 @@
 
 namespace frame\cache;
 
-use \frame\Config;
+use frame\Config;
 
-class Memcached {
+class Memcache {
 
     private static $_cache;
 
@@ -27,15 +27,15 @@ class Memcached {
         
         if(!isset(self::$_cache[$node])) {
             
-            $_memd = new \Memcached();
+            $_memcached = new \Memcached();
             $options    = Config::get('memcached', $node);
 
             if( $options == false ) {
                 throw new BizException("memcached缓存相关节点未配置：".$node);
             }
 
-            $_memd->addServers($options);
-            self::$_cache[$node] = $_memd;
+            $_memcached->addServers($options);
+            self::$_cache[$node]=$_memcached;
         }
         return self::$_cache[$node];
     }

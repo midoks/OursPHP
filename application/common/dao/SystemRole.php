@@ -8,13 +8,25 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-namespace common\model;
 
-use frame\model\Dao;
+namespace common\dao;
 
-class Base extends Dao {
+class SystemRole extends Base {
+    public function getTableName(){
+        return 'system_role';
+    }
 
-    public function getProjectName() {
-        return 'default';
+    public function getPKey(){
+        return 'id';
+    }
+
+    public function lock($id) {
+        $fun = self::findByPkey($id);
+        if($fun) {
+            $vars['status']=$fun['status']==1?0:1;
+            //dump($vars['status'],$fun['status']);
+            return self::edit($id,$vars);
+        }
+        return false;
     }
 }

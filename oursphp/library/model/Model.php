@@ -19,8 +19,6 @@ class Model {
 	public $_db = NULL;
     public $_default_item = 'default';
 
-    //use \frame\traits\WithCache;
-
     public function __construct(){
 
         //var_dump($this->getProjectName());
@@ -29,35 +27,6 @@ class Model {
     	$this->_db->setProject($this->getProjectName());
 
     }
-    
-    /**
-	 * 启动当前连接的事务
-	 */
-	public function startTrans(){
-		return $this->_db->startTrans();
-	}
-	
-	/**
-	 * 提交当前已经启动的事务
-	 */
-	public function commit(){
-		return $this->_db->commit();
-	}
-	
-	/**
-	 * 回滚事务
-	 */
-	public function rollBack(){
-		return $this->_db->rollBack();
-	}
-
-	/**
-	 * 事务处理
-     * @param $callback 闭包方法
-	 */
-	public function transaction($callback){
-		return $this->_db->transaction($callback);
-	}
 
 	/**
      * 获取数据
@@ -73,7 +42,9 @@ class Model {
     		$result = $this->_db->query($trim_sql, $bind);
 
             // \frame\traits\Cache;
-            $this->cacheEnd($trim_sql, $bind, $result);
+            if (method_exists($this, 'cacheEnd')){
+                $this->cacheEnd($trim_sql, $bind, $result);
+            }
     		return $result;
     		
     	}
@@ -93,7 +64,9 @@ class Model {
 	}
 
 	public function __call($method, $args){
-        //var_dump($method, $args);exit;
-    	return call_user_func_array(array($this->_db, $method), $args);
+        if (method_exists($this->_db, $method)){
+            return call_user_func_array(array($this->_db, $method), $args);
+        }
+        return false;
     }
 }

@@ -25,6 +25,8 @@ class Request {
     private static $_instance;
     private static $filter   = "'|\\b(and|or)\\b.+?(>|<|=|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)";
 
+    const REPLACEMENT = '';
+
     private function __construct() {
         //$this->input = file_get_contents("php://input");
     }
@@ -90,7 +92,7 @@ class Request {
      */
     public function post($index, $default = '') {
         if (isset($_POST[$index])) {
-            $data = $this->filter_input($_POST[$index]);
+            $data = $_REQUEST[$index];
             return preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
         } else {
             return $default;
@@ -105,7 +107,7 @@ class Request {
      */
     public function getRequest($index, $default='') {
         if (isset($_REQUEST[$index])) {
-            $data=$this->filter_input($_REQUEST[$index]);
+            $data = $_REQUEST[$index];
             $data = preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
             return preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
         } else {
@@ -181,4 +183,14 @@ class Request {
     public function isPost() {
         return isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST';
     }
+
+    /**
+     * 用对象属性方式直接调用
+     * @param string $key
+     * @return string
+     */
+    public function __get($key) {
+        return $this->getRequest($key);
+    }
+
 }

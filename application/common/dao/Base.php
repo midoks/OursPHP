@@ -8,11 +8,11 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-namespace common\model;
+namespace common\dao;
 
 use frame\model\Dao;
 
-class Base extends Dao {
+abstract class Base extends Dao {
 
     public function getProjectName() {
         return 'default';
