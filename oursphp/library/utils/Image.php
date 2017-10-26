@@ -13,12 +13,24 @@ namespace frame\utils;
 class Image {
 
     /**
+     *  生成随机数
+     */
+    public function makeChar($figures = 4){
+        $data       = OURS_CHARSET;
+        $char = '';
+        for ($i=0; $i < $figures; $i++) { 
+            $char   .= substr($data,rand(0,strlen($data)),1);
+        }
+        return $char;   
+    }
+
+    /**
      * 生成验证码
      */
-    public static function captcha(){
+    public function captcha(){
 
         $image      = imagecreatetruecolor(100,30);
-        $bgcolor    =imagecolorallocate($image,255,255,255);
+        $bgcolor    = imagecolorallocate($image, 255, 255, 255);
         imagefill($image,0,0,$bgcolor);
 
         $captch_code = '';
@@ -39,6 +51,7 @@ class Image {
 
         //随机点，生成干扰点
         for( $i=0; $i<200; $i++ ){
+            
             $pointcolor = imagecolorallocate($image,rand(50,120),rand(50,120),rand(50,120));
             imagesetpixel($image,rand(1,99),rand(1,99),$pointcolor);
         }
@@ -53,6 +66,10 @@ class Image {
         header("content-type:image/png");
         imagepng($image);
         imagedestroy($image);
+    }
+
+    public function out(){
+
     }
 
 }

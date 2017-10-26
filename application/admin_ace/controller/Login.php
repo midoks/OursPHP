@@ -33,9 +33,11 @@ class Login extends Controller {
     }
 
 
-    //生成码
+    //生成验证码
     public function captcha($request, $response){
-    	Image::captcha();
+    	// $im = new Image();
+     //    $char = $im->makeChar();
+        var_dump($char);
     }
 	
 }

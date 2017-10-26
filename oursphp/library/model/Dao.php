@@ -97,7 +97,7 @@ abstract class Dao extends Model {
 	 * @param array $vars 行记录数组
 	 */
 	public function adds(array $varslist) {
-		Assert::notEmpty($varslist, new BizException('插入内容为空'));
+		
 		return $this->_db->inserts($this->getTableName(), $varslist);
 	}
 
@@ -107,7 +107,6 @@ abstract class Dao extends Model {
 	 * @param array $vars 修改行记录数组
 	 */
 	public function edit($pk_value, array $vars) {
-		Assert::notEmpty($pk_value, new BizException('主键为空'));
 		return $this->_db->update($this->getTableName(), $vars, $this->getPkeyWhere($pk_value));
 		
 	}
@@ -120,7 +119,6 @@ abstract class Dao extends Model {
 	 * 	editByWhere(array('name'=>'hi'), 'id=1') == sql: update xxx set name='hi' where id=1;
 	 */
 	public function editByWhere(array $vars, $where) {
-		Assert::notEmpty($where, new BizException('where条件为空'));
 		return $this->_db->update($this->getTableName(), $vars, $where);
 	}
 	
@@ -139,7 +137,6 @@ abstract class Dao extends Model {
 	 * @param unknown_type $pk_value 主键值
 	 */
 	public function delete($pk_value) {
-		Assert::notEmpty($pk_value, new BizException('主键为空'));
 		return $this->_db->delete($this->getTableName(), $this->getPkeyWhere($pk_value));
 	}
 	
@@ -148,7 +145,6 @@ abstract class Dao extends Model {
 	 * @param unknown_type $where 条件
 	 */
 	public function deleteByWhere($where) {
-		Assert::notEmpty($where, new BizException('where条件为空'));
 		return $this->_db->delete($this->getTableName(), $where);
 	}
 
