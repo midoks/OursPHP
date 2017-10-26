@@ -12,10 +12,6 @@ abstract class Dao extends Model {
     public function __construct(){
     	parent::__construct();
     }
-    
-	
-	//取得数据库从库配置，由子类实现
-	protected abstract function getProjectName();
 	
 	//Model对应表名，由子类实现
 	protected abstract function getTableName();

@@ -57,8 +57,11 @@ class Login extends Controller {
 
         $query['username'] = 'admin';
         $where  = ' username=:username and status=1';
-        $user   = $dao->cache('cache_t',30)->findOne($query,$where);
+        $data = $user   = $dao->cache(30)->findOne($query,$where);
+        $data = $user   = $dao->findOne($query,$where);
 
+        // $data = $user   = $dao->findOne($query,$where);
+        // var_dump($data);
     }
 
     //登出

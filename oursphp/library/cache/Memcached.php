@@ -15,20 +15,43 @@ use \frame\Config;
 class Memcached {
 
     private static $_cache;
+    private static $_config = NULL;
 
     private function __construct() {}
+
+     /**
+     * 注册memcached配置信息
+     * @param string $config 配置文件KEY
+     */
+    public static function registerOption($option_name){
+        self::$_config = Config::get($options);
+        return true;
+    }
+
+    /**
+     * 注册memcached配置信息
+     * @param array $config 配置信息
+     */
+    public static function registerConfig($config){
+        self::$_config = $config;
+        return true;
+    } 
 
     /**
      * 获取指定配置节点的memcached实例
      * @param string $node
      * @return \Memcached
      */
-    public static function  getInstance( $node = 'default' ) {
+    public static function  getInstance() {
         
         if(!isset(self::$_cache[$node])) {
             
             $_memd = new \Memcached();
-            $options    = Config::get('memcached', $node);
+            if ( !empty(self::$_config) ){
+                $options    = self::$_config;
+            } else {
+                $options    = Config::get('memcached');
+            }
 
             if( $options == false ) {
                 throw new BizException("memcached缓存相关节点未配置：".$node);

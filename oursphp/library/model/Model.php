@@ -17,15 +17,12 @@ class Model {
     use \frame\traits\Cache;
 
 	public $_db = NULL;
-    public $_default_item = 'default';
 
     public function __construct(){
 
-        //var_dump($this->getProjectName());
 
     	$this->_db = new Db();
-    	$this->_db->setProject($this->getProjectName());
-
+    	$this->_db->setProject();
     }
 
 	/**
@@ -39,11 +36,20 @@ class Model {
     	$trim_sql = trim($sql);
 
     	if(preg_match( '/^\s*(select|show|describe)/i', $trim_sql)){
+
+            // \frame\traits\Cache;
+            if (method_exists($this, 'cacheSqlStart')){
+                $cache_result = $this->cacheSqlStart($trim_sql, $bind);
+                if ($cache_result){
+                    return $cache_result;
+                }
+            }
+
     		$result = $this->_db->query($trim_sql, $bind);
 
             // \frame\traits\Cache;
-            if (method_exists($this, 'cacheEnd')){
-                $this->cacheEnd($trim_sql, $bind, $result);
+            if (method_exists($this, 'cacheSqlEnd')){
+                $this->cacheSqlEnd($trim_sql, $bind, $result);
             }
     		return $result;
     		

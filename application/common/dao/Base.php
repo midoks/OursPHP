@@ -13,8 +13,4 @@ namespace common\dao;
 use frame\model\Dao;
 
 abstract class Base extends Dao {
-
-    public function getProjectName() {
-        return 'default';
-    }
 }

@@ -35,10 +35,10 @@ class Db {
 	 * 设置当前项目
 	 * @param string $name 项目名
 	 */
-	public function setProject($name){
+	public function setProject(){
 		$this->instance = Mysql::getInstance();
-		$cfg = Config::get('db', $name);
-		$this->instance->injection($cfg, $name);
+		$cfg = Config::get('db');
+		$this->instance->injection($cfg, 'db');
 	}
 
 	public function query($sql, $bind = array()){

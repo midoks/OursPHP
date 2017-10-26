@@ -1,12 +1,7 @@
 <?php
-namespace OursPHP\Core\Lib\Db;
+namespace frame\model;
 
-use OursPHP\Core\Common\Config;
-use OursPHP\Core\Common\DataAssert;
-use OursPHP\Core\Common\BizException;
-
-use OursPHP\Core\Lib\Db\Db;
-use OursPHP\Core\Mvc\Model\Model;
+use frame\Config;
 
 //abstract class Model implements ConnectionInterface 
 abstract class Orm extends Model {
@@ -14,9 +9,6 @@ abstract class Orm extends Model {
     public function __construct(){
     	parent::__construct();
     }
-
-	//取得数据库从库配置，由子类实现
-	protected abstract function getProjectName();
 	
 	//Model对应表名，由子类实现
 	protected abstract function getTableName();

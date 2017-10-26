@@ -13,8 +13,4 @@ namespace common\model;
 use frame\model\Dao;
 
 class Base extends Dao {
-
-    public function getProjectName() {
-        return 'default';
-    }
 }
