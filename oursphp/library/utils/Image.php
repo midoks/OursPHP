@@ -74,7 +74,7 @@ class Image {
         }
 
         //随机线，生成干扰线
-        for( $i=0; $i<5; $i++ ){
+        for( $i=0; $i<3; $i++ ){
 
             $linecolor = imagecolorallocate($image,rand(80,220),rand(80,220),rand(80,220));
             imageline($image,rand(1, $width),rand(1,$height),rand(1,$width),rand(1,$height),$linecolor);
