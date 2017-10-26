@@ -14,7 +14,6 @@ use frame\Config;
 
 class Model {
 
-    use \frame\traits\Cache;
 
 	public $_db = NULL;
 

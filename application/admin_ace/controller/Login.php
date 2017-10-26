@@ -14,14 +14,14 @@ use frame\Controller;
 use frame\utils\Image;
 use frame\utils\Cookie;
 
-use common\dao\SystemManager;
+use common\dao\SysUser;
 
 class Login extends Controller {
     
 	//登录
     public function index($request, $response) {
     	//var_dump($_POST);
-        $dao        = new SystemManager();
+        $dao        = new SysUser();
         $dao->startTrans();
         $cookie     = Cookie::getInstance();
 
@@ -52,7 +52,7 @@ class Login extends Controller {
     }
 
     public function t(){
-        $dao        = new SystemManager();
+        $dao        = new SysUser();
         $dao->startTrans();
 
         $query['username'] = 'admin';

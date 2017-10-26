@@ -11,9 +11,9 @@
 
 namespace common\dao;
 
-class SystemRole extends Base {
+class SysRole extends Base {
     public function getTableName(){
-        return 'system_role';
+        return 'sys_role';
     }
 
     public function getPKey(){

@@ -10,10 +10,10 @@
 
 namespace common\dao;
 
-class SystemManager extends Base {
+class SysFunction extends Base {
 
     public function getTableName(){
-        return 'system_manager';
+        return 'sys_function';
     }
 
     public function getPKey(){
@@ -21,10 +21,23 @@ class SystemManager extends Base {
     }
 
     public function lock($id) {
+        $fun=self::findByPkey($id);
+
+        if($fun) {
+            $vars['status']=$fun['status']==1?0:1;
+            //dump($vars['status'],$fun['status']);
+            return self::edit($id,$vars);
+        }
+        return false;
+    }
+
+
+    public function ismenu($id) {
+
         $fun = self::findByPkey($id);
 
         if($fun) {
-            $vars['status'] = $fun['status'] == 1 ? 0 : 1;
+            $vars['ismenu'] = $fun['ismenu']==1?0:1;
             //dump($vars['status'],$fun['status']);
             return self::edit($id,$vars);
         }
