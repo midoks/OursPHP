@@ -16,6 +16,7 @@ class Memcached {
 
     private static $_cache;
     private static $_config = NULL;
+    private static $_node   = NULL;
 
     private function __construct() {}
 

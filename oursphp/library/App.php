@@ -23,6 +23,8 @@ class App {
     private static $app_ns = 'app';
     public static $debug    = true;
 
+    private static $version = NULL;
+
     /**
      * 构造函数
      * 
@@ -57,7 +59,31 @@ class App {
         $path = $request->path();
         $result = Route::parseUrl($path);
         if ($config['app_multi_module']) {
-            Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
+
+            if (self::$version){ //版本控制 v3->v2->v1
+
+                var_dump(self::$version);
+
+                if (in_array($result['route'][0], self::$version)) {
+                    $file   = APP_PATH.$result['route'][0].DS.'controller'.DS.$result['route'][1].EXT;
+                    $pos    = array_keys(self::$version, $result['route'][0]);
+                    
+                    $list = array_slice(self::$version, 0, $pos[0]);
+                    var_dump($list);
+
+                    $className = '\\'.self::$app_ns.'\\controller\\'.$result['route'][0];
+
+                    var_dump($pos,$file, $className, self::$version);exit;
+
+                } else {
+                    Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
+                }
+
+            } else {
+                Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
+            }
+
+
             return ['type'      => 'module', 
                 'module'        => $result['route'][0], 
                 'controller'    => $result['route'][1], 
@@ -92,6 +118,12 @@ class App {
     public static function initCommon(){
         $app_config = APP_PATH.'config/config'.EXT;
         $config = Config::merge(include $app_config);
+
+        //版本配置文件
+        $version_config = APP_PATH.'config/version'.EXT;
+        if(file_exists($version_config)){
+            self::$version = include($version_config);
+        }
 
         $debug =  Config::get('app_debug');
         if ($debug) {

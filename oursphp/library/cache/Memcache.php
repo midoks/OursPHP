@@ -54,7 +54,7 @@ class Memcache {
             
             $_mem = new \Memcache();
             if ( !empty(self::$_config) ){
-                 $options    = self::$_config;
+                $options    = self::$_config;
             } else {
                 $options    = Config::get($node);
             }

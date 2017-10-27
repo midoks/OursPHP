@@ -15,6 +15,8 @@ use frame\Config;
 class Redis {
 
     private static $_cache;
+    private static $_config = NULL;
+    private static $_node   = NULL;
 
     private function __construct(){}
 
