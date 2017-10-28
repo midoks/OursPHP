@@ -191,6 +191,20 @@ class Loader {
         }
     }
 
+    public static function addNamespaceOverride($namespace, $path = ''){
+        if (is_array($namespace)) {
+            foreach ($namespace as $prefix => $paths) {
+                $name = $prefix.'\\';
+                self::$prefixDirsPsr4[$name] = NULL;
+            }
+        } else {
+            $name = $namespace.'\\';
+            self::$prefixDirsPsr4[$name] = NULL;
+        }
+        
+        self::addNamespace($namespace, $path = '');
+    }
+
     // 添加Ps0空间
     private static function addPsr0($prefix, $paths, $prepend = false) {
         if (!$prefix) {

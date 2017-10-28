@@ -9,7 +9,9 @@
 
 namespace app\controller;
 
-class Index {
+use \frame\Controller;
+
+class Index extends Controller{
 	
 	public function index() {
         return 'v3';

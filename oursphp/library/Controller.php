@@ -14,12 +14,21 @@ use frame\View;
 
 class Controller {
 
-    private  $_sys_layout = 'layout/index';
+    private $_sys_layout = 'layout/index';
+    private static $_instance = NULL;
 
     /**
      * 构造函数
      */
 	public function __construct() {}
+
+
+    public static function getInstance(){
+        if (!self::$_instance){
+            self::$_instance = new self();
+        }
+        return self::$_instance;
+    }
 
 	/**
      * 设置默认的布局器

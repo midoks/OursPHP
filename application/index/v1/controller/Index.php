@@ -9,14 +9,16 @@
 
 namespace app\controller;
 
-class Index {
+use \frame\Controller;
+
+class Index extends Controller{
 	
 	public function index() {
-        return 'v1_index';
+        return 'v1';
 	}
 
-	public function v2go(){
-		return 'v1_go';
+	public function v1(){
+		return 'v1 func';
 	}
 
 }

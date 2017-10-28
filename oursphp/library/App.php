@@ -62,27 +62,27 @@ class App {
 
             if (self::$version){ //版本控制 v3->v2->v1
 
-                var_dump(self::$version);
-
                 if (in_array($result['route'][0], self::$version)) {
-                    $file   = APP_PATH.$result['route'][0].DS.'controller'.DS.$result['route'][1].EXT;
+                   
                     $pos    = array_keys(self::$version, $result['route'][0]);
-                    
-                    $list = array_slice(self::$version, 0, $pos[0]);
-                    var_dump($list);
-
-                    $className = '\\'.self::$app_ns.'\\controller\\'.$result['route'][0];
-
-                    var_dump($pos,$file, $className, self::$version);exit;
-
+                    $list   = array_slice(self::$version, 0, $pos[0] + 1);
+                    $list   = array_reverse($list);
+                    foreach ($list as $k => $v) {
+                        $controller = APP_PATH.$v.DS.'controller'.DS.$result['route'][1].EXT;
+                        if ( file_exists($controller) &&
+                            self::methodExists($controller, $result['route'][2])){
+                            Loader::addNamespace(['app'=> APP_PATH.$v ] );
+                            break;
+                        }
+                    }
                 } else {
+
                     Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
                 }
 
             } else {
                 Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
             }
-
 
             return ['type'      => 'module', 
                 'module'        => $result['route'][0], 
@@ -96,10 +96,21 @@ class App {
         }
     }
 
+    //检查文件中类方法是存在
+    public static function methodExists($file, $method){
+        $content = file_get_contents($file);
+        $pattern  = "/public\s*function\s*{$method}\s*\(|function\s*{$method}\s*\(/is";
+        preg_match($pattern, $content, $matches);
+        if(!empty($matches)){
+            return true;
+        }
+        return false;
+    }
+
     public static function exec($dispatch, $config){
 
-        $className = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
-        $instance = new $className;
+        $class_name = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
+        $instance = new $class_name;
         $action = $dispatch['action'];
 
         define('APP_CONTROLLER_CALL', $dispatch['controller']);
