@@ -12,6 +12,7 @@ namespace frame;
 class Config {
 
     private static $_config;
+    private static $range = '_sys_';
 
     /**
      * 获取配置信息
@@ -19,11 +20,14 @@ class Config {
      * @param $value
      * @return mixed
      */
-    public static function get($type, $name = NULL) {
-        if ($name){
-            return self::$_config[$type][$name];
+    public static function get($name = NULL, $range = '') {
+        //var_dump($name);
+        $range = $range ?: self::$range;
+
+        if (empty($name) && isset(self::$_config[$range])) {
+            return self::$_config[$range];
         }
-        return self::$_config[$type];
+        return isset(self::$_config[$name])? self::$_config[$name] : NULL;
     }
 
     /**

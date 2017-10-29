@@ -15,7 +15,7 @@ return [
     // | 应用设置
     // +----------------------------------------------------------------------
     'app_id'                 => 'app_oursphp',
-    'app_debug'              => true,
+    'app_debug'              => false,
     'app_trace'              => false,
     'app_multi_module'       => true,   // 是否支持多模块
     'default_path_access'    => true,   // 路径访问

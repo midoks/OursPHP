@@ -28,6 +28,10 @@ class Logs {
     	}
 	}
 
+	public static function getLog(){
+		return [];
+	}
+
 	/**
 	 * 判断是否是chrome浏览器内容
 	 * @return boolean

@@ -26,8 +26,7 @@ class Debug
      * @param mixed     $value 标记值 留空则取当前 time 表示仅记录时间 否则同时记录时间和内存
      * @return mixed
      */
-    public static function remark($name, $value = '')
-    {
+    public static function remark($name, $value = ''){
         // 记录时间和内存使用
         self::$info[$name] = is_float($value) ? $value : microtime(true);
         if ('time' != $value) {
@@ -43,8 +42,7 @@ class Debug
      * @param integer|string    $dec 小数位
      * @return integer
      */
-    public static function getRangeTime($start, $end, $dec = 6)
-    {
+    public static function getRangeTime($start, $end, $dec = 6) {
         if (!isset(self::$info[$end])) {
             self::$info[$end] = microtime(true);
         }
@@ -56,17 +54,15 @@ class Debug
      * @param integer|string $dec 小数位
      * @return integer
      */
-    public static function getUseTime($dec = 6)
-    {
-        return number_format((microtime(true) - THINK_START_TIME), $dec);
+    public static function getUseTime($dec = 6) {
+        return number_format((microtime(true) - FRAME_START_TIME), $dec);
     }
 
     /**
      * 获取当前访问的吞吐率情况
      * @return string
      */
-    public static function getThroughputRate()
-    {
+    public static function getThroughputRate() {
         return number_format(1 / self::getUseTime(), 2) . 'req/s';
     }
 
@@ -77,8 +73,7 @@ class Debug
      * @param integer|string    $dec 小数位
      * @return string
      */
-    public static function getRangeMem($start, $end, $dec = 2)
-    {
+    public static function getRangeMem($start, $end, $dec = 2) {
         if (!isset(self::$mem['mem'][$end])) {
             self::$mem['mem'][$end] = memory_get_usage();
         }
@@ -97,9 +92,8 @@ class Debug
      * @param integer|string $dec 小数位
      * @return string
      */
-    public static function getUseMem($dec = 2)
-    {
-        $size = memory_get_usage() - THINK_START_MEM;
+    public static function getUseMem($dec = 2) {
+        $size = memory_get_usage() - FRAME_START_MEM;
         $a    = ['B', 'KB', 'MB', 'GB', 'TB'];
         $pos  = 0;
         while ($size >= 1024) {
@@ -116,8 +110,7 @@ class Debug
      * @param integer|string    $dec 小数位
      * @return mixed
      */
-    public static function getMemPeak($start, $end, $dec = 2)
-    {
+    public static function getMemPeak($start, $end, $dec = 2) {
         if (!isset(self::$mem['peak'][$end])) {
             self::$mem['peak'][$end] = memory_get_peak_usage();
         }
@@ -136,8 +129,7 @@ class Debug
      * @param bool  $detail 是否显示详细
      * @return integer|array
      */
-    public static function getFile($detail = false)
-    {
+    public static function getFile($detail = false) {
         if ($detail) {
             $files = get_included_files();
             $info  = [];
@@ -157,11 +149,9 @@ class Debug
      * @param integer       $flags htmlspecialchars flags
      * @return void|string
      */
-    public static function dump($var, $echo = true, $label = null, $flags = ENT_SUBSTITUTE)
-    {
+    public static function dump($var, $echo = true, $label = null, $flags = ENT_SUBSTITUTE) {
         $label = (null === $label) ? '' : rtrim($label) . ':';
         ob_start();
-        var_dump($var);
         $output = ob_get_clean();
         $output = preg_replace('/\]\=\>\n(\s+)/m', '] => ', $output);
         if (IS_CLI) {
@@ -180,12 +170,11 @@ class Debug
         }
     }
 
-    public static function inject(Response $response, &$content)
-    {
+    public static function inject(Response $response, &$content) {
         $config  = Config::get('trace');
         $type    = isset($config['type']) ? $config['type'] : 'Html';
         $request = Request::instance();
-        $class   = false !== strpos($type, '\\') ? $type : '\\think\\debug\\' . ucwords($type);
+        $class   = false !== strpos($type, '\\') ? $type : '\\frame\\debug\\' . ucwords($type);
         unset($config['type']);
         if (class_exists($class)) {
             $trace = new $class($config);
@@ -196,7 +185,7 @@ class Debug
         if ($response instanceof Redirect) {
             //TODO 记录
         } else {
-            $output = $trace->output($response, Log::getLog());
+            $output = $trace->output($response, Logs::getLog());
             if (is_string($output)) {
                 // trace调试信息注入
                 $pos = strripos($content, '</body>');

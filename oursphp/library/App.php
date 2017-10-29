@@ -118,6 +118,13 @@ class App {
 
         $ret = $instance->$action(Request::instance(), Response::instance());
 
+        // Trace调试注入
+        if ( Config::get('app_trace')) {
+            $data = Response::instance()->getContent();
+            Debug::inject(Response::instance(), $data);
+            echo ($data);
+        }
+
         return $ret;
     }
 
