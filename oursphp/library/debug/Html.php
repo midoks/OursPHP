@@ -27,9 +27,7 @@ class Html {
     ];
 
     // 实例化并传入参数
-    public function __construct(array $config = [])
-    {
-        //var_dump(FRAME_PATH);exit;
+    public function __construct(array $config = []) {
         $this->config['trace_file'] = OURS_PATH . 'tpl/page_trace.tpl';
         $this->config               = array_merge($this->config, $config);
     }

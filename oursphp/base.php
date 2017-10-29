@@ -13,7 +13,7 @@ defined('OURS_DEBUG') or define('OURS_DEBUG', false);
 //常规值
 define('FRAME_START_TIME', microtime(true));
 define('OURS_VERSION', '3.0.0');
-define('FRAME_START_MEM', memory_get_usage(true));
+define('FRAME_START_MEM', memory_get_usage());
 define('EXT', '.php');
 define('DS', DIRECTORY_SEPARATOR);
 
