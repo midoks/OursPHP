@@ -32,6 +32,16 @@ class Request {
     }
 
     /**
+     * 读取请求缓存设置
+     * @access public
+     * @return array
+     */
+    public function getCache()
+    {
+        return $this->cache;
+    }
+
+    /**
      * 初始化
      * @access public
      * @param array $options 参数

@@ -18,6 +18,7 @@ class Index extends Controller{
 	}
 
 	public function v3(){
+		//sleep(1);
 		return 'v3 func';
 	}
 
