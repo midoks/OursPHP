@@ -16,14 +16,14 @@ namespace  app\controller;
 use \frame\Controller;
 use \frame\utils\Cookie;
 
-use \common\model\Base as BaseModel;
+//use \common\model\Base as BaseModel;
 
 class Base extends Controller {
 
     const ADMIN_VERSION = '0.1.0';
 
-    protected $_manager;
-    protected $_rolelist = [];
+    protected $_user;
+    protected $_role = [];
     protected $_menu;
 
     //超级权限(方便开发及维护)
@@ -32,23 +32,16 @@ class Base extends Controller {
         'password'  => 'root',
     ];
 
-
     /**
      * 后台初始化检查,是否登录
      */
     public function __construct() {
 
-        $baseM = new BaseModel();
-
-        //$ee = $baseM->cache('mmm', 60)->getOne('select * from system_function limit 1');
-        //$ee = $baseM->cache('mmm2', 60)->getOne('select * from system_function limit 2');
-        //var_dump($ee);
-
         $this->initTplVar();
         
-        $cookie = new Cookie();
-        $this->_manager = $cookie->get('info');
-        if (!$this->_manager || $this->_manager['status'] == 0) {
+        $cookie     = Cookie::getInstance();
+        $this->_user = $cookie->get('info');
+        if (!$this->_user || $this->_user['status'] == 0) {
             $this->redirect('/login');
         }
 
@@ -82,5 +75,7 @@ class Base extends Controller {
         $this->assign('_sys_name', 'ACE后台管理系统');
         $this->assign('_sys_version', self::ADMIN_VERSION);
         $this->assign('_sys_copyright', 'ACE后台管理系统');
+
+
     }
 }

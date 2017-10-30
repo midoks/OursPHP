@@ -8,8 +8,5 @@
 // +----------------------------------------------------------------------
 
 
-define('OURS_DEBUG', true);
-
-
 include dirname(__DIR__).'/oursphp/start.php';
 ?>

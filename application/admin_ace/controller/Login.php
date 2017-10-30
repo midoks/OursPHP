@@ -22,28 +22,25 @@ class Login extends Controller {
     public function index($request, $response) {
     	//var_dump($_POST);
         $dao        = new SysUser();
-        $dao->startTrans();
+        //$dao->startTrans();
         $cookie     = Cookie::getInstance();
 
         if ($request->isPost()){
 
+            $password = $request->post('password');
             $vars = $request->post('vars');
             $code = $cookie->get('admin_captcha');
 
             if (strtolower($vars['code']) == strtolower($code)){
 
-                var_dump($vars,$code);
-                var_dump($_POST);
-                $name = $request->name;
-                var_dump($name);
-           
+                $name = $request->name; 
                 $query['username'] = $name;
                 $where  = ' username=:username and status=1';
-                $user   = $dao->cache('cache_t',30)->findOne($query,$where);
-                var_dump($user);exit;
+                $user   = $dao->cache('cache_t', 30)->findOne($query, $where);
+ 
                 if( $user && md5($password) === $user['password']) {
                     $cookie->set('info', $user, 0);
-                    //return $user;
+                    $this->redirect("/index");
                 }
             }
         }

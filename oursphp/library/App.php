@@ -67,13 +67,19 @@ class App {
                     $pos    = array_keys(self::$version, $result['route'][0]);
                     $list   = array_slice(self::$version, 0, $pos[0] + 1);
                     $list   = array_reverse($list);
+                    $load   = false;
                     foreach ($list as $k => $v) {
                         $controller = APP_PATH.$v.DS.'controller'.DS.$result['route'][1].EXT;
                         if ( file_exists($controller) &&
                             self::methodExists($controller, $result['route'][2])){
                             Loader::addNamespace(['app'=> APP_PATH.$v ] );
+                            $load = true;
                             break;
                         }
+                    }
+                    
+                    if (!$load){
+                        Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
                     }
                 } else {
 
@@ -134,11 +140,11 @@ class App {
      * 初始化应用
      */
     public static function initCommon(){
-        $app_config = APP_PATH.'config/config'.EXT;
+        $app_config = APP_PATH.'config'.DS.'config'.EXT;
         $config = Config::merge(include $app_config);
 
         //版本配置文件
-        $version_config = APP_PATH.'config/version'.EXT;
+        $version_config = APP_PATH.'config'.DS.'version'.EXT;
         if(file_exists($version_config)){
             self::$version = include($version_config);
         }
@@ -146,6 +152,10 @@ class App {
         $debug =  Config::get('app_debug');
         if ($debug) {
             ini_set('display_errors', 'On');
+            self::$debug = true;
+        } else {
+            ini_set('display_errors', 'Off');
+            self::$debug = false;
         }
 
         //设置时区

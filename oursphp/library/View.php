@@ -35,6 +35,7 @@ class View {
         self::$_smarty->cache_dir       = $cache_dir."cache";
         self::$_smarty->compile_dir     = $cache_dir.$app_id;
         self::$_smarty->error_reporting = E_ALL & ~E_NOTICE & ~E_DEPRECATED;
+        //self::$_smarty->allow_php_tag   = true;
 
         if(!file_exists($cache_dir)) {
             mkdir($cache_dir, 0755);

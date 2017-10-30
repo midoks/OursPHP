@@ -11,6 +11,8 @@
 
 namespace frame;
 
+use frame\utils\Session;
+
 class Response {
     // 原始数据
     protected $data;
@@ -75,8 +77,7 @@ class Response {
      * @param array  $options 输出参数
      * @return Response|JsonResponse|ViewResponse|XmlResponse|RedirectResponse|JsonpResponse
      */
-    public static function create($data = '', $type = '', $code = 200, array $header = [], $options = [])
-    {
+    public static function create($data = '', $type = '', $code = 200, array $header = [], $options = []) {
         $type = empty($type) ? 'null' : strtolower($type);
 
         $class = false !== strpos($type, '\\') ? $type : '\\think\\response\\' . ucfirst($type);
@@ -141,9 +142,9 @@ class Response {
         Hook::listen('response_end', $this);
 
         // 清空当次请求有效的数据
-        if (!($this instanceof RedirectResponse)) {
-            Session::flush();
-        }
+        // if (!($this instanceof RedirectResponse)) {
+        //     Session::flush();
+        // }
     }
 
     /**
