@@ -25,6 +25,8 @@ return [
 
 	// 是否支持多模块
     'app_multi_module'       => true,
+
+    'exception_handle' => "\\common\\exception\\Handle",
     
 ];
 
