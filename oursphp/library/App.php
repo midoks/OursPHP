@@ -46,6 +46,13 @@ class App {
             $data = $exception->getResponse();
         }
 
+        // 记录路由和请求信息
+            if (self::$debug) {
+                Logs::record('[ ROUTE ] ' . var_export($dispatch, true), 'info');
+                Logs::record('[ HEADER ] ' . var_export($request->header(), true), 'info');
+                //Logs::record('[ PARAM ] ' . var_export($request->param(), true), 'info');
+            }
+
         echo $data;   
     }
 
@@ -68,6 +75,7 @@ class App {
                     $list   = array_slice(self::$version, 0, $pos[0] + 1);
                     $list   = array_reverse($list);
                     $load   = false;
+
                     foreach ($list as $k => $v) {
                         $controller = APP_PATH.$v.DS.'controller'.DS.$result['route'][1].EXT;
                         if ( file_exists($controller) &&
@@ -77,15 +85,13 @@ class App {
                             break;
                         }
                     }
-                    
+        
                     if (!$load){
                         Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
                     }
                 } else {
-
                     Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
                 }
-
             } else {
                 Loader::addNamespace([ 'app'=> APP_PATH.$result['route'][0] ]);
             }
@@ -116,7 +122,8 @@ class App {
     public static function exec($dispatch, $config){
 
         $class_name = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
-        $instance = new $class_name;
+
+        $instance = new $class_name(Request::instance(), Response::instance());
         $action = $dispatch['action'];
 
         define('APP_CONTROLLER_CALL', $dispatch['controller']);

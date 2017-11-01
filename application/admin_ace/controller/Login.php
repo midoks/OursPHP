@@ -20,11 +20,16 @@ class Login extends Controller {
     
 	//登录
     public function index($request, $response) {
-    	//var_dump($_POST);
         $dao        = new SysUser();
-        //$dao->startTrans();
         $cookie     = Cookie::getInstance();
 
+        //检查是否已经登录
+        $this->_user = $cookie->get('info');
+        if ($this->_user){
+            $this->redirect('/index');
+        }
+
+        //登录操作
         if ($request->isPost()){
 
             $password = $request->post('password');

@@ -35,7 +35,7 @@ class Base extends Controller {
     /**
      * 后台初始化检查,是否登录
      */
-    public function __construct() {
+    public function __construct($request, $response) {
 
         $this->initTplVar();
         
@@ -45,8 +45,10 @@ class Base extends Controller {
             $this->redirect('/login');
         }
 
+        //var_dump($this->_user);
 
-        // $response->me   = $this->_manager;
+
+        $response->me   = $this->_user;
         // $roleid         = $this->_manager['roleid'];
         // $svc            = new SystemSvc();
         // $response->menulist = $this->_menu = $svc->getFunctionMap();
@@ -68,14 +70,16 @@ class Base extends Controller {
         // }
     }
 
-
-
+    //初始化基本变量
     protected function initTplVar(){
 
         $this->assign('_sys_name', 'ACE后台管理系统');
         $this->assign('_sys_version', self::ADMIN_VERSION);
         $this->assign('_sys_copyright', 'ACE后台管理系统');
+    }
 
+    //获取系统方法
+    public function getSysFunc(){
 
     }
 }
