@@ -16,7 +16,7 @@ use frame\Config;
 use frame\Route;
 use frame\Exception;
 use frame\exception\HttpResponseException;
-
+use frame\Logs;
 
 class App {
 
@@ -47,13 +47,22 @@ class App {
         }
 
         // 记录路由和请求信息
-            if (self::$debug) {
-                Logs::record('[ ROUTE ] ' . var_export($dispatch, true), 'info');
-                Logs::record('[ HEADER ] ' . var_export($request->header(), true), 'info');
-                //Logs::record('[ PARAM ] ' . var_export($request->param(), true), 'info');
-            }
+        if (self::$debug) {
+            Logs::record('[ ROUTE ] ' . var_export($dispatch, true), 'info');
+            Logs::record('[ HEADER ] ' . var_export($request->header(), true), 'info');
+            //Logs::record('[ PARAM ] ' . var_export($request->param(), true), 'info');
+        }
 
-        echo $data;   
+         // 输出数据到客户端
+        if ($data instanceof Response) {
+            $response = $data;
+        } elseif (!is_null($data)) {
+            $response = Response::create($data);
+        } else {
+            $response = Response::create();
+        }
+
+        return $response;
     }
 
     /**
@@ -130,13 +139,6 @@ class App {
         define('APP_METHOD_CALL', $action);
 
         $ret = $instance->$action(Request::instance(), Response::instance());
-
-        // Trace调试注入
-        if ( Config::get('app_trace')) {
-            $data = Response::instance()->getContent();
-            Debug::inject(Response::instance(), $data);
-            echo ($data);
-        }
 
         return $ret;
     }

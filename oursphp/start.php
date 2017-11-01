@@ -10,5 +10,5 @@
 namespace frame;
 
 require_once __DIR__.'/base.php';
-App::start();
+App::start()->send();
 ?>

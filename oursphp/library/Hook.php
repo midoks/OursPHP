@@ -10,8 +10,7 @@
 
 namespace frame;
 
-class Hook
-{
+class Hook {
 
     private static $tags = [];
 
@@ -22,8 +21,7 @@ class Hook
      * @param bool      $first 是否放到开头执行
      * @return void
      */
-    public static function add($tag, $behavior, $first = false)
-    {
+    public static function add($tag, $behavior, $first = false) {
         isset(self::$tags[$tag]) || self::$tags[$tag] = [];
         if (is_array($behavior) && !is_callable($behavior)) {
             if (!array_key_exists('_overlay', $behavior) || !$behavior['_overlay']) {
@@ -45,8 +43,7 @@ class Hook
      * @param array        $tags 插件信息
      * @param boolean     $recursive 是否递归合并
      */
-    public static function import(array $tags, $recursive = true)
-    {
+    public static function import(array $tags, $recursive = true) {
         if ($recursive) {
             foreach ($tags as $tag => $behavior) {
                 self::add($tag, $behavior);
@@ -61,8 +58,7 @@ class Hook
      * @param string $tag 插件位置 留空获取全部
      * @return array
      */
-    public static function get($tag = '')
-    {
+    public static function get($tag = '') {
         if (empty($tag)) {
             //获取全部的插件信息
             return self::$tags;
@@ -79,8 +75,7 @@ class Hook
      * @param bool   $once   只获取一个有效返回值
      * @return mixed
      */
-    public static function listen($tag, &$params = null, $extra = null, $once = false)
-    {
+    public static function listen($tag, &$params = null, $extra = null, $once = false) {
         $results = [];
         $tags    = static::get($tag);
         foreach ($tags as $key => $name) {
@@ -103,8 +98,7 @@ class Hook
      * @param mixed     $extra 额外参数
      * @return mixed
      */
-    public static function exec($class, $tag = '', &$params = null, $extra = null)
-    {
+    public static function exec($class, $tag = '', &$params = null, $extra = null) {
         App::$debug && Debug::remark('behavior_start', 'time');
         $method = Loader::parseName($tag, 1, false);
         if ($class instanceof \Closure) {

@@ -43,8 +43,7 @@ class Response {
      * @param array $header
      * @param array $options 输出参数
      */
-    public function __construct($data = '', $code = 200, array $header = [], $options = [])
-    {
+    public function __construct($data = '', $code = 200, array $header = [], $options = []) {
         $this->data($data);
         if (!empty($options)) {
             $this->options = array_merge($this->options, $options);
@@ -324,5 +323,11 @@ class Response {
      */
     public function getCode() {
         return $this->code;
+    }
+
+    
+    public function __set($name, $value){
+        $view = View::getInstance();
+        $view->assign($name, $value);
     }
 }
