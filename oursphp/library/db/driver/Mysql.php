@@ -5,6 +5,8 @@ namespace frame\db\driver;
 use \PDO;
 
 use frame\Logs;
+use frame\App;
+use frame\Debug;
 
 class Mysql {
 
@@ -68,7 +70,7 @@ class Mysql {
      * @param $name string 项目名称
      * @return void
 	 */
-	public function injection($config, $project){
+	public function inject($config, $project){
 		$this->config       = $config;
         $this->projectName  = $project;
 	}
@@ -157,7 +159,7 @@ class Mysql {
     protected function multiConnect($master = false) {
         $_config = array();
 
-        $project_name    = $this->projectName;
+        $projectName    = $this->projectName;
 
         // 分布式数据库配置解析
 		if ($master){
@@ -170,7 +172,7 @@ class Mysql {
         $m = $this->selectWeight($_config);
         $db_config = $_config[$m];
 
-        return $this->connect($db_config, $project_name.$m, false);
+        return $this->connect($db_config, $projectName.$m, false);
     }
 
     /**
@@ -202,8 +204,11 @@ class Mysql {
 		$trim_sql = trim($sql);
 		$result = false;
 
-        Logs::show('[ SQL ] : '.$sql);
-        Logs::show('[ SQL BIND ] : '.json_encode($bind));
+        if (App::$debug){
+            Debug::remark('sql_start', 'time');
+            Logs::record('[ SQL ] : '.$sql.'|'.json_encode($bind), 'sql');
+        }
+       
 
 		//查询数据
 		if(preg_match( '/^\s*(select|show|describe)/i', $trim_sql)){
@@ -229,7 +234,6 @@ class Mysql {
 				$result[] = $data;
 			}
 
-			return $result;
 		} else {
 			$this->initConnect(true);
 
@@ -248,6 +252,12 @@ class Mysql {
 				$result = $stmt->rowCount();
 			}
 		}
+
+        if (App::$debug){
+            Debug::remark('sql_end', 'time');
+            Logs::record('[ SQL TIME ] '.Debug::getRangeTime('sql_start', 'sql_end').'s', 'sql');
+        }
+       
 		return $result;
 	}
 

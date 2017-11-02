@@ -42,14 +42,31 @@ class PageLink {
         $this->_tpl_more=$options['tpl_more'];
     }
 
-    public static function  getInstance($nodeName='default') {
-        if(!isset(self::$_pagelinklist[$nodeName])) {
+    public static function  getInstance($node = 'default') {
+        if(!isset(self::$_pagelinklist[$node])) {
 
-            $options=Config::get('pagination',$nodeName);
-            $_pagelink = new self($options);
-            self::$_pagelinklist[$nodeName]=$_pagelink;
+            $options    = self::getDefault();
+            $_pagelink  = new self($options);
+
+            self::$_pagelinklist[$node] = $_pagelink;
         }
-        return self::$_pagelinklist[$nodeName];
+        return self::$_pagelinklist[$node];
+    }
+
+    public static function getDefault(){
+        return [
+            'pages'=> 9, //只能是单数
+            'data_total'=> "<li class=\"disabled\"><span>共{datatotal}条,{pagetotal}页</span></li>", //条数页数
+            'page_start' => '<ul class="pagination">',
+            'page_end' => '</ul>',
+            'tpl_pre' => '<li><a href="@url@p=@i@{anchor}">&laquo;</a></li>',
+            'tpl_pre_disable' => '<li class="disabled"><span>&laquo;</span></li>',
+            'tpl_next' => '<li><a href="@url@p=@i@{anchor}">&raquo;</a></li>',
+            'tpl_next_disable' => '<li class="disabled"><span>&raquo;</span></li>',
+            'tpl_item' => '<li><a href="@url@p=@i@{anchor}">@i@</a></li>',
+            'tpl_item_current' => '<li class="active"><a>@i@</a></li>',
+            'tpl_more' => '<li><span>...</span></li>'
+        ];
     }
 
     /**

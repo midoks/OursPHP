@@ -35,7 +35,7 @@ class App {
         $data = '';
         try {
             $config     = self::initCommon();
-            $request    = Request::instance();
+            $request    = Request::getInstance();
 
             //var_dump($config);
             $dispatch   = self::routeCheck($request, $config);
@@ -132,13 +132,13 @@ class App {
 
         $class_name = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
 
-        $instance = new $class_name(Request::instance(), Response::instance());
+        $instance = new $class_name(Request::getInstance(), Response::getInstance());
         $action = $dispatch['action'];
 
         define('APP_CONTROLLER_CALL', $dispatch['controller']);
         define('APP_METHOD_CALL', $action);
 
-        $ret = $instance->$action(Request::instance(), Response::instance());
+        $ret = $instance->$action(Request::getInstance(), Response::getInstance());
 
         return $ret;
     }

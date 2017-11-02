@@ -8,18 +8,18 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-namespace App\Service;
+namespace common\service;
 
-use App\Dao\System_Function;
-use App\Dao\System_Role;
-use App\Dao\System_Manager;
-use OursPHP\Core\Lib\Traits\BaseService;
+use common\dao\SysFunc;
+use common\dao\SysLogs;
+use common\dao\SysRole;
+use common\dao\SysUser;
 
-class SystemSvc extends BaseService {
+class SysSvc {
 
 
-    public function getManagers($status=null) {
-        $dao    = new System_Manager();
+    public function getUsers($status = null) {
+        $dao    = new SysUser();
         $where  = '';
         $query  = [];
         if($status !== null) {
@@ -30,26 +30,25 @@ class SystemSvc extends BaseService {
     }
 
 
-    public function getManager($id) {
+    public function getUser($id) {
         if($id) {
-            $dao=new System_Manager();
+            $dao=new SysUser();
             return $dao->findByPkey($id);
         }
         return false;
     }
 
-    public function addManager($item) {
+    public function addUser($item) {
         if(!empty($item)) {
-            $dao = new System_Manager();
+            $dao = new SysUser();
             return $dao->add($item);
         }
         return false;
     }
 
-
-    public function editManager($id,$vars) {
+    public function editUser($id,$vars) {
         if(!empty($vars)) {
-            $dao = new System_Manager();
+            $dao = new SysUser();
             return $dao->edit($id,$vars);
         }
         return false;
@@ -62,7 +61,7 @@ class SystemSvc extends BaseService {
      * @return mixed
      */
     public function getRoles($status = null) {
-        $dao    = new System_Role();
+        $dao    = new SysRole();
         $where  = '';
         $query  = [];
         if($status !== null) {
@@ -73,27 +72,30 @@ class SystemSvc extends BaseService {
     }
 
 
+    /**
+     * 获取用户权限信息
+     * @param int $id 用户UID
+     * @return array|false 
+     */
     public function getRole($id) {
         if($id) {
-            $dao = new System_Role();
+            $dao = new SysRole();
             return $dao->findByPkey($id);
         }
         return false;
     }
 
-
     public function addRole($item) {
         if(!empty($item)) {
-            $dao = new System_Role();
+            $dao = new SysRole();
             return $dao->add($item);
         }
         return false;
     }
 
-
     public function editRole($id,$vars) {
         if(!empty($vars)) {
-            $dao=new System_Role();
+            $dao=new SysRole();
             return $dao->edit($id,$vars);
         }
         return false;
@@ -105,24 +107,26 @@ class SystemSvc extends BaseService {
      * @param $pid
      * @return mixed
      */
-    public function getFunctions($pid = 0, $status = null) {
-        $dao = new System_Function();
-        $query['pid'] = $pid;
-        $where = "pid=:pid";
+    public function getFuncs($pid = 0, $status = null) {
+        
+        $dao            = new SysFunc();
+        $query['pid']   = $pid;
+        $where          = "pid=:pid";
+
         if($status !== null) {
-            $query['status']=$status;
-            $where=$where." and status=:status";
+            $query['status'] = $status;
+            $where = $where." and status=:status ";
         }
 
-        $field = ['id','name','pid','icon','type','uri','description','ismenu','status'];
+        $field = ['id','`name`','pid','icon','type','uri','`desc`','is_menu','`status`'];
 
-        return $dao->findAll($query,$where,0,$field,'','','id asc');
+        return $dao->cache()->findAll($query, $where,0, $field,'','','id asc');
     }
 
 
-    public function getFunction($id) {
+    public function getFunc($id) {
         if($id) {
-            $dao = new System_Function();
+            $dao = new SysFunc();
             return $dao->findByPkey($id);
         }
         return false;
@@ -133,31 +137,32 @@ class SystemSvc extends BaseService {
      * @param $item
      * @return bool|mixed
      */
-    public function addFunction($item) {
+    public function addFunc($item) {
         if(!empty($item)) {
-            $dao = new System_Function();
+            $dao = new SysFunc();
             return $dao->add($item);
         }
         return false;
     }
 
 
-    public function editFunction($id, $vars) {
+    public function editFunc($id, $vars) {
         if(!empty($vars)) {
-            $dao = new System_Function();
+            $dao = new SysFunc();
             return $dao->edit($id,$vars);
         }
         return false;
     }
 
     /**
-     * @return mixed
+     * 获取所有菜单
+     * @return array
      */
-    public function getFunctionMap() {
-        $functions=self::getFunctions(0,1);
+    public function getMenu() {
+        $functions = self::getFuncs(0,1);
         if(!empty($functions)) {
             foreach ($functions as &$fun) {
-                $fun['sub'] = self::getFunctions($fun['id'], 1);
+                $fun['sub'] = self::getFuncs($fun['id'], 1);
             }
         }
         return $functions;

@@ -56,6 +56,7 @@
     <script src="/assets/js/bootstrap.js"></script>
 
     <!-- page specific plugin scripts -->
+    <script src="/assets/js/jquery-ui.js"></script>
 
     <!--[if lte IE 8]>
     <script src="/assets/js/excanvas.js"></script>
@@ -176,8 +177,18 @@
 
 <!-- inline scripts related to this page -->
 <script type="text/javascript">
-    jQuery(function($) {
-    });
+jQuery(function($) {
+    $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
+        _title: function(title) {
+            var $title = this.options.title || '&nbsp;'
+            if( ("title_html" in this.options) && this.options.title_html == true ){
+                title.html($title);
+            } else {
+                title.text($title);
+            }
+        }
+    }));
+});
 </script>
 
 <!-- the following scripts are used in demo only for onpage help and you don't need them -->

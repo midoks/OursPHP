@@ -59,7 +59,7 @@ class Response {
      * @param array $options 参数
      * @return \frame\Request
      */
-    public static function instance() {
+    public static function getInstance() {
         if (!self::$_instance){
             self::$_instance = new static();
         }
@@ -108,7 +108,7 @@ class Response {
         }
 
         if (200 == $this->code) {
-            $cache = Request::instance()->getCache();
+            $cache = Request::getInstance()->getCache();
             if ($cache) {
                 $this->header['Cache-Control'] = 'max-age=' . $cache[1] . ',must-revalidate';
                 $this->header['Last-Modified'] = gmdate('D, d M Y H:i:s') . ' GMT';

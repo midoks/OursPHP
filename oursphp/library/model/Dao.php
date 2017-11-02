@@ -82,7 +82,6 @@ abstract class Dao extends Model {
 	 * @param array $data 行记录数组
 	 */
 	public function add(array $data) {
-		Assert::notEmpty($data, new BizException('插入内容为空'));
 		return $this->_db->insert($this->getTableName(), $data);
 	}
 	
@@ -91,7 +90,6 @@ abstract class Dao extends Model {
 	 * @param array $vars 行记录数组
 	 */
 	public function adds(array $varslist) {
-		
 		return $this->_db->inserts($this->getTableName(), $varslist);
 	}
 

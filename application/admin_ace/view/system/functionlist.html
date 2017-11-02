@@ -25,7 +25,7 @@
                     <td>
 
 
-                        {{if $root['ismenu']==1}}
+                        {{if $root['is_menu']==1}}
                         <a class="blue" href="javascript:del('/{{$_controller}}/functionsetmenu?id={{$root['id']}}')">
 						<span title="点击取消菜单显示"
                               class="badge badge-warning">是</span></a>
@@ -86,7 +86,7 @@
                                 <td><i class="glyphicon glyphicon-play-circle"></i>————{{$child['name']}}</th>
                                 <td>
 
-                                    {{if $child['ismenu']==1}}
+                                    {{if $child['is_menu']==1}}
                                     <a class="blue" href="javascript:del('/{{$_controller}}/functionsetmenu?id={{$child['id']}}')">
                                 <span title="点击取消菜单显示"
                                       class="badge badge-warning">是</span></a>

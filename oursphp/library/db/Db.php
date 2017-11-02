@@ -27,9 +27,14 @@ class Db {
 		'div',
 		'status',
 		'order',
+		'name',
+		'desc',
+		'status'
 	);
 
-	public function __construct(){}
+	public function __construct(){
+		
+	}
 
 	/**
 	 * 设置当前项目
@@ -38,7 +43,7 @@ class Db {
 	public function setProject(){
 		$this->instance = Mysql::getInstance();
 		$cfg = Config::get('db');
-		$this->instance->injection($cfg, 'db');
+		$this->instance->inject($cfg, 'db');
 	}
 
 	public function query($sql, $bind = array()){

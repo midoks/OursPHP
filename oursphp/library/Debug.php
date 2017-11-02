@@ -173,7 +173,7 @@ class Debug
     public static function inject(Response $response, &$content) {
         $config  = Config::get('trace');
         $type    = isset($config['type']) ? $config['type'] : 'Html';
-        $request = Request::instance();
+        $request = Request::getInstance();
         $class   = false !== strpos($type, '\\') ? $type : '\\frame\\debug\\' . ucwords($type);
         unset($config['type']);
         if (class_exists($class)) {

@@ -27,6 +27,10 @@ class Request {
 
     const REPLACEMENT = '';
 
+    protected $module;
+    protected $controller;
+    protected $action;
+
     private function __construct() {
         //$this->input = file_get_contents("php://input");
     }
@@ -47,7 +51,7 @@ class Request {
      * @param array $options 参数
      * @return \frame\Request
      */
-    public static function instance() {
+    public static function getInstance() {
         if (!self::$_instance){
             self::$_instance = new static();
         }
@@ -144,6 +148,51 @@ class Request {
             return preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
         } else {
             return $default;
+        }
+    }
+
+    /**
+     * 设置或者获取当前的模块名
+     * @access public
+     * @param string $module 模块名
+     * @return string|Request
+     */
+    public function module($module = null) {
+        if (!is_null($module)) {
+            $this->module = $module;
+            return $this;
+        } else {
+            return $this->module ?: '';
+        }
+    }
+
+    /**
+     * 设置或者获取当前的控制器名
+     * @access public
+     * @param string $controller 控制器名
+     * @return string|Request
+     */
+    public function controller($controller = null) {
+        if (!is_null($controller)) {
+            $this->controller = $controller;
+            return $this;
+        } else {
+            return $this->controller ?: '';
+        }
+    }
+
+    /**
+     * 设置或者获取当前的操作名
+     * @access public
+     * @param string $action 操作名
+     * @return string|Request
+     */
+    public function action($action = null) {
+        if (!is_null($action)) {
+            $this->action = $action;
+            return $this;
+        } else {
+            return $this->action ?: '';
         }
     }
 

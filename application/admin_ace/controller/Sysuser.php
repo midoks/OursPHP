@@ -18,11 +18,11 @@ use common\dao\SysUser;
 
 use \common\service\SysSvc;
 
-class System  extends Base {
+class SysUser  extends Base {
 
     public function __construct($request, $response){
         parent::__construct($request, $response);
-        $response->title = '系统设置';
+        $response->title = '管理员管理';
     }
 
     public function functionsetmenu($request,$response) {

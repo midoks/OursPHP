@@ -13,5 +13,5 @@ namespace common\dao;
 use frame\model\Dao;
 
 abstract class Base extends Dao {
-	use \frame\traits\Cache;
+	
 }

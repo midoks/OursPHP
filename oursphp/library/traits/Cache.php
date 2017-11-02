@@ -39,8 +39,8 @@ trait Cache {
         return $this;
     }
 
-    private function cacheSqlStart($sql, $bind){
 
+    private function cacheSqlStart($sql, $bind){
         $mem = Memcache::getInstance();
 
         if ( !isset($this->__cache_key)){
@@ -49,6 +49,7 @@ trait Cache {
 
         $key = $this->__cache_key;
         $cacheV = $mem->get($key);
+       
         if ($cacheV){
             return $cacheV;
         }

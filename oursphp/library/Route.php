@@ -32,12 +32,15 @@ class Route {
 
             $module = array_shift($path);
             $module = !empty($module) ? $module : Config::get('module_value');
+            Request::getInstance()->module($module);
 
             $controller = array_shift($path);
             $controller = !empty($controller) ? $controller : Config::get('controller_value');
+            Request::getInstance()->controller($controller);
 
             $action = array_shift($path);
             $action = !empty($action) ? $action : Config::get('action_value');
+            Request::getInstance()->action($action);
  
             $route = [strtolower($module), ucfirst($controller), strtolower($action)];
             return ['type' => 'module', 'route' => $route];
@@ -45,9 +48,11 @@ class Route {
 
             $controller = array_shift($path);
             $controller = !empty($controller) ? $controller : Config::get('controller_value');
+            Request::getInstance()->controller($controller);
 
             $action = array_shift($path);
             $action = !empty($action) ? $action : Config::get('action_value');
+            Request::getInstance()->action($action);
 
             $route = [ucfirst($controller), strtolower($action)];
             return ['type' => 'mvc', 'route' => $route];
