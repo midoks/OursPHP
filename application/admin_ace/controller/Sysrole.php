@@ -42,41 +42,30 @@ class SysRole  extends Base {
 
     //添加,修改角色
     public function add($request,$response) {
+
         $svc    = new SysSvc();
 
         $response->stitle = '创建新角色';
 
+
+
         if($request->id) {
 
             $response->stitle   = '编辑角色信息';
+
             $id     = $request->id;
-            
             $item   = $svc->getRole($id);
 
             $item['list'] = explode(',', $item['list']);
             $response->item = $item;
         }
 
+
         if($request->isPost()) {
 
             $vars       = $request->vars;
-            $funarray   = [];
-            $svc        = new SysSvc();
-            $functions = $svc->getFunctions();
-            if(!empty($functions)) {
-                foreach ($functions as $fun) {
-                    $powers = $request->$fun['uri'];
-                    if(!empty($powers)) {
-                        if(is_string($powers)) {
-                            $powers = [$powers];
-                        }
-                        $funarray[strtolower($fun['uri'])] = $powers;
-                    }
-
-                }
-            }
-            $vars['functionlist'] = json_encode($funarray);
-            //dump($vars);exit;
+            $box       = $request->box;
+            $vars['list'] = implode(',', $box);
             if(isset($id)) {
                 $svc->editRole($id,$vars);
             } else {
@@ -85,13 +74,9 @@ class SysRole  extends Base {
 
             $this->redirect('/sysrole');
         }
-
-        $rows       = $svc->getRoles();
+        
         $functions  = $svc->getMenu();
-
-        $rows['list'] = explode(',', $rows['list']);
         $response->functions    = $functions;
-        $response->rows         = $rows;
 
         $this->renderLayout();
     }

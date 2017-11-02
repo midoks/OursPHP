@@ -113,8 +113,7 @@ class Cookie {
      * @return $this 返回类本身实现链式操作
      */
     public function setExpire($expire) {
-        if(is_int($expire))
-        {
+        if(is_int($expire)) {
             $this->_expire = $expire;
         }
         return $this;
@@ -206,7 +205,6 @@ class Cookie {
      * @return bool
      */
     public function clear($name){
-
         $cookie_name = $this->getName($name);
         return setcookie($cookie_name, null, -1,$this->_path,$this->_domain,$this->_secure);
     }
@@ -217,7 +215,7 @@ class Cookie {
      * @return String
      */
     private function getName($name){
-        return $this->_prefix? $this->_prefix.'_'.$name : $name;
+        return $this->_prefix ? $this->_prefix.'_'.$name : $name;
     }
 
     /** pack

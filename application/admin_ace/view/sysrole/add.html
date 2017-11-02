@@ -43,8 +43,9 @@
                                 <div class="widget-main">
                                     {{foreach  from=$func['sub'] key=sk item=subfunc}}
                                     <label class="inline" style="width:160px;">
-                                        <input class="ace" type="checkbox" name="box" value="{{$subfunc['id']}}" {{if in_array($subfunc[id],$item[list])}}1{{else}}2{{/if}}>
-                                        <span class="lbl" role="checkbox">{{$subfunc['name']}}</span>
+                                        <input class="ace" type="checkbox" name="box[]" value="{{$subfunc['id']}}"
+                                        {{if isset($item) && in_array($subfunc['id'],$item['list'])}}checked="checked"{{/if}}>
+                                        <span class="lbl" role="checkbox" title="{{$subfunc['desc']}}">{{$subfunc['name']}}</span>
                                     </label>
                                     {{/foreach}}
                                      

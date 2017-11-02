@@ -44,7 +44,7 @@ class Login extends Controller {
                 $user   = $dao->cache('cache_t', 30)->findOne($query, $where);
  
                 if( $user && md5($password) === $user['password']) {
-                    $cookie->set('info', $user, 0);
+                    $cookie->set('info', $user, 1*24*60*60);
                     $this->redirect("/index");
                 }
             }
@@ -67,7 +67,11 @@ class Login extends Controller {
     }
 
     //登出
-    public function loginOut($request, $response) {
+    public function out($request, $response) {
+        $cookie     = Cookie::getInstance();
+        $ret = $cookie->set('info','',0);
+        //var_dump($ret);
+        //$this->redirect("/index");
     }
 
 
