@@ -17,7 +17,7 @@ return [
 	//应用名称
 	'app_id'	=> 'oursphp_home',
 	'app_debug' => $app_debug,
-	'app_trace' => true,
+	'app_trace' => $app_debug,
 	
 	// +----------------------------------------------------------------------
     // | 应用设置

@@ -121,7 +121,7 @@ class Hook {
         }
         if (App::$debug) {
             Debug::remark('behavior_end', 'time');
-            Log::record('[ BEHAVIOR ] Run ' . $class . ' @' . $tag . ' [ RunTime:' . Debug::getRangeTime('behavior_start', 'behavior_end') . 's ]', 'info');
+            Logs::record('[ BEHAVIOR ] Run ' . $class . ' @' . $tag . ' [ RunTime:' . Debug::getRangeTime('behavior_start', 'behavior_end') . 's ]', 'info');
         }
         return $result;
     }
