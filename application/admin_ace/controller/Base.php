@@ -15,8 +15,9 @@ namespace  app\controller;
 
 use \frame\Controller;
 use \frame\utils\Cookie;
+use \frame\utils\PageLink;
 
-//use \common\model\Base as BaseModel;
+use \common\service\SysSvc;
 
 class Base extends Controller {
 
@@ -36,26 +37,23 @@ class Base extends Controller {
      * 后台初始化检查,是否登录
      */
     public function __construct($request, $response) {
+        
+        $response->_controller = $request->controller();
+        $response->_action = $request->action();
 
         $this->initTplVar();
         
         $cookie     = Cookie::getInstance();
-        $this->_user = $cookie->get('info');
+        $response->me = $this->_user = $cookie->get('info');
         if (!$this->_user || $this->_user['status'] == 0) {
             $this->redirect('/login');
         }
 
-        //var_dump($this->_user);
+        $roleid         = $this->_user['roleid'];
+        $svc            = new SysSvc();
 
-
-        $response->me   = $this->_user;
-        // $roleid         = $this->_manager['roleid'];
-        // $svc            = new SystemSvc();
-        // $response->menulist = $this->_menu = $svc->getFunctionMap();
-
-        // $role = $svc->getRole($roleid);
-
-        // //var_dump($role);
+        $response->menulist = $this->_menu = $svc->getMenu();
+        $role = $svc->getRole($roleid);
 
         // $this->_rolelist    = ( $role['status']==1 ) ? json_decode($role['functionlist'],true) : [];
         // $response->rolelist = $this->_rolelist;
@@ -68,6 +66,13 @@ class Base extends Controller {
         //     $this->layoutSmarty('../layout/nopower');
         //     exit;
         // }
+
+        $this->pageLink = PageLink::getInstance();
+    }
+
+    //获取系统方法
+    public function getSysFunc(){
+
     }
 
     //初始化基本变量
@@ -78,8 +83,5 @@ class Base extends Controller {
         $this->assign('_sys_copyright', 'ACE后台管理系统');
     }
 
-    //获取系统方法
-    public function getSysFunc(){
-
-    }
+    
 }
