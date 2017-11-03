@@ -11,7 +11,7 @@
 namespace  app\controller;
 
 
-use common\dao\SysFunc as SysFuncDao;
+use common\dao\SysFuncDao;
 
 use \common\service\SysSvc;
 
@@ -37,7 +37,7 @@ class Sysfunc extends Base {
         $this->renderLayout();
     }
 
-    public function functionsetmenu($request,$response) {
+    public function setmenu($request,$response) {
         $id=$request->id;
         if($id) {
             $dao = new SysFunc();
@@ -46,7 +46,7 @@ class Sysfunc extends Base {
         $this->renderString('ok');
     }
 
-    
+
     public function del($request,$response) {
         $id = $request->id;
         if($id) {
@@ -65,7 +65,7 @@ class Sysfunc extends Base {
     }
 
 
-    public function functionlock($request) {
+    public function lock($request) {
         $id=$request->id;
         if($id) {
             $dao = new System_Function();
@@ -86,8 +86,8 @@ class Sysfunc extends Base {
 
         if($request->isPost()) {
             $vars = $request->vars;
-            if(isset($vars['ismenu'])) {
-                $vars['ismenu']=1;
+            if(isset($vars['is_menu'])) {
+                $vars['is_menu']=1;
             }
 
             $vars['type'] = ($vars['pid'] == 0) ? 0 : 1;
@@ -99,7 +99,7 @@ class Sysfunc extends Base {
                 $svc->addFunc($vars);
             }
 
-            $this->redirect('/system/functionlist');
+            $this->redirect('/system/index');
         }
 
         //icon start

@@ -16,7 +16,7 @@ return [
 
 	'app_id'           => 'admin_ace',
     'app_debug'         => $app_debug,
-    'app_trace'         => $app_debug,
+    'app_trace'         => true,//$app_debug,
 
 	// +----------------------------------------------------------------------
     // | 应用设置

@@ -20,14 +20,5 @@ class SysUserDao extends Base {
         return 'id';
     }
 
-    public function lock($id) {
-        $fun = self::findByPkey($id);
-
-        if($fun) {
-            $vars['status'] = $fun['status'] == 1 ? 0 : 1;
-            //dump($vars['status'],$fun['status']);
-            return self::edit($id,$vars);
-        }
-        return false;
-    }
+    
 }

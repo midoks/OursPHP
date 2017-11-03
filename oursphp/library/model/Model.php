@@ -66,6 +66,10 @@ class Model {
      */
 	public function getOne($sql, $bind = array()){
 		$list = $this->query($sql, $bind);
+        
+        if (empty($list)){
+            return false;
+        }
 		return $list[0];
 	}
 

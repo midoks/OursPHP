@@ -10,9 +10,23 @@
 
 namespace common\service;
 
-use common\dao\SysFunc;
+use common\dao\SysFuncDao;
 
 class SysFuncSvc {
+
+    /**
+     * 获取所有菜单
+     * @return array
+     */
+    public function getMenu() {
+        $functions = self::getFuncs(0,1);
+        if(!empty($functions)) {
+            foreach ($functions as &$fun) {
+                $fun['sub'] = self::getFuncs($fun['id'], 1);
+            }
+        }
+        return $functions;
+    }
 
 
     /**
@@ -22,7 +36,7 @@ class SysFuncSvc {
      */
     public function getFuncs($pid = 0, $status = null) {
         
-        $dao            = new SysFunc();
+        $dao            = new SysFuncDao();
         $query['pid']   = $pid;
         $where          = "pid=:pid";
 
@@ -33,13 +47,13 @@ class SysFuncSvc {
 
         $field = ['id','`name`','pid','icon','type','controller', 'action', '`desc`','is_menu','`status`'];
 
-        return $dao->cache()->findAll($query, $where,0, $field,'','','id asc');
+        return $dao->findAll($query, $where,0, $field,'','','id asc');
     }
 
 
     public function get($id) {
         if($id) {
-            $dao = new SysFunc();
+            $dao = new SysFuncDao();
             return $dao->findByPkey($id);
         }
         return false;
@@ -52,7 +66,7 @@ class SysFuncSvc {
      */
     public function add($item) {
         if(!empty($item)) {
-            $dao = new SysFunc();
+            $dao = new SysFuncDao();
             return $dao->add($item);
         }
         return false;
@@ -61,7 +75,7 @@ class SysFuncSvc {
 
     public function edit($id, $vars) {
         if(!empty($vars)) {
-            $dao = new SysFunc();
+            $dao = new SysFuncDao();
             return $dao->edit($id,$vars);
         }
         return false;

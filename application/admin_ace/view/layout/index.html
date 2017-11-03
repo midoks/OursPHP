@@ -188,6 +188,12 @@ jQuery(function($) {
             }
         }
     }));
+
+    $('.glyphicon.glyphicon-plus').each(function(){
+        $(this).on('click', function(){
+            $(this).toggleClass('glyphicon-minus');
+        });
+    });
 });
 </script>
 

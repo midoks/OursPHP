@@ -10,14 +10,10 @@
 
 namespace  app\controller;
 
+use \common\service\SysRoleSvc;
+use \common\service\SysFuncSvc;
 
-use common\dao\SysFunc;
-use common\dao\SysLogs;
-use common\dao\SysUser;
-
-use \common\service\SysSvc;
-
-class SysRole  extends Base {
+class Sysrole  extends Base {
 
     public function __construct($request, $response){
         parent::__construct($request, $response);
@@ -28,56 +24,80 @@ class SysRole  extends Base {
     public function index($request, $response){
         $response->stitle = '列表';
 
-        if(!isset($svc)) {
-            $svc = new SysSvc();
-        }
-        $rows = $svc->getRoles();
-        $_rows[] = $rows;
+        $roleSvc = new SysRoleSvc();
+        $response->p        = $p = $request->p ? $request->p : 1;
+        $pageSize           = 1;
 
-        $response->stitle   = '角色管理';
-        $response->rows     = $_rows;
+        $rows   = $roleSvc->getPageData($p, $pageSize);
+        $total  = $roleSvc->getCount();
+
+        $response->rows = $rows;
+        $response->pageLink = $this->pageLink->getPageLink("/{$this->_controller}/{$this->_action}?t=1", $p, $pageSize, $total,"");
 
         $this->renderLayout();
     }
 
     //添加,修改角色
     public function add($request,$response) {
-
-        $svc    = new SysSvc();
-
         $response->stitle = '创建新角色';
 
+        $roleSvc = new SysRoleSvc();
+        $funcSvc = new SysFuncSvc();
 
-
+        //编辑时
         if($request->id) {
 
             $response->stitle   = '编辑角色信息';
 
             $id     = $request->id;
-            $item   = $svc->getRole($id);
+            $item   = $roleSvc->get($id);
 
             $item['list'] = explode(',', $item['list']);
             $response->item = $item;
         }
 
-
+        //添加或修改数据
         if($request->isPost()) {
 
             $vars       = $request->vars;
             $box       = $request->box;
             $vars['list'] = implode(',', $box);
+
             if(isset($id)) {
-                $svc->editRole($id,$vars);
+                $roleSvc->edit($id,$vars);
             } else {
-                $svc->addRole($vars);
+                $roleSvc->add($vars);
             }
 
-            $this->redirect('/sysrole');
+            $this->redirect('/'.$this->_controller);
         }
         
-        $functions  = $svc->getMenu();
+        $functions  = $funcSvc->getMenu();
         $response->functions    = $functions;
 
         $this->renderLayout();
+    }
+
+     //删除角色
+    public function del($request, $response) {
+        $id = $request->id;
+        if( $id ) {
+            $userSvc  = new SysRoleSvc();
+            $ret = $userSvc->delete($id);
+            if ($ret){
+                return $this->renderString('ok');
+            }
+        }
+        return $this->renderString('非法操作');
+    }
+
+    //锁定或解锁角色
+    public function lock($request,$response) {
+        $id = $request->id;
+        if($id) {
+            $dao = new SysRoleSvc();
+            $dao->lock($id);
+        }
+        $this->renderString('ok');
     }
 }

@@ -14,13 +14,13 @@ use frame\Controller;
 use frame\utils\Image;
 use frame\utils\Cookie;
 
-use common\dao\SysUser;
+use common\dao\SysUserDao;
 
 class Login extends Controller {
     
 	//登录
     public function index($request, $response) {
-        $dao        = new SysUser();
+        $dao        = new SysUserDao();
         $cookie     = Cookie::getInstance();
 
         //检查是否已经登录

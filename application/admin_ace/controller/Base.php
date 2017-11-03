@@ -38,8 +38,8 @@ class Base extends Controller {
      */
     public function __construct($request, $response) {
         
-        $_controller = $response->_controller = $request->controller();
-        $_action = $response->_action = $request->action();
+        $this->_controller = $_controller = $response->_controller = $request->controller();
+        $this->_action = $_action = $response->_action = $request->action();
 
         $this->initTplVar();
         
@@ -55,12 +55,11 @@ class Base extends Controller {
         $this->_menu = $svc->getMenu();
 
 
+        //子菜单是否在父菜单内,父菜单便于打开
         foreach ($this->_menu as $key => $value) {
-            //var_dump($key, $value);
             $sub = $value['sub'];
             $this->_menu[$key]['open_menu'] = false;
             foreach ($sub as $subKey => $subVal) {
-                //var_dump($subVal['controller'] == $_controller && $subVal['action'] == $_action);
                 if ($subVal['controller'] == $_controller && $subVal['action'] == $_action){
                     $this->_menu[$key]['open_menu'] = true;
                 }

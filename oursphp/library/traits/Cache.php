@@ -32,7 +32,9 @@ trait Cache {
      * @param string $node 节点名称
      * @return bool
      */
-    public function cache($time = 30 , $key = NULL){
+    public function cache($time = 30, $key = NULL){
+
+        $this->__cache_open = true;
 
         $this->__cache_key = $key;
         $this->__cache_time = $time;
@@ -41,6 +43,12 @@ trait Cache {
 
 
     private function cacheSqlStart($sql, $bind){
+
+        if (!isset($this->__cache_open) || !$this->__cache_open){
+            $this->__cache_open = false;
+            return false;
+        }
+
         $mem = Memcache::getInstance();
 
         if ( !isset($this->__cache_key)){
@@ -48,11 +56,18 @@ trait Cache {
         }
 
         $key = $this->__cache_key;
-        $cacheV = $mem->get($key);
+
+        try {
+            $cacheV = $mem->get($key);
+        } catch (\Exception $e) {
+            return false;
+        }
+        
        
         if ($cacheV){
             return $cacheV;
         }
+
         return false;
     }
 
@@ -60,15 +75,17 @@ trait Cache {
      *
      */
     private function cacheSqlEnd($sql, $bind, $result){
+
+        if (!isset($this->__cache_open) || !$this->__cache_open){
+            $this->__cache_open = false;
+            return false;
+        }
         
         $mem = Memcache::getInstance();
     
         if (isset($this->__cache_key)){
             $cache = $mem->add($this->__cache_key, $result);
         }
-
-        $this->__cache_key = NULL;
-        $this->__cache_time = NULL;
     }
 
 
