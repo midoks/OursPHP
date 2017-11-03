@@ -38,8 +38,8 @@ class Base extends Controller {
      */
     public function __construct($request, $response) {
         
-        $response->_controller = $request->controller();
-        $response->_action = $request->action();
+        $_controller = $response->_controller = $request->controller();
+        $_action = $response->_action = $request->action();
 
         $this->initTplVar();
         
@@ -52,7 +52,25 @@ class Base extends Controller {
         $roleid         = $this->_user['roleid'];
         $svc            = new SysSvc();
 
-        $response->menulist = $this->_menu = $svc->getMenu();
+        $this->_menu = $svc->getMenu();
+
+
+        foreach ($this->_menu as $key => $value) {
+            //var_dump($key, $value);
+            $sub = $value['sub'];
+            $this->_menu[$key]['open_menu'] = false;
+            foreach ($sub as $subKey => $subVal) {
+                //var_dump($subVal['controller'] == $_controller && $subVal['action'] == $_action);
+                if ($subVal['controller'] == $_controller && $subVal['action'] == $_action){
+                    $this->_menu[$key]['open_menu'] = true;
+                }
+            }
+        }
+
+
+        //var_dump($this->_menu);
+        $response->menulist = $this->_menu;
+
         $role = $svc->getRole($roleid);
 
         // $this->_rolelist    = ( $role['status']==1 ) ? json_decode($role['functionlist'],true) : [];

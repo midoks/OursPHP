@@ -10,7 +10,7 @@
 {{if !empty($menulist)}}
     {{foreach $menulist as $menu}}
     {{if $menu['is_menu'] == 1}}
-    <li class="{{if $menu['uri'] == $_controller}}open{{/if}}">
+    <li class="{{if $menu['open_menu']}}open{{/if}}">
         <a href="#" class="dropdown-toggle">
             <i class="menu-icon {{$menu['icon']}}"></i>
             <span class="menu-text"> {{$menu['name']}} </span>
@@ -24,7 +24,7 @@
                 {{foreach $menu['sub'] as $sub}}
                 {{if $sub['is_menu']==1 }}
                 <li class="">
-                    <a href="/{{$menu['uri']}}/{{$sub['uri']}}">
+                    <a href="/{{$sub['controller']}}/{{$sub['action']}}">
                         <i class="menu-icon fa fa-caret-right"></i>
                         {{$sub['name']}}
                     </a>

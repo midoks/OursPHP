@@ -8,12 +8,12 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
+
 namespace common\dao;
 
-class SysUser extends Base {
-
+class SysRoleDao extends Base {
     public function getTableName(){
-        return 'sys_user';
+        return 'sys_role';
     }
 
     public function getPKey(){
@@ -22,9 +22,8 @@ class SysUser extends Base {
 
     public function lock($id) {
         $fun = self::findByPkey($id);
-
         if($fun) {
-            $vars['status'] = $fun['status'] == 1 ? 0 : 1;
+            $vars['status']=$fun['status']==1?0:1;
             //dump($vars['status'],$fun['status']);
             return self::edit($id,$vars);
         }

@@ -11,18 +11,30 @@
 namespace  app\controller;
 
 
-use common\dao\SysFunc;
-use common\dao\SysLogs;
-use common\dao\SysRole;
-use common\dao\SysUser;
+use common\dao\SysFunc as SysFuncDao;
 
 use \common\service\SysSvc;
 
-class SysUser  extends Base {
+class Sysfunc extends Base {
 
     public function __construct($request, $response){
         parent::__construct($request, $response);
         $response->title = '管理员管理';
+    }
+
+    public function index($request, $response) {
+        $response->stitle='系统功能管理';
+
+        $svc        = new SysSvc();
+        $rootMenu   = $svc->getFuncs();
+
+        if(!empty($rootMenu)) {
+            foreach ($rootMenu as &$fun) {
+                $fun['sub'] = $svc->getFuncs($fun['id']);
+            }
+        }
+        $response->rootMenu = $rootMenu;
+        $this->renderLayout();
     }
 
     public function functionsetmenu($request,$response) {
@@ -33,7 +45,9 @@ class SysUser  extends Base {
         }
         $this->renderString('ok');
     }
-    public function functiondel($request,$response) {
+
+    
+    public function del($request,$response) {
         $id = $request->id;
         if($id) {
             $svc    = new SysSvc();
@@ -60,25 +74,7 @@ class SysUser  extends Base {
         $this->renderString('ok');
     }
 
-
-    public function functionList($request,$response) {
-
-        $response->stitle='系统功能管理';
-
-        $svc        = new SysSvc();
-        $rootMenu   = $svc->getFuncs();
-
-        if(!empty($rootMenu)) {
-            foreach ($rootMenu as &$fun) {
-                $fun['sub'] = $svc->getFuncs($fun['id']);
-            }
-        }
-        $response->rootMenu = $rootMenu;
-        $this->renderLayout();
-    }
-
-
-    public function functionAdd($request,$response) {
+    public function add($request,$response) {
         $response->stitle = '功能添加';
         if($request->id) {
             $response->stitle = '功能编辑';
@@ -122,175 +118,6 @@ class SysUser  extends Base {
         array_unshift($functionrows,$baserow);
         $response->functionrows = $functionrows;
   
-
-
         $this->renderLayout();
-    }
-
-
-    public function roleAdd($request,$response) {
-        $response->stitle = '创建新角色';
-
-        if($request->id) {
-            $response->stitle = '编辑角色信息';
-            $id = $request->id;
-            $svc = new SysSvc();
-            $item = $svc->getRole($id);
-            $item['list'] = json_decode($item['list'],true);
-            //dump($item);
-            $response->item = $item;
-        }
-        if($request->isPost()) {
-
-            $vars       = $request->vars;
-            $funarray   = [];
-            $svc        = new SysSvc();
-            $functions = $svc->getFunctions();
-            if(!empty($functions)) {
-                foreach ($functions as $fun) {
-                    $powers = $request->$fun['uri'];
-                    if(!empty($powers)) {
-                        if(is_string($powers)) {
-                            $powers = [$powers];
-                        }
-                        $funarray[strtolower($fun['uri'])] = $powers;
-                    }
-
-                }
-            }
-            $vars['functionlist'] = json_encode($funarray);
-            //dump($vars);exit;
-            if(isset($id)) {
-                $svc->editRole($id,$vars);
-            } else {
-                $svc->addRole($vars);
-            }
-
-            $this->redirect('/system/Rolelist');
-        }
-
-        if(!isset($svc)) {
-            $svc = new SystemSvc();
-        }
-
-        $rows = $svc->getRoles();
-
-        $functions = $svc->getMenu();
-        //dump($functions);
-        $response->functions = $functions;
-        $response->rows = $rows;
-
-        $this->renderLayout();
-    }
-
-    public function roleList($request,$response) {
-        if(!isset($svc)) {
-            $svc = new SysSvc();
-        }
-        $rows = $svc->getRoles();
-        $_rows[] = $rows;
-
-        $response->stitle   = '角色管理';
-        $response->rows     = $_rows;
-        $this->renderLayout();
-    }
-
-    public function roledel($request,$response) {
-        $id = $request->id;
-        if($id) {
-            $dao = new SysRole();
-            $dao->delete($id);
-            $this->renderString('ok');
-        } else {
-            $this->renderString('非法操作');
-        }
-
-    }
-
-    public function rolelock($request) {
-        $id = $request->id;
-        if($id) {
-            $dao = new System_Role();
-            $dao->lock($id);
-        }
-        $this->renderString('ok');
-    }
-
-    public function managerlist($request,$response) {
-        $svc    = new SysSvc();
-        $rows   = $svc->getUsers();
-        $response->stitle = '管理员管理';
-        foreach ($rows as &$row) {
-            $row['rolename'] = $svc->getRole($row['roleid'])['name'];
-        }
-        $response->rows = $rows;
-
-        $this->renderLayout();
-    }
-
-    public function manageradd($request,$response) {
-        $response->stitle = '新增管理员';
-
-        if($request->id) {
-            $response->stitle = '编辑管理员信息';
-            $id     = $request->id;
-            $svc    = new SysSvc();
-            $item   = $svc->getUser($id);
-            if(!$item) {
-                $this->redirect('/system/managerlist');
-            }
-            $response->user = $item;
-        }
-
-        if($request->isPost()) {
-            $vars   = $request->vars;
-            $svc    = new SysSvc();
-            if(empty($vars['password'])) {
-                unset($vars['password']);
-            } else {
-                $vars['password'] = md5($vars['password']);
-            }
-            //dump($vars);
-            if(isset($id)) {
-                $svc->editUser($id,$vars);
-            } else {
-                $svc->addUser($vars);
-            }
-
-            $this->redirect('/system/managerList');
-        }
-
-        if(!isset($svc)) {
-            $svc = new SysSvc();
-        }
-        $rows = $svc->getRoles(1);
-        $baserow = [ 'id' => 0, 'name' => '无权限', 'description' => '无权限' ];
-        array_unshift($rows, $baserow);
-        $response->roles = $rows;
-
-        var_dump($rows);
-
-        $this->renderLayout();
-    }
-
-    public function managerdel($request,$response) {
-        $id = $request->id;
-        if($id) {
-            $dao = new SysUser();
-            $dao->delete($id);
-            $this->renderString('ok');
-        } else {
-            $this->renderString('非法操作');
-        }
-
-    }
-
-    public function managerlock($request) {
-        $id = $request->id;
-        if($id) {
-            $dao = new SysUser();
-            $dao->lock($id);
-        }
-        $this->renderString('ok');
     }
 }

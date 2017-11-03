@@ -10,16 +10,16 @@
 
 namespace common\service;
 
-use common\dao\SysFunc;
-use common\dao\SysLogs;
-use common\dao\SysRole;
-use common\dao\SysUser;
+use common\dao\SysFuncDao;
+use common\dao\SysLogsDao;
+use common\dao\SysRoleDao;
+use common\dao\SysUserDao;
 
 class SysSvc {
 
 
     public function getUsers($status = null) {
-        $dao    = new SysUser();
+        $dao    = new SysUserDao();
         $where  = '';
         $query  = [];
         if($status !== null) {
@@ -32,7 +32,7 @@ class SysSvc {
 
     public function getUser($id) {
         if($id) {
-            $dao=new SysUser();
+            $dao=new SysUserDao();
             return $dao->findByPkey($id);
         }
         return false;
@@ -40,7 +40,7 @@ class SysSvc {
 
     public function addUser($item) {
         if(!empty($item)) {
-            $dao = new SysUser();
+            $dao = new SysUserDao();
             return $dao->add($item);
         }
         return false;
@@ -48,7 +48,7 @@ class SysSvc {
 
     public function editUser($id,$vars) {
         if(!empty($vars)) {
-            $dao = new SysUser();
+            $dao = new SysUserDao();
             return $dao->edit($id,$vars);
         }
         return false;
@@ -61,7 +61,7 @@ class SysSvc {
      * @return mixed
      */
     public function getRoles($status = null) {
-        $dao    = new SysRole();
+        $dao    = new SysRoleDao();
         $where  = '';
         $query  = [];
         if($status !== null) {
@@ -79,7 +79,7 @@ class SysSvc {
      */
     public function getRole($id) {
         if($id) {
-            $dao = new SysRole();
+            $dao = new SysRoleDao();
             return $dao->findByPkey($id);
         }
         return false;
@@ -87,7 +87,7 @@ class SysSvc {
 
     public function addRole($item) {
         if(!empty($item)) {
-            $dao = new SysRole();
+            $dao = new SysRoleDao();
             return $dao->add($item);
         }
         return false;
@@ -95,7 +95,7 @@ class SysSvc {
 
     public function editRole($id,$vars) {
         if(!empty($vars)) {
-            $dao=new SysRole();
+            $dao=new SysRoleDao();
             return $dao->edit($id,$vars);
         }
         return false;
@@ -109,7 +109,7 @@ class SysSvc {
      */
     public function getFuncs($pid = 0, $status = null) {
         
-        $dao            = new SysFunc();
+        $dao            = new SysFuncDao();
         $query['pid']   = $pid;
         $where          = "pid=:pid";
 
@@ -118,15 +118,15 @@ class SysSvc {
             $where = $where." and status=:status ";
         }
 
-        $field = ['id','`name`','pid','icon','type','uri','`desc`','is_menu','`status`'];
+        $field = ['id','`name`','pid','icon','type','controller', 'action', '`desc`','is_menu','`status`'];
 
-        return $dao->cache()->findAll($query, $where,0, $field,'','','id asc');
+        return $dao->cache()->findAll($query, $where, 0 , $field,'','','id asc');
     }
 
 
     public function getFunc($id) {
         if($id) {
-            $dao = new SysFunc();
+            $dao = new SysFuncDao();
             return $dao->findByPkey($id);
         }
         return false;
@@ -139,7 +139,7 @@ class SysSvc {
      */
     public function addFunc($item) {
         if(!empty($item)) {
-            $dao = new SysFunc();
+            $dao = new SysFuncDao();
             return $dao->add($item);
         }
         return false;
@@ -148,7 +148,7 @@ class SysSvc {
 
     public function editFunc($id, $vars) {
         if(!empty($vars)) {
-            $dao = new SysFunc();
+            $dao = new SysFuncDao();
             return $dao->edit($id,$vars);
         }
         return false;
