@@ -30,7 +30,7 @@ class SysUser  extends Base {
         $roleSvc    = new SysRoleSvc();
 
         $response->p        = $p = $request->p ? $request->p : 1;
-        $pageSize           = 1;
+        $pageSize           = 10;
 
         $rows   = $userSvc->getPageData($p, $pageSize);
         $total  = $userSvc->getCount();

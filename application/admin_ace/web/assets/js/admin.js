@@ -1,10 +1,14 @@
+
 function edit(url, w, h) {
-    if (!w)
+    if (!w){
         w = 600;
-    if (!h)
+    }
+    if (!h){
         h = 600;
+    }
     $('<iframe id="editFrame" style="min-width:' + w + 'px; min-height:' + h + 'px"/>').attr("src", url).dialog({ autoOpen: true, modal: true, title: "编辑", width: w, height: h});
 }
+
 function del(url, callback) {
     if (confirm("是否确定执行操作?")) {
         $.get(url, function (msg) {
@@ -19,6 +23,22 @@ function del(url, callback) {
         });
     }
 }
+
+function req(url, callback) {
+    if (confirm("是否确定执行操作?")) {
+        $.get(url, function (msg) {
+            if (msg == 'ok') {
+                alert('操作成功！');
+                refresh();
+            } else if (msg == 'callback') {
+                callback();
+            } else {
+                alert(msg);
+            }
+        });
+    }
+}
+
 function recover(url, callback) {
     $.get(url, function (msg) {
         if (msg == 'ok') {
@@ -60,6 +80,7 @@ function recoverAll(url, callback) {
     }
     return false;
 }
+
 function refresh() {
     location.href = location.href;
     location.reload(true);

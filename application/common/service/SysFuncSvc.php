@@ -19,22 +19,21 @@ class SysFuncSvc {
      * @return array
      */
     public function getMenu() {
-        $functions = self::getFuncs(0,1);
+        $functions = self::gets(0,1);
         if(!empty($functions)) {
             foreach ($functions as &$fun) {
-                $fun['sub'] = self::getFuncs($fun['id'], 1);
+                $fun['sub'] = self::gets($fun['id'], 1);
             }
         }
         return $functions;
     }
-
 
     /**
      * 获取子功能列表
      * @param $pid
      * @return mixed
      */
-    public function getFuncs($pid = 0, $status = null) {
+    public function gets($pid = 0, $status = null) {
         
         $dao            = new SysFuncDao();
         $query['pid']   = $pid;
@@ -45,12 +44,19 @@ class SysFuncSvc {
             $where = $where." and status=:status ";
         }
 
-        $field = ['id','`name`','pid','icon','type','controller', 'action', '`desc`','is_menu','`status`'];
-
-        return $dao->findAll($query, $where,0, $field,'','','id asc');
+        $field = [  
+                    'id','`name`','pid','icon','type',
+                    'controller', 'action', '`desc`',
+                    'is_menu','`status`','`sort`'
+                 ];
+        return $dao->findAll($query, $where,0, $field,'','', '`sort` asc, id asc' );
     }
 
-
+    /**
+     * 通过主键ID获取信息
+     * @param int $id 主键ID
+     * @return array | bool
+     */
     public function get($id) {
         if($id) {
             $dao = new SysFuncDao();
@@ -73,11 +79,77 @@ class SysFuncSvc {
     }
 
 
+    /**
+     * 根据主键ID修改信息
+     * @param int $id ID
+     * @param array $vars 一维数组
+     * @return bool
+     */
     public function edit($id, $vars) {
         if(!empty($vars)) {
             $dao = new SysFuncDao();
             return $dao->edit($id,$vars);
         }
         return false;
+    }
+
+    /**
+     * 设置是否菜单显示
+     * @param int $id 主键ID
+     * @return array | bool
+     */
+    public function isMenu($id) {
+        $funcDao = new SysFuncDao();
+        $func = $funcDao->findByPkey($id);
+        if($func) {
+            $vars['is_menu'] = $func['is_menu']== 1 ? 0 : 1;
+            return self::edit($id,$vars);
+        }
+        return false;
+    }
+
+    /**
+     * 升序或降序功能
+     * @param int $id 主键ID
+     * @param int $asc 是否降序
+     * @return bool
+     */
+    public function sort($id, $down = true){
+        $funcDao = new SysFuncDao();
+        $func = $funcDao->findByPkey($id);
+        if($func) {
+            if ($down){
+                $vars['sort'] = $func['sort'] - 1;
+            } else {
+                $vars['sort'] = $func['sort'] + 1;
+            }
+            return self::edit($id, $vars);
+        }
+        return false;
+    }
+
+    /**
+     * 锁定或解锁功能
+     * @param int $id 主键ID
+     * @return bool
+     */
+    public function lock($id){
+        $dao = new SysFuncDao();
+        $fun = $dao->findByPkey($id);
+        if($fun) {
+            $vars['status'] = $fun['status'] == 1 ? 0 : 1;
+            return $dao->edit($id,$vars);
+        }
+        return false;
+    }
+
+    /**
+     * 删除数据功能
+     * @param int $id 主键ID
+     * @return bool
+     */
+    public function delete($id){
+        $dao = new SysFuncDao();
+        return $dao->delete($id);
     }
 }

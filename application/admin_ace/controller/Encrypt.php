@@ -1,5 +1,4 @@
 <?php
-
 // +----------------------------------------------------------------------
 // | oursphp [ simple and fast ]
 // +----------------------------------------------------------------------
@@ -8,16 +7,18 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-namespace common\dao;
 
-class SysFuncDao extends Base {
+namespace  app\controller;
 
-    public function getTableName(){
-        return 'sys_func';
+class Encrypt extends Base {
+    	
+    //控制台页面
+	public function index($request, $response) {
+		echo "1231212";
+		//return $this->renderLayout();
     }
 
-    public function getPKey(){
-        return 'id';
-    }
     
+
+	
 }

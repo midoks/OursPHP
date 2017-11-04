@@ -62,6 +62,22 @@ class SysRoleSvc {
     }
 
     /**
+     * 获取全部角色
+     * @param int $status
+     * @return mixed
+     */
+    public function gets($status = null) {
+        $dao    = new SysRoleDao();
+        $where  = '';
+        $query  = [];
+        if($status !== null) {
+            $query['status'] = $status;
+            $where = "status=:status";
+        }
+        return $dao->findAll( $query, $where, 0, [], '', '', 'id asc');
+    }
+
+    /**
      * 通过主键ID获取信息
      * @param int $id 主键ID
      * @return array | bool

@@ -130,17 +130,14 @@ class App {
 
     public static function exec($dispatch, $config){
 
+
         $class_name = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
 
         $instance = new $class_name(Request::getInstance(), Response::getInstance());
         $action = $dispatch['action'];
+        $data = $instance->$action(Request::getInstance(), Response::getInstance());
 
-        define('APP_CONTROLLER_CALL', $dispatch['controller']);
-        define('APP_METHOD_CALL', $action);
-
-        $ret = $instance->$action(Request::getInstance(), Response::getInstance());
-
-        return $ret;
+        return $data;
     }
 
 

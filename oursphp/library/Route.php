@@ -41,9 +41,13 @@ class Route {
             $action = array_shift($path);
             $action = !empty($action) ? $action : Config::get('action_value');
             Request::getInstance()->action($action);
+
+            define('APP_MODULE_CALL', $controller);
+            define('APP_CONTROLLER_CALL', $controller);
+            define('APP_METHOD_CALL', $action);
  
-            $route = [strtolower($module), ucfirst($controller), strtolower($action)];
-            return ['type' => 'module', 'route' => $route];
+            $route  = [strtolower($module), ucfirst($controller), strtolower($action)];
+            $data   =  ['type' => 'module', 'route' => $route];
         } else {
 
             $controller = array_shift($path);
@@ -54,9 +58,14 @@ class Route {
             $action = !empty($action) ? $action : Config::get('action_value');
             Request::getInstance()->action($action);
 
-            $route = [ucfirst($controller), strtolower($action)];
-            return ['type' => 'mvc', 'route' => $route];
-        }        
+            define('APP_CONTROLLER_CALL', $controller);
+            define('APP_METHOD_CALL', $action);
+
+            $route  = [ucfirst($controller), strtolower($action)];
+            $data   = ['type' => 'mvc', 'route' => $route];
+        }
+
+        return $data;    
     }
 
     /**

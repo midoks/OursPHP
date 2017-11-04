@@ -17,7 +17,8 @@ use \frame\Controller;
 use \frame\utils\Cookie;
 use \frame\utils\PageLink;
 
-use \common\service\SysSvc;
+use \common\service\SysFuncSvc;
+use \common\service\SysRoleSvc;
 
 class Base extends Controller {
 
@@ -49,46 +50,50 @@ class Base extends Controller {
             $this->redirect('/login');
         }
 
-        $roleid         = $this->_user['roleid'];
-        $svc            = new SysSvc();
+        $roleid     = $this->_user['roleid'];
+        $funcSvc    = new SysFuncSvc();
+        $roleSvc    = new SysRoleSvc();
 
-        $this->_menu = $svc->getMenu();
+        $_menu = $funcSvc->getMenu();
+        $_role = $roleSvc->get($roleid);
+
+        //var_dump($_menu, $_role);
+
+        $_menu = $this->checkAuth($_menu, $_role);
+        if(!$_menu){
+
+            $response->title    = "权限验证";
+            $response->stitle   = "未授权";
+            $this->renderLayout('layout/nopower');
+            exit;
+        }
 
 
         //子菜单是否在父菜单内,父菜单便于打开
-        foreach ($this->_menu as $key => $value) {
+        foreach ($_menu as $key => $value) {
             $sub = $value['sub'];
-            $this->_menu[$key]['open_menu'] = false;
+            $_menu[$key]['open_menu'] = false;
             foreach ($sub as $subKey => $subVal) {
                 if ($subVal['controller'] == $_controller && $subVal['action'] == $_action){
-                    $this->_menu[$key]['open_menu'] = true;
+                    $_menu[$key]['open_menu'] = true;
                 }
             }
         }
 
-
-        //var_dump($this->_menu);
-        $response->menulist = $this->_menu;
-
-        $role = $svc->getRole($roleid);
-
-        // $this->_rolelist    = ( $role['status']==1 ) ? json_decode($role['functionlist'],true) : [];
-        // $response->rolelist = $this->_rolelist;
-
-        // if(!array_key_exists(strtolower($this->_controller), $this->_rolelist) 
-        //     || !in_array(strtolower($this->_action), $this->_rolelist[strtolower($this->_controller)])) {
-
-        //     $response->title    = "权限验证";
-        //     $response->stitle   = "未授权";
-        //     $this->layoutSmarty('../layout/nopower');
-        //     exit;
-        // }
+        $response->menulist = $_menu;
 
         $this->pageLink = PageLink::getInstance();
     }
 
-    //获取系统方法
-    public function getSysFunc(){
+    //权限检查
+    private function checkAuth($menu, $role){
+        var_dump($menu, $role);
+
+        return false;
+    }
+
+    //日志
+    protected function log($msg, $type = ''){
 
     }
 

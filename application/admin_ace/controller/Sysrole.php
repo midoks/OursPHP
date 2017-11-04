@@ -26,7 +26,7 @@ class Sysrole  extends Base {
 
         $roleSvc = new SysRoleSvc();
         $response->p        = $p = $request->p ? $request->p : 1;
-        $pageSize           = 1;
+        $pageSize           = 10;
 
         $rows   = $roleSvc->getPageData($p, $pageSize);
         $total  = $roleSvc->getCount();

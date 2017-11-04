@@ -14,92 +14,71 @@ namespace  app\controller;
 use common\dao\SysFuncDao;
 
 use \common\service\SysSvc;
+use \common\service\SysFuncSvc;
 
 class Sysfunc extends Base {
 
+    //初始化
     public function __construct($request, $response){
         parent::__construct($request, $response);
-        $response->title = '管理员管理';
+        $response->title = '功能管理';
     }
 
+    //列表
     public function index($request, $response) {
-        $response->stitle='系统功能管理';
+        $response->stitle = '列表';
 
-        $svc        = new SysSvc();
-        $rootMenu   = $svc->getFuncs();
+        $funcSvc    = new SysFuncSvc();
+        $rootMenu   = $funcSvc->gets();
 
         if(!empty($rootMenu)) {
-            foreach ($rootMenu as &$fun) {
-                $fun['sub'] = $svc->getFuncs($fun['id']);
+            foreach ( $rootMenu as $k=>$fun ) {
+                $rootMenu[$k]['sub'] = $funcSvc->gets($fun['id']);
             }
         }
+
         $response->rootMenu = $rootMenu;
         $this->renderLayout();
     }
 
-    public function setmenu($request,$response) {
-        $id=$request->id;
-        if($id) {
-            $dao = new SysFunc();
-            $dao->ismenu($id);
-        }
-        $this->renderString('ok');
-    }
 
-
-    public function del($request,$response) {
+    //菜单设置功能
+    public function setMenu($request,$response) {
         $id = $request->id;
         if($id) {
-            $svc    = new SysSvc();
-            $rows   = $svc->getFunctions($id);
-            if(count($rows)==0) {
-                $dao = new System_Function();
-                $dao->delete($id);
-                $this->renderString('ok');
-            } else {
-                $this->renderString('存在子功能，禁止删除');
-            }
-        } else {
-            $this->renderString('ok');
-        }
-    }
-
-
-    public function lock($request) {
-        $id=$request->id;
-        if($id) {
-            $dao = new System_Function();
-            $dao->lock($id);
+            $funcSvc    = new SysFuncSvc();
+            $funcSvc->isMenu($id);
         }
         $this->renderString('ok');
     }
 
+    //添加编辑功能
     public function add($request,$response) {
         $response->stitle = '功能添加';
+
+        $funcSvc = new SysFuncSvc();
         if($request->id) {
             $response->stitle = '功能编辑';
             $id     = $request->id;
-            $svc    = new SysSvc();
-            $item   = $svc->getFunc($id);
+            $item   = $funcSvc->get($id);
             $response->item = $item;
         }
 
         if($request->isPost()) {
             $vars = $request->vars;
             if(isset($vars['is_menu'])) {
-                $vars['is_menu']=1;
+                $vars['is_menu'] = 1;
             }
 
             $vars['type'] = ($vars['pid'] == 0) ? 0 : 1;
-            $svc  = new SysSvc();
 
             if(isset($id)) {
-                $svc->editFunc($id,$vars);
+                $funcSvc->edit($id,$vars);
             } else {
-                $svc->addFunc($vars);
+                $funcSvc->add($vars);
             }
 
-            $this->redirect('/system/index');
+            $this->redirect('/'.$this->_controller.'/index');
         }
 
         //icon start
@@ -109,15 +88,60 @@ class Sysfunc extends Base {
         $iconarray['fa'] = explode(',',$icon_fa);
         $response->icons = $iconarray;
         //icon end
-        //隶属 start
-        $svc = new SysSvc();
-        $functionrows = $svc->getFuncs(0,1);
 
-        //dump($functionrows);exit;
-        $baserow = [ 'id'=>0, 'name' => '根节点' , 'icon' => '', 'type'=>0 , 'description' => '根节点', 'ismenu' => 0];
-        array_unshift($functionrows,$baserow);
+        $functionrows = $funcSvc->gets(0,1);
         $response->functionrows = $functionrows;
   
         $this->renderLayout();
     }
+
+    //删除数据功能
+    public function del($request, $response) {
+        $id = $request->id;
+        if($id) {
+            $funcSvc    = new SysFuncSvc();
+            $rows   = $funcSvc->gets($id);
+            if( count($rows) == 0 ) {
+                $funcSvc->delete($id);
+                $this->renderString('ok');
+            } else {
+                $this->renderString('存在子功能，禁止删除');
+            }
+        } else {
+            $this->renderString('ok');
+        }
+    }
+
+    //锁定解锁功能
+    public function lock($request, $response) {
+        $id = $request->id;
+        if($id) {
+            $funcSvc = new SysFuncSvc();
+            $funcSvc->lock($id);
+        }
+        return $this->renderString('ok');
+    }
+
+    //升序降序功能
+    public function sort($request, $response){
+        $id     = $request->id;
+        $type   = $request->type;
+
+        $funcSvc = new SysFuncSvc();
+
+        $ret = false;
+        if ($type == 'up'){
+            $ret = $funcSvc->sort($id, true);
+        } else if ($type == 'down'){
+            $ret = $funcSvc->sort($id, false);
+        }
+
+        if ($ret){
+            return $this->renderString('ok');
+        } else {
+            return $this->renderString('fail');
+        }
+    }
+
+    
 }

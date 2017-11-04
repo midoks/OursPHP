@@ -37,13 +37,23 @@ class Controller {
 	protected function setLayout($layout){
         $this->_sys_layout = $layout;
     }
+
+    /**
+     * 模版变量传递方法
+     * @param string $name 变量名
+     * @param mixed  $value 变量值
+     */
+    protected function assign($name, $value){
+        $view = View::getInstance();
+        $view->assign($name, $value);
+    }
     
 	/**
      * 输出JSON格式字符
      * @param array $data 数组数组
      * @return void
      */
-	public function renderJson($data) {
+	protected function renderJson($data) {
         header('Content-type: application/json');
         echo json_encode($data);exit;
     }
@@ -54,7 +64,7 @@ class Controller {
      * @param string|array 数据
      * @return void
      */
-    public function renderJsonP($callName, $data){
+    protected function renderJsonP($callName, $data){
         $ret = '';
         if (is_string($data)){
             $ret = $data;
@@ -69,46 +79,71 @@ class Controller {
      * @param string $string
      * @return void
      */
-	public function renderString($string) {
+	protected function renderString($string) {
         echo $string;
     }
 
-	/**
+    /**
      * 渲染smarty模版文件
      * @param string $file 指定的模版文件
      */
-	public function render($tpl_file = NULL) {
+    protected function render($view = NULL) {
+        $tplFile = self::parseView($view);
+        $view = View::getInstance();
         
-        $template_file = APP_CONTROLLER_CALL .DS. APP_METHOD_CALL;
-        $view = View::getInstance();
-
-        $view->render(strtolower($template_file));
-    }
-
-    /**
-     * 模版变量传递方法
-     * @param string $name 变量名
-     * @param mixed  $value 变量值
-     */
-    public function assign($name, $value){
-        $view = View::getInstance();
-        $view->assign($name, $value);
+        $view->render(strtolower($tplFile));
     }
 
 	/**
      * 渲染smarty模版布局文件
-     * @param string $tpl_file 指定的布局文件
+     * @param string $view 指定的模版文件
+     * @param string $tplVarName 模版变量名称
      */
-	public function renderLayout($tpl_file = NULL) {
+	protected function renderLayout($view = NULL, $tplVarName = '_layout_content') {
 
-        $template_file = APP_CONTROLLER_CALL .DS. APP_METHOD_CALL;
+        $tplFile = self::parseView($view);
 
         $view = View::getInstance();
-        $template = Config::get('template');
-        $template_file .= '.'.$template['view_suffix'];
+        $tplConf = Config::get('template');
+        $tplFile .= '.'.$tplConf['view_suffix'];
 
-        $view->assign('_layout_content',$template_file);
+        $view->assign($tplVarName, $tplFile);
         $view->layout($this->_sys_layout);
+    }
+
+    /**
+     * 解析模版
+     * @param string $view 模版名称
+     * @return string | false
+     */
+    private static function parseView($view = NULL){
+
+        $tplFile = '';
+        if( !$view ){
+            $tplFile = APP_CONTROLLER_CALL.DS.APP_METHOD_CALL;
+        } else {
+            $view = str_ireplace(array('.','/','|','>','>>','@'), DS, $view);
+            $tplFile = trim($view, DS);
+        }
+
+        $list = explode(DS, $tplFile);
+        $listNum = count($list);
+
+        if ($listNum == 1) {
+            $tplFile = APP_CONTROLLER_CALL.DS.$tplFile;
+
+            $multiModule = Config::get('app_multi_module');
+            if ($multiModule) {
+                $tplFile = APP_MODULE_CALL.DS.$tplFile;
+            }
+        } else if ($listNum == 2){
+            $multiModule = Config::get('app_multi_module');
+            if ($multiModule) {
+                $tplFile = APP_MODULE_CALL.DS.$tplFile;
+            }
+        }
+        
+        return $tplFile;
     }
 
 
