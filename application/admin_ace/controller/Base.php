@@ -145,7 +145,7 @@ class Base extends Controller {
 
         $this->assign('_sys_name', 'ACE后台管理系统');
         $this->assign('_sys_version', self::ADMIN_VERSION);
-        $this->assign('_sys_copyright', 'ACE后台管理系统');
+        $this->assign('_sys_copyright', 'Copyright 2017 - ∞ oursphp. All Rights Reserved');
     }
 
     //日志

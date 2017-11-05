@@ -4,7 +4,7 @@
         <form class="form-horizontal" method="post" role="form">
             <!-- #section:elements.form -->
             <div class="form-group">
-                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 功能名称: </label>
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1">功能名称: </label>
 
                 <div class="col-sm-9">
                     <input name="vars[name]" class="col-xs-8 col-sm-4" type="text" value="{{$item['name']}}" required>
@@ -12,10 +12,10 @@
             </div>
 
             <div class="form-group">
-                <label class="col-sm-3 control-label no-padding-right" for="form-field-1-1"> 隶属: </label>
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1-1">隶属: </label>
 
                 <div class="col-sm-9">
-                    <select class="col-sm-3 select"  name="vars[pid]">
+                    <select class="col-sm-3 select"  name="vars[pid]" id="select_option_owner">
                         <option value="0">根节点</option>
                         {{foreach $functionrows as $fun}}
                             <option value="{{$fun['id']}}" {{if $item['pid']==$fun['id']}} selected{{/if}}>
@@ -30,15 +30,30 @@
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> controller: </label>
 
                 <div class="col-sm-9">
-                    <input name="vars[controller]" class="col-xs-8 col-sm-4" type="text" value="{{$item['controller']}}" required>
+                    <input name="vars[controller]" class="col-xs-8 col-sm-4" type="text" value="{{$item['controller']}}" required> 
+                    <span class="help-inline col-xs-12 col-sm-7">
+                        <span class="middle" id="form-group-controller-h">子菜单默认选项</span>
+                    </span>
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="form-group-action">
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> action: </label>
 
                 <div class="col-sm-9">
                     <input name="vars[action]" class="col-xs-8 col-sm-4" type="text" value="{{$item['action']}}" required>
+
+                    <span class="help-inline col-xs-12 col-sm-7">
+                        <span class="middle">方法</span>
+                    </span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> 排序: </label>
+
+                <div class="col-sm-9">
+                    <input name="vars[sort]" class="col-xs-8 col-sm-4" type="text" value="{{if isset($item['sort'])}}{{$item['sort']}}{{else}}99{{/if}}" required>
                 </div>
             </div>
 
@@ -52,7 +67,7 @@
 
                 <div class="col-sm-9">
                     <label class="inline">
-                        <input id="id-button-borders" name="vars[is_menu]" checked="checked" class="ace ace-switch ace-switch-5" type="checkbox">
+                        <input id="id-button-borders" name="vars[is_menu]" is_menu="{{$item['is_menu']}}_" class="ace ace-switch ace-switch-5" type="checkbox">
                         <span class="lbl middle"></span>
                     </label>
                 </div>
@@ -78,10 +93,11 @@
                 </label>
 
                 <div class="col-sm-9">
-                    <label class="control-label" for="form-field-4"><i id="selected_icon" class="icon-only ace-icon bigger-150 {{$item['icon']}}"></i></label>
+                    <label class="control-label" for="form-field-4">
+                        <i id="selected_icon" class="icon-only ace-icon bigger-150 {{$item['icon']}}"></i>
+                    </label>
+
                     <input id="hidden_icon" name="vars[icon]" placeholder=".input-sm" value="{{$item['icon']}}" type="hidden">
-
-
                 </div>
             </div>
 
@@ -96,15 +112,22 @@
 
                         <div  class="widget-body">
                             <div class="widget-main">
+                                <!-- <div class="bs-glyphicons"> -->
+                                <ul class="bs-glyphicons-list" style="cursor:pointer;">
                                 <!-- #section:elements.popover -->
                                 {{foreach $icons['fa'] as $icon}}
-                                <button  class="btn btn-xs" type="button" data="fa {{$icon}}" data-toggle="button" ><i class="icon-only ace-icon fa {{$icon}}"></i></button>
-                                {{/foreach}}
-                                {{foreach $icons['glyphicon'] as $icon}}
-                                <button  class="btn btn-xs" type="button" data="glyphicon {{$icon}}" data-toggle="button" ><i class="icon-only ace-icon glyphicon {{$icon}}"></i></button>
+                                <i style="width: 20px;height: 20px;" data="fa {{$icon}}" class="icon-only ace-icon fa {{$icon}}"></i>                                
                                 {{/foreach}}
 
+                                {{foreach $icons['glyphicon'] as $icon}}
+                                    <!-- <button  class="btn btn-xs" type="button" data="glyphicon {{$icon}}" data-toggle="button" > -->
+                                <i style="width: 20px;height: 20px;"  data="glyphicon {{$icon}}" class="icon-only ace-icon glyphicon {{$icon}}"></i>
+                               
+                                {{/foreach}}
+                                </ul>
+
                                 <!-- /section:elements.popover -->
+                                <!-- </div> -->
                             </div>
                         </div>
                     </div>
@@ -128,17 +151,56 @@
 </div>
 <script>
 jQuery(function($) {
-    $('.btn.btn-xs').each(function(){
-        $(this).on('click', function(){
-            var data=$(this).attr('data');
-            $('#selected_icon').attr('class','icon-only ace-icon bigger-150 '+data)
-            $('#hidden_icon').val(data);
-        });
+//start
+//图标选择
+$('.bs-glyphicons-list').children().each(function(){
+    $(this).mousemove(function(){
+        $(this).css('color', '#8ab2c9');
+    }).mouseout(function(){
+        $(this).css('color', '');
     });
 
-    $('#id-button-borders').attr('checked' , 'checked').on('click', function(){
-        $('#widget-body-icon').toggleClass('hide');
-        $('#form-group-icon').toggleClass('hide');
+    $(this).on('click', function(){
+        var data = $(this).attr('data');
+        
+        $('#selected_icon').attr('class','icon-only ace-icon bigger-150 '+data)
+        $('#hidden_icon').val(data);
     });
+});
+
+
+
+//属于选择
+function select_option_owner(){
+    var select_v = $('#select_option_owner').val();
+    if(select_v == 0){
+        $('#form-group-action').addClass('hide');
+        $('#form-group-controller-h').text('子菜单默认选项');
+    } else {
+        $('#form-group-action').removeClass('hide');
+        $('#form-group-controller-h').text('控制器名称');
+    }
+}
+select_option_owner();
+$('#select_option_owner').on('change', function(){
+    select_option_owner()
+});
+
+//菜单选项
+var is_menu = $('#id-button-borders').attr('is_menu');
+// console.log(is_menu);
+if(is_menu == '0_'){
+    $('#widget-body-icon').toggleClass('hide');
+    $('#form-group-icon').toggleClass('hide');
+} else {
+    $('#id-button-borders').attr('checked','checked');
+}
+
+$('#id-button-borders').on('click', function(){
+    $('#widget-body-icon').toggleClass('hide');
+    $('#form-group-icon').toggleClass('hide');
+});
+
+//end
 })
 </script>

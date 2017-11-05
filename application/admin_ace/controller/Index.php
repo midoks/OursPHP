@@ -14,13 +14,9 @@ class Index extends Base {
     	
     //控制台页面
 	public function index($request, $response) {
-
-		$this->assign("title",'控制台');
-		$this->assign("stitle",'首页');
+		
+		$response->title = '控制台';
+		$response->stitle = '首页';
 		return $this->renderLayout();
     }
-
-    
-
-	
 }
