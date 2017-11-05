@@ -133,7 +133,8 @@ class Base extends Controller {
 
         //return($roleMenu);
         //var_dump($this->_controller,$this->_action);
-        if ($_hasAuth || ($this->_controller == 'Index' && $this->_action == 'index') ) {
+        if ($_hasAuth || 
+            (strtolower($this->_controller) == 'index' && strtolower($this->_action) == 'index') ) {
             return $roleMenu;
         }
         return false;
