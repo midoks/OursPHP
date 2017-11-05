@@ -38,29 +38,37 @@ class Base extends Controller {
      * 后台初始化检查,是否登录
      */
     public function __construct($request, $response) {
-        
-        $this->_controller = $_controller = $response->_controller = $request->controller();
-        $this->_action = $_action = $response->_action = $request->action();
 
-        $this->initTplVar();
-        
+
+
         $cookie     = Cookie::getInstance();
         $response->me = $this->_user = $cookie->get('info');
         if (!$this->_user || $this->_user['status'] == 0) {
             $this->redirect('/login');
         }
 
-        $roleid     = $this->_user['roleid'];
+        $this->_controller = $_controller = $response->_controller = $request->controller();
+        $this->_action = $_action = $response->_action = $request->action();
+
+        $this->initTplVar();
+
         $funcSvc    = new SysFuncSvc();
         $roleSvc    = new SysRoleSvc();
 
         $_menu = $funcSvc->getMenu();
-        $_role = $roleSvc->get($roleid);
 
-        //var_dump($_menu, $_role);
+        $roleid     = $this->_user['roleid'];
+        $_role = $roleSvc->get($roleid);
 
         $_menu = $this->checkAuth($_menu, $_role);
         if(!$_menu){
+
+            //ajax请求特殊处理
+            $reqWith = $request->header('X-Requested-With');
+            if ( 'XMLHttpRequest' == $reqWith ){
+                echo "无权限使用!";
+                exit;
+            }
 
             $response->title    = "权限验证";
             $response->stitle   = "未授权";
@@ -87,22 +95,61 @@ class Base extends Controller {
 
     //权限检查
     private function checkAuth($menu, $role){
-        var_dump($menu, $role);
+        
+        //获取用户所有权限
+        $role['list'] = explode(',', $role['list']);
+        $roleMenu = [];
+        
+        foreach ($menu as $key => $value) {
+            $sub = $value['sub'];
+            $_sub = array();
+            foreach ($sub as $subKey => $subVal) {
+                if (in_array($subVal['id'], $role['list']) ){
+                   $_sub[] = $subVal; 
+                }
+            }
 
+            if (!empty($_sub)){
+                $value['sub'] = $_sub;
+                $roleMenu[$key] = $value;
+            }
+        }
+
+        if (empty($roleMenu)){
+            return false;
+        }
+
+        //判断当前操作是否有权限
+        $_hasAuth = false;
+        foreach ($roleMenu as $kr => $vr) {
+            $sub = $vr['sub'];
+            foreach ($sub as $subKey => $subVal) {
+                if ($subVal['controller'] == $this->_controller 
+                    && $subVal['action'] == $this->_action){
+                    $_hasAuth = true;
+                }
+            }
+        }
+
+        //return($roleMenu);
+        //var_dump($this->_controller,$this->_action);
+        if ($_hasAuth || ($this->_controller == 'Index' && $this->_action == 'index') ) {
+            return $roleMenu;
+        }
         return false;
+    }
+
+    //初始化基本变量
+    private function initTplVar(){
+
+        $this->assign('_sys_name', 'ACE后台管理系统');
+        $this->assign('_sys_version', self::ADMIN_VERSION);
+        $this->assign('_sys_copyright', 'ACE后台管理系统');
     }
 
     //日志
     protected function log($msg, $type = ''){
 
-    }
-
-    //初始化基本变量
-    protected function initTplVar(){
-
-        $this->assign('_sys_name', 'ACE后台管理系统');
-        $this->assign('_sys_version', self::ADMIN_VERSION);
-        $this->assign('_sys_copyright', 'ACE后台管理系统');
     }
 
     

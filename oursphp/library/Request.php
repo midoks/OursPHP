@@ -40,8 +40,7 @@ class Request {
      * @access public
      * @return array
      */
-    public function getCache()
-    {
+    public function getCache() {
         return $this->cache;
     }
 

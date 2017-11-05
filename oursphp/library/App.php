@@ -130,7 +130,6 @@ class App {
 
     public static function exec($dispatch, $config){
 
-
         $class_name = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
 
         $instance = new $class_name(Request::getInstance(), Response::getInstance());
