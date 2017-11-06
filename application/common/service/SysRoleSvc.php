@@ -85,7 +85,7 @@ class SysRoleSvc {
     public function get($id) {
         if($id) {
             $dao = new SysRoleDao();
-            return $dao->findByPkey($id);
+            return $dao->cache(60, 'role_'.$id)->findByPkey($id);
         }
         return false;
     }
@@ -112,6 +112,7 @@ class SysRoleSvc {
     public function edit($id,$vars) {
         if(!empty($vars)) {
             $dao = new SysRoleDao();
+            $dao->clear('role_'.$id);
             return $dao->edit($id,$vars);
         }
         return false;

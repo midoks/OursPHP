@@ -11,14 +11,36 @@
 namespace frame\traits;
 
 use frame\Config;
-use frame\Cache\Memcache;
-use frame\Cache\Memcached;
-use frame\Cache\Redis;
+use frame\cache\driver\Memcache;
+use frame\cache\driver\Memcached;
+use frame\cache\driver\Redis;
+
+use frame\exception\CommonException;
 
 trait Cache {
 
-    public static function getCacheObj(){
+    public static $__cacheInstance = NULL;
 
+    public static function getCacheObj(){
+        $option = Config::get('cache');
+
+        if(isset(self::$__cacheInstance)){
+           return self::$__cacheInstance;
+        }
+
+        if (in_array($option['type'], array('memcache', 'memcached','redis'))){
+            $name = strtolower($option['type']);
+            if ( 'memcache' == $name){
+                self::$__cacheInstance =  Memcache::getInstance();
+            } else if ('memcached' == $name) {
+                self::$__cacheInstance =  Memcached::getInstance();
+            } else {
+                self::$__cacheInstance =  Redis::getInstance();
+            }
+            
+            return  self::$__cacheInstance;
+        }
+        throw new CommonException('cache配置错误!!!');
     }
 
     /**
@@ -47,7 +69,11 @@ trait Cache {
         return $this;
     }
 
-
+    /**
+     * 监听SQL查询前
+     * @param string $sql SQL语句
+     * @param array $bind 数组
+     */
     private function cacheSqlStart($sql, $bind){
 
         if (!isset($this->__cache_open) || !$this->__cache_open){
@@ -55,21 +81,19 @@ trait Cache {
             return false;
         }
 
-        $mem = Memcache::getInstance();
-
         if ( !isset($this->__cache_key)){
             $this->__cache_key = md5($sql.serialize($bind));
         }
 
         $key = $this->__cache_key;
 
-        // try {
-            $cacheV = $mem->get($key);
-        // } catch (\Exception $e) {
-        //     return false;
-        // }
+        try {
+            $cacheObj = self::getCacheObj();
+            $cacheV = $cacheObj->get($key);
+        } catch (\Exception $e) {
+            return false;
+        }
         
-       
         if ($cacheV){
             return $cacheV;
         }
@@ -78,7 +102,10 @@ trait Cache {
     }
 
     /**
-     * 
+     * 监听SQL查询后台
+     * @param string $sql SQL语句
+     * @param array $bind 数组
+     * @param $mixed 结果集
      */
     private function cacheSqlEnd($sql, $bind, $result){
 
@@ -86,11 +113,10 @@ trait Cache {
             $this->__cache_open = false;
             return false;
         }
-        
-        $mem = Memcache::getInstance();
-    
+
         if (isset($this->__cache_key)){
-            $cache = $mem->add($this->__cache_key, $result);
+            $cacheObj = self::getCacheObj();
+            $cache = $cacheObj->set($this->__cache_key, $result, 300);
         }
     }
 

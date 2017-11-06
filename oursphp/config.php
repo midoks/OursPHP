@@ -97,12 +97,29 @@ return [
         ]],
     ],
     
+    'log'                    => [
+        // 日志记录方式，内置 file none 支持扩展
+        'type'  => 'File',
+        // 日志保存目录
+        'path'  => dirname(OURS_PATH).DS.'runtime'.DS
+    ],
+
+
 
     'memcached' => [
         ['127.0.0.1', 11211]
     ],
 
-    'redis'     => [ '127.0.0.1', 6379, '', '' ],
+    'redis'     => [
+        'host'       => '127.0.0.1',
+        'port'       => 6379,
+        'password'   => '',
+        'select'     => 0,
+        'timeout'    => 0,
+        'expire'     => 0,
+        'persistent' => false,
+        'prefix'     => '',
+    ],
 
     'cache'                  => [
         // 驱动方式 支持redis memcache memcached
@@ -124,7 +141,7 @@ return [
         // SESSION_ID的提交变量,解决flash上传跨域
         'var_session_id' => '',
         // SESSION 前缀
-        'prefix'         => 'oursphp_',
+        'prefix'         => 'oursphp_session_',
         // 驱动方式 支持redis memcache memcached
         'type'           => 'memcache',
         // 是否自动开启 SESSION
