@@ -1,20 +1,19 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | oursphp [ simple and fast ]
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://zjzit.cn>
+// | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
+
 
 namespace frame\exception;
 
 use frame\Exception;
 
 /**
- * ThinkPHP错误异常
+ * OURSPHP错误异常
  * 主要用于封装 set_error_handler 和 register_shutdown_function 得到的错误
  * 除开从 think\Exception 继承的功能
  * 其他和PHP系统\ErrorException功能基本一样
@@ -35,8 +34,7 @@ class ErrorException extends Exception
      * @param integer $line     出错行号
      * @param array   $context  错误上下文，会包含错误触发处作用域内所有变量的数组
      */
-    public function __construct($severity, $message, $file, $line, array $context = [])
-    {
+    public function __construct($severity, $message, $file, $line, array $context = []) {
         $this->severity = $severity;
         $this->message  = $message;
         $this->file     = $file;
@@ -50,8 +48,7 @@ class ErrorException extends Exception
      * 获取错误级别
      * @return integer 错误级别
      */
-    final public function getSeverity()
-    {
+    final public function getSeverity() {
         return $this->severity;
     }
 }

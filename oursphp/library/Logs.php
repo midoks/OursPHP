@@ -63,29 +63,12 @@ class Logs {
         self::$log = [];
     }
 
-
-	/**
-	 * 调式显示日志
-	 * @param $msg string 日志信息
-	 * @return void
-	 */
-	public static function show($msg) {
-		if (OURS_DEBUG) {
-        	echo '<!--  '.$msg.'  -->'."\r\n";
-    	}
-	}
-
-	/**
-	 * 判断是否是chrome浏览器内容
-	 * @return boolean
-	 */
-	public static function isChrome(){
-
-
-	}
-
-	public static function save($log, $type){
-		var_dump($log,$type);
+    /**
+     * 保存日志
+     * @return void
+     */
+	public static function save(){
+		// var_dump(self::$log);
 	}
 
 }

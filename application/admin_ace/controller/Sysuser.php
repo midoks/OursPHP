@@ -87,6 +87,32 @@ class SysUser  extends Base {
         $this->renderLayout();
     }
 
+    //修改密码
+    public function repwd($request, $response){
+
+        $response->stitle = '信息修改';
+        $id = $this->_user['id'];
+
+        if( $request->isPost() ){
+            $vars   = $request->vars;
+
+            if(empty($vars['password'])) {
+                unset($vars['password']);
+            } else {
+                $vars['password'] = md5($vars['password']);
+            }
+
+            $userSvc    = new SysUserSvc();
+
+            if(isset($id)) {
+                $userSvc->edit($id,$vars);
+            }
+            $this->redirect('/');
+        }
+
+        $this->renderLayout();
+    }
+
 
     //删除系统用户
     public function del($request, $response) {

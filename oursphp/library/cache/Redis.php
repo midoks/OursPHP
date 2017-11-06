@@ -11,6 +11,7 @@
 namespace frame\cache;
 
 use frame\Config;
+use \frame\exception\CommonException;
 
 class Redis {
 
@@ -21,17 +22,51 @@ class Redis {
     private function __construct(){}
 
     /**
+     * 注册redis配置信息
+     * @param string $config 配置文件KEY
+     */
+    public static function injectOption($opName){
+        self::$_config = Config::get($opName);
+        return true;
+    }
+
+    /**
+     * 注册redis配置信息
+     * @param array $config 配置信息
+     */
+    public static function injectConfig($config){
+        self::$_config = $config;
+        return true;
+    } 
+
+    /**
      * 获取指定配置节点的redis实例
      * @param string $nodeName
      * @return \Redis
      */
     public static function  getInstance($node = 'default') {
+
+        if (!extension_loaded('Redis')) {
+            throw new \BadFunctionCallException('not support: Redis');
+        }
+        
+        $node = 'redis';
+        if (self::$_node){
+            $node = self::$_node;
+        }
+
         if(!isset(self::$_cache[$node])) {
+
             $_redis     = new \Redis();
-            $options    = Config::get('redis', $node);
+
+            if ( !empty(self::$_config) ){
+                $options    = self::$_config;
+            } else {
+                $options    = Config::get($node);
+            }
 
             if($options == false) {
-                throw new BizException("redis缓存相关节点未配置：".$node);
+                throw new CommonException("redis缓存相关节点未配置：".$node, 'redis');
             }
             list($host, $port,$passwd,$dbindex) = $options;
             $_redis->pconnect($host,$port);

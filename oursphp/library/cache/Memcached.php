@@ -24,8 +24,8 @@ class Memcached {
      * 注册memcached配置信息
      * @param string $config 配置文件KEY
      */
-    public static function registerOption($option_name){
-        self::$_config = Config::get($options);
+    public static function injectOption($opName){
+        self::$_config = Config::get($opName);
         return true;
     }
 
@@ -33,7 +33,7 @@ class Memcached {
      * 注册memcached配置信息
      * @param array $config 配置信息
      */
-    public static function registerConfig($config){
+    public static function injectConfig($config){
         self::$_config = $config;
         return true;
     } 
@@ -44,6 +44,10 @@ class Memcached {
      * @return \Memcached
      */
     public static function  getInstance() {
+
+        if (!extension_loaded('memcached')) {
+            throw new \BadFunctionCallException('not support: memcached');
+        }
         
         if(!isset(self::$_cache[$node])) {
             
@@ -55,7 +59,7 @@ class Memcached {
             }
 
             if( $options == false ) {
-                throw new BizException("memcached缓存相关节点未配置：".$node);
+                throw new CommonException("memcached缓存相关节点未配置：".$node, 'memcached');
             }
 
             $_memd->addServers($options);

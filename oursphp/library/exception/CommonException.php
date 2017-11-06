@@ -13,25 +13,11 @@ namespace frame\exception;
 use frame\Exception;
 
 class CommonException extends Exception {
-    
-    private $statusCode;
-    private $headers;
 
-    public function __construct($statusCode, $message = null, \Exception $previous = null, array $headers = [], $code = 0)
-    {
-        $this->statusCode = $statusCode;
-        $this->headers    = $headers;
+    public function __construct( $message, $type = 'common'){
+        
+        $this->setData($type, ['msg'=>$message ]);
 
-        parent::__construct($message, $code, $previous);
-    }
-
-    public function getStatusCode()
-    {
-        return $this->statusCode;
-    }
-
-    public function getHeaders()
-    {
-        return $this->headers;
+        parent::__construct($message, 404);
     }
 }

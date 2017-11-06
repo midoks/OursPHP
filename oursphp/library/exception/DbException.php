@@ -1,13 +1,12 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | oursphp [ simple and fast ]
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://zjzit.cn>
+// | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
+
 
 namespace frame\exception;
 
@@ -16,8 +15,8 @@ use frame\Exception;
 /**
  * Database相关异常处理类
  */
-class DbException extends Exception
-{
+class DbException extends Exception {
+    
     /**
      * DbException constructor.
      * @param string    $message
@@ -25,8 +24,7 @@ class DbException extends Exception
      * @param string    $sql
      * @param int       $code
      */
-    public function __construct($message, array $config, $sql, $code = 10500)
-    {
+    public function __construct($message, array $config, $sql, $code = 10500){
         $this->message = $message;
         $this->code    = $code;
 

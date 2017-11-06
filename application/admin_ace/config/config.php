@@ -81,8 +81,35 @@ return [
         ['127.0.0.1', 11211]
     ],
 
-    'redis'     => [
-        ['127.0.0.1', 6379, '', '']
+    'redis'     => [ '127.0.0.1', 6379, '', '' ],
+
+    'cache'                  => [
+        // 驱动方式 支持redis memcache memcached
+        'type'   => 'memcache',
+        // 缓存保存目录
+        'path'   => '',
+        // 缓存前缀
+        'prefix' => 'oursphp_',
+        // 缓存有效期 0表示永久缓存
+        'expire' => 0,
+    ],
+
+    // +----------------------------------------------------------------------
+    // | 会话设置
+    // +----------------------------------------------------------------------
+
+    'session'                => [
+        'id'             => '',
+        // SESSION_ID的提交变量,解决flash上传跨域
+        'var_session_id' => '',
+        // SESSION 前缀
+        'prefix'         => 'oursphp_',
+        // 驱动方式 支持redis memcache memcached
+        'type'           => 'memcache',
+        // 是否自动开启 SESSION
+        'auto_start'     => true,
+        'httponly'       => true,
+        'secure'         => false,
     ],
     
 ];

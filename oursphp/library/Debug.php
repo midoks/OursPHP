@@ -13,8 +13,7 @@ namespace frame;
 use frame\exception\ClassNotFoundException;
 use frame\response\Redirect;
 
-class Debug
-{
+class Debug {
     // 区间时间信息
     protected static $info = [];
     // 区间内存信息

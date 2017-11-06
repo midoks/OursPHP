@@ -1,13 +1,12 @@
 <?php
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006~2017 http://thinkphp.cn All rights reserved.
+// | oursphp [ simple and fast ]
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: 麦当苗儿 <zuojiazi@vip.qq.com> <http://zjzit.cn>
+// | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
+
 
 namespace frame\exception;
 
@@ -15,8 +14,7 @@ namespace frame\exception;
  * PDO异常处理类
  * 重新封装了系统的\PDOException类
  */
-class PDOException extends DbException
-{
+class PDOException extends DbException {
     /**
      * PDOException constructor.
      * @param \PDOException $exception
@@ -24,8 +22,7 @@ class PDOException extends DbException
      * @param string        $sql
      * @param int           $code
      */
-    public function __construct(\PDOException $exception, array $config, $sql, $code = 10501)
-    {
+    public function __construct(\PDOException $exception, array $config, $sql, $code = 10501) {
         $error = $exception->errorInfo;
 
         $this->setData('PDO Error Info', [

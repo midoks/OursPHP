@@ -16,8 +16,7 @@ use frame\Lang;
 use frame\Logs;
 use frame\Response;
 
-class Handle
-{
+class Handle {
 
     protected $ignoreReport = [
         '\\frame\\exception\\HttpException',

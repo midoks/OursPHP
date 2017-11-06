@@ -1,20 +1,19 @@
 <?php
+
 // +----------------------------------------------------------------------
-// | ThinkPHP [ WE CAN DO IT JUST THINK IT ]
-// +----------------------------------------------------------------------
-// | Copyright (c) 2006-2016 http://thinkphp.cn All rights reserved.
+// | oursphp [ simple and fast ]
 // +----------------------------------------------------------------------
 // | Licensed ( http://www.apache.org/licenses/LICENSE-2.0 )
 // +----------------------------------------------------------------------
-// | Author: yunwuxin <448901948@qq.com>
+// | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
+
 
 namespace frame\exception;
 
-class ThrowableError extends \ErrorException
-{
-    public function __construct(\Throwable $e)
-    {
+class ThrowableError extends \ErrorException {
+
+    public function __construct(\Throwable $e) {
 
         if ($e instanceof \ParseError) {
             $message  = 'Parse error: ' . $e->getMessage();
@@ -38,8 +37,7 @@ class ThrowableError extends \ErrorException
         $this->setTrace($e->getTrace());
     }
 
-    protected function setTrace($trace)
-    {
+    protected function setTrace($trace) {
         $traceReflector = new \ReflectionProperty('Exception', 'trace');
         $traceReflector->setAccessible(true);
         $traceReflector->setValue($this, $trace);

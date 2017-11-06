@@ -49,7 +49,7 @@ class SysFuncSvc {
                     'controller', 'action', '`desc`',
                     'is_menu','`status`','`sort`'
                  ];
-        return $dao->findAll($query, $where,0, $field,'','', '`sort` asc, id asc' );
+        return $dao->cache()->findAll($query, $where,0, $field,'','', '`sort` asc, id asc' );
     }
 
     /**

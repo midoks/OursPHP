@@ -18,7 +18,7 @@
                     <select class="col-sm-3 select"  name="vars[pid]" id="select_option_owner">
                         <option value="0">根节点</option>
                         {{foreach $functionrows as $fun}}
-                            <option value="{{$fun['id']}}" {{if $item['pid']==$fun['id']}} selected{{/if}}>
+                            <option data="{{$fun['controller']}}" value="{{$fun['id']}}" {{if $item['pid']==$fun['id']}} selected{{/if}}>
                                 {{$fun['name']}}
                             </option>
                         {{/foreach}}
@@ -30,7 +30,7 @@
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> controller: </label>
 
                 <div class="col-sm-9">
-                    <input name="vars[controller]" class="col-xs-8 col-sm-4" type="text" value="{{$item['controller']}}" required> 
+                    <input id="form-group-controller-i" name="vars[controller]" class="col-xs-8 col-sm-4" type="text" value="{{$item['controller']}}" required> 
                     <span class="help-inline col-xs-12 col-sm-7">
                         <span class="middle" id="form-group-controller-h">子菜单默认选项</span>
                     </span>
@@ -41,7 +41,7 @@
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> action: </label>
 
                 <div class="col-sm-9">
-                    <input name="vars[action]" class="col-xs-8 col-sm-4" type="text" value="{{$item['action']}}" required>
+                    <input name="vars[action]" class="col-xs-8 col-sm-4" type="text" value="{{if $item['action']}}{{$item['action']}}{{else}}index{{/if}}" required>
 
                     <span class="help-inline col-xs-12 col-sm-7">
                         <span class="middle">方法</span>
@@ -180,7 +180,18 @@ function select_option_owner(){
         $('#form-group-action').removeClass('hide');
         $('#form-group-controller-h').text('控制器名称');
     }
+
+    var data = $('#select_option_owner :selected').attr('data');
+    $('#form-group-controller-i').val(data);
+
 }
+$('#select_option_owner').children().each(function(index, el) {
+    console.log(this);
+    $(this).click(function(event) {
+        console.log($(this).attr('data'));
+    });        
+});
+
 select_option_owner();
 $('#select_option_owner').on('change', function(){
     select_option_owner()
