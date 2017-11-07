@@ -1,42 +1,50 @@
 <div class="row">
     <div class="col-xs-12">
         <!-- PAGE CONTENT BEGINS -->
-        <div class="alert alert-block alert-success">
-            <button type="button" class="close" data-dismiss="alert">
-                <i class="ace-icon fa fa-times"></i>
-            </button>
-            <i class="ace-icon fa fa-check green"></i>
-            简单的后台示例，实现了 用户登录、角色、权限的控制管理，只需要下载下来后写自己的业务逻辑即可快速完成后台类站点。
-        </div>
+        <form class="form-horizontal" method="post" role="form">
+            <!-- #section:elements.form -->
+            
 
-
-        <!-- 站点信息 start -->
-        <div id="accordion-sysinfo" class="accordion-style1 panel-group col-sm-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse"
-                           data-parent="#accordion-sysinfo" href="#sysinfo">
-                            <i class="ace-icon fa fa-angle-down bigger-110"
-                               data-icon-hide="ace-icon fa fa-angle-down"
-                               data-icon-show="ace-icon fa fa-angle-right"></i>
-                            &nbsp;站点信息
-                        </a>
-                    </h4>
-                </div>
-
-                <div class="panel-collapse collapse in" id="sysinfo">
-                    <div class="panel-body">
-                        <p>运行方式：{{$smarty.server.SERVER_SOFTWARE}}</p>
-                        <p>服务器IP：{{$smarty.server.SERVER_ADDR}}</p>
-                        <p>程序版本：{{$_sys_version}}&nbsp;&nbsp;&nbsp;</p>
-
-                    </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly"> 
+                    操作数据: 
+                </label>
+            
+                <div class="col-sm-9">
+                    <textarea class="col-sm-5" rows="6" name="str">{{$str}}</textarea>
                 </div>
             </div>
-        </div>
-        <!-- 站点信息 end -->
 
-        <!-- PAGE CONTENT ENDS -->
+            <div class="space-4"></div>
+
+            <div class="form-group">
+                <label class="col-sm-3 control-label no-padding-right" for="form-input-readonly">
+                    处理后数据: 
+                </label>
+            
+                <div class="col-sm-9">
+                    <textarea class="col-sm-5" rows="6" readonly="readonly">{{$code}}</textarea>
+                </div>
+            </div>
+
+            <div class="space-4"></div>
+
+
+            <div class="clearfix form-actions">
+                <div class="col-md-offset-3 col-md-9">
+                    <button class="btn btn-info" type="submit">
+                        <i class="ace-icon fa fa-check bigger-110"></i>编码
+                    </button>
+                    &nbsp; &nbsp; &nbsp;
+                    
+                    <input type="submit" class='btn btn-info' name="submit_decode" value="解码">
+            
+                    &nbsp; &nbsp; &nbsp;
+                    <input type="reset" class='btn' name="reset">
+                
+                </div>
+            </div>
+
+        </form>
     </div><!-- /.col -->
 </div>

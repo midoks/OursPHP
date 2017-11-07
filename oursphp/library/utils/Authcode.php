@@ -13,54 +13,13 @@ namespace frame\utils;
 class Authcode {
 
     //加密
-    public static function encode($string){
-        return self::authcode($string, 'ENCODE');
+    public static function encode($string, $key = ''){
+        return self::authcode($string, 'ENCODE', $key);
     }
 
     //解密
-    public static function decode($string){
-        return self::authcode($string, 'DECODE');
-    }
-
-    
-    public static function encrypt($string, $operation, $key='' ){ 
-        $key = md5($key); 
-        $key_length = strlen($key); 
-        $string = $operation == 'D'?base64_decode($string):substr(md5($string.$key),0,8).$string; 
-        $string_length = strlen($string); 
-        $rndkey = $box= array(); 
-        $result = '';
-
-        for($i=0;$i<=255;$i++){ 
-               $rndkey[$i]=ord($key[$i%$key_length]); 
-            $box[$i]=$i; 
-        } 
-        
-        for($j=$i=0;$i<256;$i++){ 
-            $j=($j+$box[$i]+$rndkey[$i])%256; 
-            $tmp=$box[$i]; 
-            $box[$i]=$box[$j]; 
-            $box[$j]=$tmp; 
-        } 
-        
-        for($a = $j = $i = 0; $i < $string_length; $i++){ 
-            $a = ($a+1)%256;
-            $j = ($j+$box[$a])%256; 
-            $tmp = $box[$a]; 
-            $box[$a] = $box[$j]; 
-            $box[$j] = $tmp; 
-            $result .= chr(ord($string[$i])^($box[($box[$a]+$box[$j])%256])); 
-        } 
-
-        if($operation == 'D'){ 
-            if(substr($result,0,8) == substr(md5(substr($result,8).$key),0,8)){ 
-                return substr($result,8); 
-            } else { 
-                return''; 
-            } 
-        } else { 
-            return str_replace('=','',base64_encode($result)); 
-        } 
+    public static function decode($string, $key = ''){
+        return self::authcode($string, 'DECODE', $key);
     }
 
     /**
@@ -69,11 +28,10 @@ class Authcode {
      * @param string $operation ENCODE or DECODE
      * @return string 根据设置返回明文活密文
      */
-    private static function authcode($string, $operation = 'DECODE' ) {
+    private static function authcode($string, $operation = 'DECODE' , $key = '') {
 
         $ckey_length = 4;  // 随机密钥长度 取值 0-32;
 
-        $key = $this->_securekey;
 
         $key = md5($key);
         $keya = md5(substr($key, 0, 16));

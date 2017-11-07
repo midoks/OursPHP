@@ -10,6 +10,7 @@
 
 namespace  app\controller;
 
+use frame\utils\Authcode;
 
 class Encrypt extends Base {
 
@@ -21,6 +22,16 @@ class Encrypt extends Base {
     //展示
 	public function index($request, $response) {
 		$response->stitle = 'authcode';
+
+		$response->str = $str = $request->str;
+		$submit_decode = $request->submit_decode;
+
+		if ($submit_decode){
+			$response->code = $code = Authcode::decode($str);
+		} else {
+			$response->code = $code = Authcode::encode($str);
+		}
+
 		return $this->renderLayout();
     }
 

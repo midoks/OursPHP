@@ -41,7 +41,7 @@ class Login extends Controller {
                 $name = $request->name; 
                 $query['username'] = $name;
                 $where  = ' username=:username and status=1';
-                $user   = $dao->cache('cache_t', 30)->findOne($query, $where);
+                $user   = $dao->findOne($query, $where);
  
                 if( $user && md5($password) === $user['password']) {
                     $cookie->set('info', $user, 1*24*60*60);
@@ -53,25 +53,15 @@ class Login extends Controller {
         return $this->render();
     }
 
-    public function t(){
-        $dao        = new SysUser();
-        $dao->startTrans();
-
-        $query['username'] = 'admin';
-        $where  = ' username=:username and status=1';
-        $data = $user   = $dao->cache(30)->findOne($query,$where);
-        $data = $user   = $dao->findOne($query,$where);
-
-        // $data = $user   = $dao->findOne($query,$where);
-        // var_dump($data);
-    }
-
     //登出
     public function out($request, $response) {
-        $cookie     = Cookie::getInstance();
-        $ret = $cookie->set('info','',0);
+        $cookie = Cookie::getInstance();
+        $cookie->setPath('/');
+
+        $ret    = $cookie->clear('info');
         //var_dump($ret);
-        //$this->redirect("/index");
+        $this->redirect("/index");
+        exit;
     }
 
 
