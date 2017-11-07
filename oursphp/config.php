@@ -107,8 +107,18 @@ return [
 
 
     'memcached' => [
-        ['127.0.0.1', 11211]
+        [
+            'host'       => '127.0.0.1',
+            'port'       => 11211,    
+            'expire'     => 30,
+            'timeout'    => 0,  // 超时时间（单位：毫秒）
+            'username'   => '', //账号
+            'password'   => '', //密码
+            'persistent' => true,
+            'option'     => [],
+        ]
     ],
+
 
     'redis'     => [
         'host'       => '127.0.0.1',

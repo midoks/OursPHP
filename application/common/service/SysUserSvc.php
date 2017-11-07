@@ -12,7 +12,7 @@ namespace common\service;
 
 use common\dao\SysUserDao;
 
-class SysUserSvc {
+class SysUserSvc extends BaseSvc {
 
     /**
      * 获取分页数列表

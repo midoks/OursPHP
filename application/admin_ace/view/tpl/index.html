@@ -1,42 +1,165 @@
+
+<script src="/assets/js/webuploader/webuploader.js"></script>
+<link rel="stylesheet" href="/assets/js/webuploader/webuploader.css" />
+
 <div class="row">
     <div class="col-xs-12">
-        <!-- PAGE CONTENT BEGINS -->
-        <div class="alert alert-block alert-success">
-            <button type="button" class="close" data-dismiss="alert">
-                <i class="ace-icon fa fa-times"></i>
-            </button>
-            <i class="ace-icon fa fa-check green"></i>
-            简单的后台示例，实现了 用户登录、角色、权限的控制管理，只需要下载下来后写自己的业务逻辑即可快速完成后台类站点。
-        </div>
+        <div class="form-group">
 
+                <div class="col-sm-12">
+                    <div>
+                        <div id="app_image_tpl" style="display: none;" class="col-xs-2 col-sm-2 widget-container-col" id="widget-container-col-1">
+                            <div class="widget-box" id="widget-box-1">
+                                <div class="widget-header">
+                                    <h5 class="widget-title">图片</h5>
+                                    <div class="widget-toolbar">
+                                        <div class="widget-menu">
+                                            <a class="box_close" href="#" data-action="close"><i class="ace-icon fa fa-times"></i></a>
+                                        </div>
+                                        <a href="#" data-action="fullscreen" class="orange2"><i class="ace-icon fa fa-expand"></i></a>
+                                    </div>
+                                </div>
 
-        <!-- 站点信息 start -->
-        <div id="accordion-sysinfo" class="accordion-style1 panel-group col-sm-3">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a class="accordion-toggle" data-toggle="collapse"
-                           data-parent="#accordion-sysinfo" href="#sysinfo">
-                            <i class="ace-icon fa fa-angle-down bigger-110"
-                               data-icon-hide="ace-icon fa fa-angle-down"
-                               data-icon-show="ace-icon fa fa-angle-right"></i>
-                            &nbsp;站点信息
-                        </a>
-                    </h4>
-                </div>
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <input class="filter form-control" name="image[image_url][]" type="hidden" value="" />
+                                        <div class="image_upload_action" class='filter form-control' style="padding-top:10px;text-align:center;height:55px;">上传</div>
+                                        <a href="#" target="_blank" class="image_pre"><img id="image_pre_t" src="http://placehold.it/200x200" class="filter form-control" style="min-height:200px;"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="panel-collapse collapse in" id="sysinfo">
-                    <div class="panel-body">
-                        <p>运行方式：{{$smarty.server.SERVER_SOFTWARE}}</p>
-                        <p>服务器IP：{{$smarty.server.SERVER_ADDR}}</p>
-                        <p>程序版本：{{$_sys_version}}&nbsp;&nbsp;&nbsp;</p>
+                        <!-- 图片模板 start -->
+                        
+                        <div id="app_image_tmps_0" class="col-xs-2 col-sm-2 widget-container-col" id="widget-container-col-1">
+                            <div class="widget-box" id="widget-box-1">
+                                <div class="widget-header">
+                                    <h5 class="widget-title">图片</h5>
+                                    <div class="widget-toolbar">
+                                        <div class="widget-menu">
+                                            <a class="box_close" href="#" data-action="close"><i class="ace-icon fa fa-times"></i></a>
+                                        </div>
+                                        <a href="#" data-action="fullscreen" class="orange2"><i class="ace-icon fa fa-expand"></i></a>
+                                    </div>
+                                </div>
 
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                       
+                                        <input class="filter form-control" name="image[image_url][]" type="hidden" value="{{$v.image_url}}" />
+                                        <div class="image_upload_action" class='filter form-control' style="padding-top:10px;text-align:center;height:55px;">上传</div>
+                                        <a href="#" target="_blank" class="image_pre"><img id="image_pre_0" src="http://placehold.it/200x200" class="form-control" style="min-height:200px;"></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                         <!-- 图片模板 end -->
+
+                        <div class="col-xs-2 col-sm-2 widget-container-col" id="widget-container-col-1">
+                            <div class="widget-box" id="widget-box-1">
+                                <div class="widget-header">
+                                    <h5 class="widget-title">操作</h5>
+                                    <div class="widget-toolbar">
+                                        <div class="widget-menu"> </div>
+                                        <a href="#" data-action="fullscreen" class="orange2"><i class="ace-icon fa fa-expand"></i></a>
+                                    </div>
+                                </div>
+
+                                <div class="widget-body">
+                                    <div class="widget-main">
+                                        <div style="height: 255px;line-height:255px;text-align: center;">
+                                             <div id="add_image_tpl" class="btn btn-success" style="">添加</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
+            
                 </div>
             </div>
-        </div>
-        <!-- 站点信息 end -->
 
-        <!-- PAGE CONTENT ENDS -->
     </div><!-- /.col -->
 </div>
+
+
+
+<script>
+jQuery(function($) {
+
+
+    //添加图片
+  
+    renderUpload('#app_image_tmps_0 .image_upload_action');
+    
+
+     $('#add_image_tpl').on('click', function(){
+
+        var _this_o = $(this).parent().parent().parent().parent().parent();
+        var app_image_tpl =  $('#app_image_tpl');
+
+        var last_image_tpl = $(_this_o).prev();
+        var last_image_tpl_id = $(last_image_tpl).attr('id');
+        var image_tpl_ok_id = last_image_tpl_id + "1";
+        var image_tpl_ok = $(app_image_tpl).clone(false);
+        var image_tpl_ok = $(image_tpl_ok).css('display','block').attr({ id: image_tpl_ok_id });
+
+        $(image_tpl_ok).insertBefore(_this_o);
+        renderUpload('#' + image_tpl_ok_id +' .image_upload_action');
+    });
+
+//end js
+});
+
+//渲染上传组件
+function renderUpload(id){
+
+    //删除大box
+    var box = $(id).parent().parent().parent().parent();
+    $(box).find('.box_close').on('click', function(){
+        box.remove();
+    });
+
+     //上传
+    var uploader = WebUploader.create({
+        auto: true,
+        // swf文件路径
+        swf:  '/assets/js/webuploader/Uploader.swf',
+
+        // 文件接收服务端。
+        server: '/{{$_controller}}/{{$_action}}',
+
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: id,
+
+        accept: {
+            title: 'Images',
+            extensions: 'gif,jpg,jpeg,bmp,png',
+            mimeTypes: 'image/*'
+        },
+
+        // 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+        resize: false
+    });
+    uploader.on( 'uploadSuccess', function( file, data ) {
+        console.log(data);
+
+        var image_input = $(this.options.pick).prev();
+        image_input.val(data.img_url);
+
+        var image_cell = $(this.options.pick).next();
+        image_cell.attr('href', data.img_url);
+        $(image_cell).find('img').attr( 'src', data.img_url );
+    });
+
+    uploader.on( 'uploadError', function( file ) {
+        alert("上传失败，请重新上传!");
+    });
+
+    uploader.on( 'uploadComplete', function( file ) {
+    });
+}
+</script>

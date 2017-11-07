@@ -12,7 +12,7 @@ namespace common\service;
 
 use common\dao\SysFuncDao;
 
-class SysFuncSvc {
+class SysFuncSvc extends BaseSvc {
 
     /**
      * 获取所有菜单

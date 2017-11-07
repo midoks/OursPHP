@@ -55,17 +55,19 @@ class Base extends Controller {
         $funcSvc    = new SysFuncSvc();
         $roleSvc    = new SysRoleSvc();
 
-        $_menu = $funcSvc->getMenu();
+        $_menu = $funcSvc->getMenu_with_cache('cache_key=t&cache_time=30');
+        //$_menu = $funcSvc->getMenu();
 
         $roleid     = $this->_user['roleid'];
         $_role = $roleSvc->get($roleid);
+
 
         $_menu = $this->checkAuth($_menu, $_role);
         if(!$_menu){
 
             //ajax请求特殊处理
             $reqWith = $request->header('X-Requested-With');
-            if ( 'XMLHttpRequest' == $reqWith ){
+            if ( 'XMLHttpRequest' == $reqWith || isset($_FILES) ){
                 echo "无权限使用!";
                 exit;
             }

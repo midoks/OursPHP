@@ -78,7 +78,15 @@ return [
     ],
 
     'memcached' => [
-        ['127.0.0.1', 11211]
+        [
+            'host'       => '127.0.0.1',
+            'port'       => 11211,
+            'expire'     => 30,
+            'timeout'    => 0, // 超时时间（单位：毫秒）
+            'username'   => '', //账号
+            'password'   => '', //密码
+            'persistent' => true,
+        ]
     ],
 
     'redis'     => [
@@ -94,13 +102,13 @@ return [
 
     'cache'                  => [
         // 驱动方式 支持redis memcache memcached
-        'type'   => 'memcache',
+        'type'   => 'redis',
         // 缓存保存目录
         'path'   => '',
         // 缓存前缀
         'prefix' => 'oursphp_',
         // 缓存有效期 0表示永久缓存
-        'expire' => 0,
+        'expire' => 30,
     ],
 
     // +----------------------------------------------------------------------

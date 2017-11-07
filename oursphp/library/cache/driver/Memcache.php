@@ -16,7 +16,13 @@ use frame\Config;
 class Memcache extends Driver {
 
     protected $options = [
-        // ['127.0.0.1', 11211],
+        [
+            'host'       => '127.0.0.1',
+            'port'       => 11211,
+            'expire'     => 0,
+            'timeout'    => 0, // 超时时间（单位：毫秒）
+            'persistent' => true,
+        ]
     ];
 
     private static $_instance = [];
@@ -34,19 +40,23 @@ class Memcache extends Driver {
             throw new \BadFunctionCallException('not support: memcache');
         }
         if (!empty($options)) {
-            $this->options = array_merge($this->options, $options);
+            $this->options = $options;
         }
 
         $this->prefix = Config::get('cache')['prefix'];
         $this->handler = new \Memcache;
 
-
         // 建立连接
-        foreach ($this->options as $i => $c) {
-            $this->handler->addServer($c[0], $c[1]);
+        foreach ($this->options as $i => $m) {
+            $timeout = $m['timeout'] > 0 ? $m['timeout']  : 1;
+            $this->handler->addServer($m['host'], $m['port'], $m['persistent'], 1, $timeout);
         }
     }
 
+    /**
+     * memcache 单例模式
+     * @return class Memcache
+     */
     public static function getInstance( $option = 'memcached' ){
         $op = Config::get($option);
 
@@ -76,7 +86,8 @@ class Memcache extends Driver {
      * @return mixed
      */
     public function get($name, $default = false) {
-        $result = $this->handler->get($this->getCacheKey($name));
+        $key = $this->getCacheKey($name);
+        $result = $this->handler->get($key);
         return false !== $result ? $result : $default;
     }
 
@@ -95,12 +106,30 @@ class Memcache extends Driver {
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
-        if ($this->tag && !$this->has($name)) {
-            $first = true;
+  
+        $key = $this->getCacheKey($name);
+        if ($this->handler->set($key, $value, 0, $expire)) {
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * 写入缓存(如何已经存在返回false)
+     * @access public
+     * @param string            $name 缓存变量名
+     * @param mixed             $value  存储数据
+     * @param integer|\DateTime $expire  有效时间（秒）
+     * @return bool
+     */
+    public function add($name, $value, $expire = null) {
+
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
+        }
+    
         $key = $this->getCacheKey($name);
         if ($this->handler->add($key, $value, 0, $expire)) {
-            isset($first) && $this->setTagItem($key);
             return true;
         }
         return false;
@@ -155,21 +184,12 @@ class Memcache extends Driver {
     /**
      * 清除缓存
      * @access public
-     * @param string $tag 标签名
+     * @param  string  $name 缓存变量名
      * @return bool
      */
-    public function clear($tag = null)
-    {
-        if ($tag) {
-            // 指定标签清除
-            $keys = $this->getTagItem($tag);
-            foreach ($keys as $key) {
-                $this->handler->delete($key);
-            }
-            $this->rm('tag_' . md5($tag));
-            return true;
-        }
-        return $this->handler->flush();
+    public function clear($name) {
+        $key = $this->getCacheKey($name);
+        return $this->handler->delete($key);
     }
 
 }

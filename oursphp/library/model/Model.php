@@ -58,6 +58,49 @@ class Model {
     }
 
 
+     /**
+     * 执行数据库事务
+     * @access public
+     * @param callable $callback 数据操作方法回调
+     * @return mixed
+     * @throws PDOException
+     * @throws \Exception
+     * @throws \Throwable
+     */
+    public function transaction($callback) {
+        return $this->_db->startTrans($callback);
+    }
+
+    /**
+     * 启动事务
+     * @access public
+     * @return void
+     */
+    public function startTrans() {
+        $this->_db->startTrans();
+    }
+
+    /**
+     * 用于非自动提交状态下面的查询提交
+     * @access public
+     * @return void
+     * @throws PDOException
+     */
+    public function commit() {
+        return $this->_db->commit();
+    }
+
+    /**
+     * 事务回滚
+     * @access public
+     * @return void
+     * @throws PDOException
+     */
+    public function rollBack() {
+        return $this->_db->rollBack();
+    }
+
+
     /**
      * 获取一条数据
      * @param $sql string SQL语句
@@ -72,11 +115,4 @@ class Model {
         }
 		return $list[0];
 	}
-
-	public function __call($method, $args){
-        if (method_exists($this->_db, $method)){
-            return call_user_func_array(array($this->_db, $method), $args);
-        }
-        return false;
-    }
 }

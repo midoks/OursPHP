@@ -23,14 +23,17 @@ class Encrypt extends Base {
 	public function index($request, $response) {
 		$response->stitle = 'authcode';
 
-		$response->str = $str = $request->str;
-		$submit_decode = $request->submit_decode;
+		if ($request->isPost()){
+			
+			$response->str = $str = $request->str;
+			$submit_decode = $request->submit_decode;
 
-		if ($submit_decode){
-			$response->code = $code = Authcode::decode($str);
-		} else {
-			$response->code = $code = Authcode::encode($str);
-		}
+			if ($submit_decode){
+				$response->code = $code = Authcode::decode($str);
+			} else {
+				$response->code = $code = Authcode::encode($str);
+			}
+		}		
 
 		return $this->renderLayout();
     }

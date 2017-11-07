@@ -14,9 +14,11 @@ namespace frame\cache;
  * 缓存基础类
  */
 abstract class Driver {
+    
     protected $handler = null;
+
     protected $options = [];
-    protected $tag;
+
 
     /**
      * 判断缓存是否存在
@@ -44,6 +46,16 @@ abstract class Driver {
      * @return boolean
      */
     abstract public function set($name, $value, $expire = null);
+
+    /** 
+     * 写入缓存(如何已经存在返回false)
+     * @access public
+     * @param string    $name 缓存变量名
+     * @param mixed     $value  存储数据
+     * @param int       $expire  有效时间 0为永久
+     * @return boolean
+     */
+    abstract public function add($name, $value, $expire = null);
 
     /**
      * 自增缓存（针对数值缓存）
@@ -74,10 +86,10 @@ abstract class Driver {
     /**
      * 清除缓存
      * @access public
-     * @param string $tag 标签名
+     * @param string $name 缓存变量名
      * @return boolean
      */
-    abstract public function clear($tag = null);
+    abstract public function clear($name);
 
     /**
      * 获取实际的缓存标识
@@ -86,7 +98,7 @@ abstract class Driver {
      * @return string
      */
     protected function getCacheKey($name) {
-        return $this->prefix . $name;
+        return $this->prefix.$name;
     }
 
     /**

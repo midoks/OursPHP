@@ -21,12 +21,13 @@ trait Cache {
 
     public static $__cacheInstance = NULL;
 
-    public static function getCacheObj(){
-        $option = Config::get('cache');
-
+    public static function getCacheObject(){
+        
         if(isset(self::$__cacheInstance)){
            return self::$__cacheInstance;
         }
+
+        $option = Config::get('cache');
 
         if (in_array($option['type'], array('memcache', 'memcached','redis'))){
             $name = strtolower($option['type']);
@@ -34,10 +35,9 @@ trait Cache {
                 self::$__cacheInstance =  Memcache::getInstance();
             } else if ('memcached' == $name) {
                 self::$__cacheInstance =  Memcached::getInstance();
-            } else {
+            } else { //Redis
                 self::$__cacheInstance =  Redis::getInstance();
             }
-            
             return  self::$__cacheInstance;
         }
         throw new CommonException('cache配置错误!!!');
@@ -49,8 +49,47 @@ trait Cache {
      * @param string $node 节点名称
      * @return bool
      */
-    public function clear($key){
-        return true;
+    public function cacheClear($key){
+        $cacheObj = self::getCacheObject();
+        return $cacheObj->clear($key);
+    }
+
+    /**
+     * 读取缓存
+     * @access public
+     * @param string $name 缓存变量名
+     * @param mixed  $default 默认值
+     * @return mixed
+     */
+    public function cacheGet($name, $default = false){
+        $cacheObj = self::getCacheObject();
+        return $cacheObj->get($name, $default);
+    }
+
+    /**
+     * 写入缓存
+     * @access public
+     * @param string    $name 缓存变量名
+     * @param mixed     $value  存储数据
+     * @param int       $expire  有效时间 0为永久
+     * @return boolean
+     */
+    public function cacheSet($name, $value, $expire = null){
+        $cacheObj = self::getCacheObject();
+        return $cacheObj->set($name, $value, $expire);
+    }   
+
+    /** 
+     * 写入缓存(如何已经存在返回false)
+     * @access public
+     * @param string    $name 缓存变量名
+     * @param mixed     $value  存储数据
+     * @param int       $expire  有效时间 0为永久
+     * @return boolean
+     */
+    public function cacheAdd($name, $value, $expire = null){
+        $cacheObj = self::getCacheObject();
+        return $cacheObj->add($name, $value, $expire);
     }
 
     /**
@@ -87,12 +126,9 @@ trait Cache {
 
         $key = $this->__cache_key;
 
-        try {
-            $cacheObj = self::getCacheObj();
-            $cacheV = $cacheObj->get($key);
-        } catch (\Exception $e) {
-            return false;
-        }
+      
+        $cacheObj = self::getCacheObject();
+        $cacheV = $cacheObj->get($key);
         
         if ($cacheV){
             return $cacheV;
@@ -115,13 +151,13 @@ trait Cache {
         }
 
         if (isset($this->__cache_key)){
-            $cacheObj = self::getCacheObj();
-            $cache = $cacheObj->set($this->__cache_key, $result, 300);
+            $cacheObj = self::getCacheObject();
+            $cache = $cacheObj->add($this->__cache_key, $result, 300);
         }
     }
 
-
     /**
+     * 魔术方法
      * @param $name
      * @param $params
      * @return mixed
@@ -129,55 +165,56 @@ trait Cache {
      */
     public function __call($name, $params) {
 
-        var_dump($name, $params);
+        if (substr($name, -11) == '_with_cache') {
 
-        // $options = Config::get('withcache', WEB_NAMESPACE);
+            $cacheObj = self::getCacheObject();
+            $options = Config::get('cache');
 
-        // if (OURS_DEBUG) {
-        //     echo '<!-- withcache: '.json_encode($options).'-->'."\r\n";
-        // }
-
-        // if (substr($name, -11) == '_with_cache') {
-
-        //     $relFunc = substr($name, 0, strlen($name)-11);
-        //     $key = md5($name.serialize($params));
-        //     $cache_time_params = isset($params[0])? $params[0]:null;
+            $relFunc = substr($name, 0, strlen($name)-11);
+            $key = md5($name.serialize($params));
 
 
-        //     if($options == false || $options['used'] == false) {
-        //         echo '<!-- withcache: nocache-->'."\r\n";
-        //         return call_user_func_array(array($this, $relFunc), $params);
-        //     }
+            //获取值
+            $data = $cacheObj->get($key);
+            if ($data) {
+                return $data;
+            }
 
-        //     $cache_time = $options['cachetime'];
-        //     $cache_type = $options['type'];
-        //     $cache_nodename = $options['nodename'];
-        //     if (is_string($cache_time_params) && substr($cache_time_params, 0, 11) == 'cache_time=') {
-        //         $cache_time = intval(substr($cache_time_params, 11));
-        //         array_shift($params); //第一个参数是缓存时间不是函数用的，去除
-        //     }
-        //     $cache_key_params = isset($params[0])? $params[0]: null;
-        //     if (is_string($cache_key_params) && substr($cache_key_params, 0, 10) == 'cache_key=') {
-        //         $key = substr($cache_key_params, 10);
-        //         array_shift($params); //第一个参数是缓存时间不是函数用的，去除
-        //     }
-           
-        //     switch ($cache_type) {
-        //         case 'memcached':
+            $cacheParam = isset($params[0]) ? $params[0]: null;
+            $cacheTime = $options['expire'];
 
-        //             $data = Memcached::accessCache($key, $cache_time, array($this, $relFunc), $params,$cache_nodename);
-        //             return $data;
-        //             break;
-        //         case 'redis':
-        //             $data = Redis::accessCache($key, $cache_time, array($this, $relFunc), $params,$cache_nodename);
-        //             return $data;
-        //             break;
-        //         default:
-        //             $data =  call_user_func_array(array($this, $relFunc), $params);
-        //             return $data;
-        //             break;
-        //     }
-        // }
+            if ( $cacheParam ){
+                 parse_str($cacheParam, $cacheParse);
+
+                 if (isset($cacheParse['cache_time'])){
+                    $cacheTime = $cacheParse['cache_time'];
+                 }
+
+                 if (isset($cacheParse['cache_key'])){
+                    $key = $cacheParse['cache_key'];
+                 }
+            }
+
+            //第一个参数不是原方法参数,去除
+            array_shift($params);
+
+            //保存值
+            if( $ret = $cacheObj->add($key, null, $cacheTime) ){
+               
+                $data = call_user_func_array(array($this, $relFunc), $params);
+                $cacheObj->set($key, $data, $cacheTime);
+            } else {
+
+                for( $i=0; $i< 5; $i++ ) { //5秒没有反应，就出白页吧，系统貌似已经不行了
+                    sleep(0.1);
+                    $data = $cacheObj->get($key);
+                    if ($data !== false){ break; }
+                }
+            }
+            // var_dump($ret, $key, $data, $cacheTime);
+
+            return $data;
+        }
     }
 
 

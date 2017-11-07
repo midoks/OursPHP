@@ -44,7 +44,7 @@ class Redis extends Driver
             throw new \BadFunctionCallException('not support: redis');
         }
         if (!empty($options)) {
-            $this->options = array_merge($this->options, $options);
+            $this->options = $options;
         }
 
          $this->prefix = Config::get('cache')['prefix'];
@@ -114,19 +114,39 @@ class Redis extends Driver
         if ($expire instanceof \DateTime) {
             $expire = $expire->getTimestamp() - time();
         }
-        if ($this->tag && !$this->has($name)) {
-            $first = true;
-        }
+     
         $key = $this->getCacheKey($name);
-        //对数组/对象数据进行缓存处理，保证数据完整性  byron sampson<xiaobo.sun@qq.com>
+        //对数组/对象数据进行缓存处理，保证数据完整性 
         $value = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
         if (is_int($expire) && $expire) {
             $result = $this->handler->setex($key, $expire, $value);
         } else {
             $result = $this->handler->set($key, $value);
         }
-        isset($first) && $this->setTagItem($key);
         return $result;
+    }
+
+
+    /**
+     * 写入缓存(如何已经存在返回false)
+     * @access public
+     * @param string            $name 缓存变量名
+     * @param mixed             $value  存储数据
+     * @param integer|\DateTime $expire  有效时间（秒）
+     * @return bool
+     */
+    public function add($name, $value, $expire = null) {
+
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
+        }
+        $value = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
+        $key = $this->getCacheKey($name);
+        if ($this->handler->setnx($key, $value)) {
+            $this->handler->expire($key, $expire);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -160,7 +180,8 @@ class Redis extends Driver
      * @return boolean
      */
     public function rm($name) {
-        return $this->handler->delete($this->getCacheKey($name));
+        $key = $this->getCacheKey($name);
+        return $this->handler->delete();
     }
 
     /**
@@ -169,17 +190,9 @@ class Redis extends Driver
      * @param string $tag 标签名
      * @return boolean
      */
-    public function clear($tag = null) {
-        if ($tag) {
-            // 指定标签清除
-            $keys = $this->getTagItem($tag);
-            foreach ($keys as $key) {
-                $this->handler->delete($key);
-            }
-            $this->rm('tag_' . md5($tag));
-            return true;
-        }
-        return $this->handler->flushDB();
+    public function clear($name) {
+        $key = $this->getCacheKey($name);
+        return $this->handler->delete($key);
     }
 
 }

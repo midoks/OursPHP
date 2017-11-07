@@ -12,7 +12,7 @@ namespace common\service;
 
 use common\dao\SysRoleDao;
 
-class SysRoleSvc {
+class SysRoleSvc extends BaseSvc {
 
 
      /**
