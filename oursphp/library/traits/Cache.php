@@ -14,6 +14,7 @@ use frame\Config;
 use frame\cache\driver\Memcache;
 use frame\cache\driver\Memcached;
 use frame\cache\driver\Redis;
+use frame\cache\driver\None;
 
 use frame\exception\CommonException;
 
@@ -28,15 +29,17 @@ trait Cache {
         }
 
         $option = Config::get('cache');
+        $name = strtolower($option['type']);
+        if (in_array($name, array('memcache', 'memcached','redis', 'none'))){
 
-        if (in_array($option['type'], array('memcache', 'memcached','redis'))){
-            $name = strtolower($option['type']);
             if ( 'memcache' == $name){
                 self::$__cacheInstance =  Memcache::getInstance();
             } else if ('memcached' == $name) {
                 self::$__cacheInstance =  Memcached::getInstance();
-            } else { //Redis
+            } else if( 'redis' == $name){ //Redis
                 self::$__cacheInstance =  Redis::getInstance();
+            } else {
+                self::$__cacheInstance =  None::getInstance();
             }
             return  self::$__cacheInstance;
         }
@@ -169,16 +172,12 @@ trait Cache {
 
             $cacheObj = self::getCacheObject();
             $options = Config::get('cache');
+            $type = strtolower($options['type']);
+
 
             $relFunc = substr($name, 0, strlen($name)-11);
             $key = md5($name.serialize($params));
 
-
-            //获取值
-            $data = $cacheObj->get($key);
-            if ($data) {
-                return $data;
-            }
 
             $cacheParam = isset($params[0]) ? $params[0]: null;
             $cacheTime = $options['expire'];
@@ -186,21 +185,31 @@ trait Cache {
             if ( $cacheParam ){
                  parse_str($cacheParam, $cacheParse);
 
-                 if (isset($cacheParse['cache_time'])){
-                    $cacheTime = $cacheParse['cache_time'];
+                 if (isset($cacheParse['time'])){
+                    $cacheTime = $cacheParse['time'];
                  }
 
-                 if (isset($cacheParse['cache_key'])){
-                    $key = $cacheParse['cache_key'];
+                 if (isset($cacheParse['key'])){
+                    $key = $cacheParse['key'];
                  }
             }
 
             //第一个参数不是原方法参数,去除
             array_shift($params);
 
+            if ( 'none' == $type ) {
+                $data = call_user_func_array(array($this, $relFunc), $params);            
+                return $data;
+            }
+
+            //获取值
+            $data = $cacheObj->get($key);
+            if ($data) {
+                return $data;
+            }
+
             //保存值
-            if( $ret = $cacheObj->add($key, null, $cacheTime) ){
-               
+            if( $cacheObj->add($key, null, $cacheTime) ){
                 $data = call_user_func_array(array($this, $relFunc), $params);
                 $cacheObj->set($key, $data, $cacheTime);
             } else {
@@ -211,7 +220,6 @@ trait Cache {
                     if ($data !== false){ break; }
                 }
             }
-            // var_dump($ret, $key, $data, $cacheTime);
 
             return $data;
         }

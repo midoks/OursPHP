@@ -55,7 +55,7 @@ class Base extends Controller {
         $funcSvc    = new SysFuncSvc();
         $roleSvc    = new SysRoleSvc();
 
-        $_menu = $funcSvc->getMenu_with_cache('cache_key=t&cache_time=30');
+        $_menu = $funcSvc->getMenu_with_cache('key=t&time=30');
         //$_menu = $funcSvc->getMenu();
 
         $roleid     = $this->_user['roleid'];

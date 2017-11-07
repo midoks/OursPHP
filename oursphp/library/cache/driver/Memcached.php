@@ -16,14 +16,16 @@ use frame\Config;
 class Memcached extends Driver {
     
     protected $options = [
-        'host'     => '127.0.0.1',
-        'port'     => 11211,
-        'expire'   => 0,
-        'timeout'  => 0, // 超时时间（单位：毫秒）
-        'prefix'   => '',
-        'username' => '', //账号
-        'password' => '', //密码
-        'option'   => [],
+        [
+            'host'     => '127.0.0.1',
+            'port'     => 11211,
+            'expire'   => 0,
+            'timeout'  => 0, // 超时时间（单位：毫秒）
+            'prefix'   => '',
+            'username' => '', //账号
+            'password' => '', //密码
+            'option'   => [],
+        ]
     ];
 
     private static $_instance = [];
@@ -39,31 +41,29 @@ class Memcached extends Driver {
             throw new \BadFunctionCallException('not support: memcached');
         }
         if (!empty($options)) {
-            $this->options = array_merge($this->options, $options);
+            $this->options =  $options;
         }
+
+        $this->prefix = Config::get('cache')['prefix'];
+
         $this->handler = new \Memcached;
-        if (!empty($this->options['option'])) {
-            $this->handler->setOptions($this->options['option']);
+        if (!empty($this->options[0]['option'])) {
+            $this->handler->setOptions($this->options[0]['option']);
         }
         // 设置连接超时时间（单位：毫秒）
-        if ($this->options['timeout'] > 0) {
-            $this->handler->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->options['timeout']);
-        }
-        // 支持集群
-        $hosts = explode(',', $this->options['host']);
-        $ports = explode(',', $this->options['port']);
-        if (empty($ports[0])) {
-            $ports[0] = 11211;
+        if ($this->options[0]['timeout'] > 0) {
+            $this->handler->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $this->options[0]['timeout']);
         }
         // 建立连接
         $servers = [];
-        foreach ((array) $hosts as $i => $host) {
-            $servers[] = [$host, (isset($ports[$i]) ? $ports[$i] : $ports[0]), 1];
+        foreach ((array) $this->options as $i => $s) {
+            $servers[] = [$s['host'], (isset($s['port']) ? $s['port'] : 11211), 1];
         }
         $this->handler->addServers($servers);
-        if ('' != $this->options['username']) {
+
+        if ('' != $this->options[0]['username']) {
             $this->handler->setOption(\Memcached::OPT_BINARY_PROTOCOL, true);
-            $this->handler->setSaslAuthData($this->options['username'], $this->options['password']);
+            $this->handler->setSaslAuthData($this->options[0]['username'], $this->options[0]['password']);
         }
     }
 
@@ -112,16 +112,33 @@ class Memcached extends Driver {
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-        if ($expire instanceof \DateTime) {
-            $expire = $expire->getTimestamp() - time();
-        }
-        if ($this->tag && !$this->has($name)) {
-            $first = true;
-        }
+
         $key    = $this->getCacheKey($name);
         $expire = 0 == $expire ? 0 : $_SERVER['REQUEST_TIME'] + $expire;
+        if ($this->handler->set($key, $value, $expire)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 写入缓存(如何已经存在返回false)
+     * @access public
+     * @param string            $name 缓存变量名
+     * @param mixed             $value  存储数据
+     * @param integer|\DateTime $expire  有效时间（秒）
+     * @return bool
+     */
+    public function add($name, $value, $expire = null) {
+
+        if (is_null($expire)) {
+            $expire = $this->options['expire'];
+        }
+    
+        $key = $this->getCacheKey($name);
+        $expire = 0 == $expire ? 0 : $_SERVER['REQUEST_TIME'] + $expire;
+
         if ($this->handler->add($key, $value, $expire)) {
-            isset($first) && $this->setTagItem($key);
             return true;
         }
         return false;
@@ -176,17 +193,11 @@ class Memcached extends Driver {
     /**
      * 清除缓存
      * @access public
-     * @param string $tag 标签名
+     * @param  string  $name 缓存变量名
      * @return bool
      */
-    public function clear($tag = null) {
-        if ($tag) {
-            // 指定标签清除
-            $keys = $this->getTagItem($tag);
-            $this->handler->deleteMulti($keys);
-            $this->rm('tag_' . md5($tag));
-            return true;
-        }
-        return $this->handler->flush();
+    public function clear($name) {
+        $key = $this->getCacheKey($name);
+        return $this->handler->delete($key);
     }
 }

@@ -47,7 +47,7 @@ class Redis extends Driver
             $this->options = $options;
         }
 
-         $this->prefix = Config::get('cache')['prefix'];
+        $this->prefix = Config::get('cache')['prefix'];
 
         $func          = $this->options['persistent'] ? 'pconnect' : 'connect';
         $this->handler = new \Redis;
@@ -79,7 +79,8 @@ class Redis extends Driver
      * @return bool
      */
     public function has($name) {
-        return $this->handler->get($this->getCacheKey($name)) ? true : false;
+        $key    =  $this->getCacheKey($name);
+        return $this->handler->get($key) ? true : false;
     }
 
     /**
@@ -90,7 +91,8 @@ class Redis extends Driver
      * @return mixed
      */
     public function get($name, $default = false) {
-        $value = $this->handler->get($this->getCacheKey($name));
+        $key    =  $this->getCacheKey($name);
+        $value  = $this->handler->get($key);
         if (is_null($value)) {
             return $default;
         }
@@ -108,17 +110,18 @@ class Redis extends Driver
      * @return boolean
      */
     public function set($name, $value, $expire = null) {
+
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-        if ($expire instanceof \DateTime) {
-            $expire = $expire->getTimestamp() - time();
-        }
-     
+
         $key = $this->getCacheKey($name);
-        //对数组/对象数据进行缓存处理，保证数据完整性 
+        $expire = intval($expire);
+        //对数组/对象数据进行缓存处理，保证数据完整性
         $value = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
+
         if (is_int($expire) && $expire) {
+
             $result = $this->handler->setex($key, $expire, $value);
         } else {
             $result = $this->handler->set($key, $value);
@@ -140,10 +143,15 @@ class Redis extends Driver
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
+
         $value = (is_object($value) || is_array($value)) ? json_encode($value) : $value;
         $key = $this->getCacheKey($name);
-        if ($this->handler->setnx($key, $value)) {
-            $this->handler->expire($key, $expire);
+
+        $lockKey = 'LOCK_PREFIX_' . $key;  
+
+        if ($ret = $this->handler->setnx($lockKey, 1) ) {
+            $this->handler->setex($key, $expire, $value);
+            $this->handler->del($lockKey);
             return true;
         }
         return false;
