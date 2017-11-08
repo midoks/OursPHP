@@ -109,7 +109,7 @@ return [
 
     'cache'                  => [
         // 驱动方式 支持 redis memcache memcached
-        'type'   => 'memcache',
+        'type'   => 'redis',
         // 缓存保存目录
         'path'   => '',
         // 缓存前缀

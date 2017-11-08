@@ -30,7 +30,7 @@
                 <label class="col-sm-3 control-label no-padding-right" for="form-field-1"> controller: </label>
 
                 <div class="col-sm-9">
-                    <input id="form-group-controller-i" name="vars[controller]" class="col-xs-8 col-sm-4" type="text" value="{{$item['controller']}}" required> 
+                    <input id="form-group-controller-i" name="vars[controller]" class="col-xs-8 col-sm-4" type="text" value="{{$item['controller']}}"> 
                     <span class="help-inline col-xs-12 col-sm-7">
                         <span class="middle" id="form-group-controller-h">子菜单默认选项</span>
                     </span>
@@ -182,8 +182,9 @@ function select_option_owner(){
     }
 
     var data = $('#select_option_owner :selected').attr('data');
-    $('#form-group-controller-i').val(data);
-
+    if (data){
+        $('#form-group-controller-i').val(data);
+    }
 }
 $('#select_option_owner').children().each(function(index, el) {
     console.log(this);

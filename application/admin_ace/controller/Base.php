@@ -26,9 +26,9 @@ class Base extends Controller {
 
     const ADMIN_VERSION = '0.1.0';
 
-    protected $_user;
+    protected $_user = [];
     protected $_role = [];
-    protected $_menu;
+    protected $_menu = [];
 
     //超级权限(方便开发及维护)
     private $super_authority = [
@@ -59,8 +59,8 @@ class Base extends Controller {
         $funcSvc    = new SysFuncSvc();
         $roleSvc    = new SysRoleSvc();
 
-        // $_menu = $funcSvc->getMenu_with_cache('key=t&time=30'); //ok
-        $_menu = $funcSvc->getMenu();
+        $this->_menu = $_menu = $funcSvc->getMenu_with_cache('key='.'admin_func_list'.'&time=1000'); //ok
+        // $this->_menu = $_menu = $funcSvc->getMenu();
 
         $roleid     = $this->_user['roleid'];
         $_role = $roleSvc->get($roleid);

@@ -18,6 +18,17 @@ use \common\service\SysFuncSvc;
 
 class Sysfunc extends Base {
 
+
+    // public $beforeAction = [
+    //     'action'    => ['setMenu', 'sort' , 'add', 'del',  'lock'],
+    //     'callback'  => 'beforeRun',
+    // ];
+
+    public $afterAction = [
+        'action'    => ['setMenu', 'sort' , 'add', 'del',  'lock'],
+        'callback'  => 'afterRun',
+    ];
+
     //初始化
     public function __construct($request, $response){
         parent::__construct($request, $response);
@@ -28,17 +39,21 @@ class Sysfunc extends Base {
     public function index($request, $response) {
         $response->stitle = '列表';
 
-        $funcSvc    = new SysFuncSvc();
-        $rootMenu   = $funcSvc->gets();
-
-        if(!empty($rootMenu)) {
-            foreach ( $rootMenu as $k=>$fun ) {
-                $rootMenu[$k]['sub'] = $funcSvc->gets($fun['id']);
-            }
-        }
-
-        $response->rootMenu = $rootMenu;
+        $response->rootMenu = $this->_menu;
+        
         $this->renderLayout();
+    }
+
+
+    public function beforeRun($request, $response){
+        echo "beforeRun";
+
+    }
+
+    
+    public function afterRun($request, $response){
+        $funcSvc    = new SysFuncSvc();
+        $funcSvc->cacheClear('admin_func_list');
     }
 
 
@@ -119,6 +134,7 @@ class Sysfunc extends Base {
             $funcSvc = new SysFuncSvc();
             $funcSvc->lock($id);
         }
+
         return $this->renderString('ok');
     }
 

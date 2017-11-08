@@ -33,7 +33,7 @@ trait Cache {
 
         $option = Config::get('cache');
         $name = strtolower($option['type']);
-
+        
         App::$debug && Logs::record('[ CACHE ] INIT ' . $name, 'info');
 
         try {
@@ -65,7 +65,8 @@ trait Cache {
      */
     public function cacheClear($key){
         $cacheObj = self::getCacheObject();
-        return $cacheObj->clear($key);
+        $cacheObj->clear($key);
+        return $this;
     }
 
     /**
@@ -166,7 +167,7 @@ trait Cache {
 
         if (isset($this->__cache_key)){
             $cacheObj = self::getCacheObject();
-            $cache = $cacheObj->add($this->__cache_key, $result, 300);
+            $cache = $cacheObj->add($this->__cache_key, $result, $this->__cache_time);
         }
     }
 

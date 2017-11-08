@@ -23,6 +23,9 @@ class Encrypt extends Base {
 	public function index($request, $response) {
 		$response->stitle = 'authcode';
 
+		$response->code = '';
+		$response->str = '';
+
 		if ($request->isPost()){
 			
 			$response->str = $str = $request->str;

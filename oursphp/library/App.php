@@ -16,6 +16,7 @@ use frame\Config;
 use frame\Route;
 use frame\Exception;
 use frame\exception\HttpResponseException;
+use frame\exception\HttpException;
 use frame\Logs;
 
 class App {
@@ -132,9 +133,61 @@ class App {
 
         $class_name = '\\'.self::$app_ns.'\\controller\\'.$dispatch['controller'];
 
-        $instance = new $class_name(Request::getInstance(), Response::getInstance());
+        $request = Request::getInstance();
+        $response = Response::getInstance();
+
+        try {
+           $instance = new $class_name($request, $response);
+        } catch (ClassNotFoundException $e) {
+            throw new HttpException(404, 'controller not exists:' . $e->getClass());
+        }
+
+        
         $action = $dispatch['action'];
-        $data = $instance->$action(Request::getInstance(), Response::getInstance());
+
+        if (method_exists($instance, $action)){
+
+            //before
+            $beforeAction = $action.'Before';
+            if (method_exists($instance, $beforeAction)){
+                $instance->$beforeAction($request, $response);
+            }
+
+            if( isset($instance->beforeAction) ){
+                if(!empty($instance->beforeAction['action']) && !empty($instance->beforeAction['callback']) ){
+                    if (in_array($action, $instance->beforeAction['action'])){
+                        if (method_exists($instance, $instance->beforeAction['callback'])){
+                            $callback = $instance->beforeAction['callback'];
+                            $instance->$callback($request, $response);
+                        }
+                    }
+                }
+            }
+
+            $data = $instance->$action($request, $response);
+
+            //after
+            $afterAction = $action.'After';
+            if (method_exists($instance, $afterAction)){
+                $instance->$afterAction($request, $response);
+            }
+
+            if( isset($instance->afterAction) ){
+                if(!empty($instance->afterAction['action']) && !empty($instance->afterAction['callback']) ){
+                    if (in_array($action, $instance->afterAction['action'])){
+                        if (method_exists($instance, $instance->afterAction['callback'])){
+                            $callback = $instance->afterAction['callback'];
+                            $instance->$callback($request, $response);
+                        }
+                    }
+                }
+            }
+
+
+        } else {
+
+        }
+        
 
         return $data;
     }

@@ -132,9 +132,8 @@ return [
     ],
 
     'cache'     => [
-        // 驱动方式 支持redis memcache memcached
-        // none 不使用cache
-        'type'   => 'memcache',
+        // 驱动方式 支持 redis memcache memcached
+        'type'   => '',
         // 缓存保存目录
         'path'   => '',
         // 缓存前缀
@@ -193,7 +192,7 @@ return [
     'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \frame\exception\Handle
     'exception_handle'       => '',
-    
+
     
     // +----------------------------------------------------------------------
     // | Trace设置 开启 app_trace 后 有效

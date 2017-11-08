@@ -85,7 +85,7 @@ class SysRoleSvc extends BaseSvc {
     public function get($id) {
         if($id) {
             $dao = new SysRoleDao();
-            return $dao->cache(60, 'role_'.$id)->findByPkey($id);
+            return $dao->cache(24*60*60, __CLASS__.'role_'.$id)->findByPkey($id);
         }
         return false;
     }
@@ -112,8 +112,7 @@ class SysRoleSvc extends BaseSvc {
     public function edit($id,$vars) {
         if(!empty($vars)) {
             $dao = new SysRoleDao();
-            $dao->clear('role_'.$id);
-            return $dao->edit($id,$vars);
+            return $dao->cacheClear(__CLASS__.'role_'.$id)->edit($id,$vars);
         }
         return false;
     }
@@ -128,7 +127,7 @@ class SysRoleSvc extends BaseSvc {
         $fun = $dao->findByPkey($id);
         if($fun) {
             $vars['status'] = $fun['status'] == 1 ? 0 : 1;
-            return $dao->edit($id,$vars);
+            return $this->edit($id,$vars);
         }
         return false;
     }
@@ -140,7 +139,7 @@ class SysRoleSvc extends BaseSvc {
      */
     public function delete($id){
         $dao = new SysRoleDao();
-        return $dao->delete($id);
+        return $dao->cacheClear(__CLASS__.'role_'.$id)->delete($id);
     }
 
 }

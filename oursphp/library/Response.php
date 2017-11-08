@@ -35,6 +35,8 @@ class Response {
 
     private static $_instance;
 
+    private static $parseView;
+
     /**
      * 构造函数
      * @access   public
@@ -62,6 +64,8 @@ class Response {
     public static function getInstance() {
         if (!self::$_instance){
             self::$_instance = new static();
+
+            self::$parseView = View::getInstance();
         }
         return self::$_instance;
     }
@@ -323,7 +327,6 @@ class Response {
 
     
     public function __set($name, $value){
-        $view = View::getInstance();
-        $view->assign($name, $value);
+        self::$parseView->assign($name, $value);
     }
 }

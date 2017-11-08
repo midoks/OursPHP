@@ -19,13 +19,12 @@ class SysFuncSvc extends BaseSvc {
      * @return array
      */
     public function getMenu() {
-        $functions = self::gets(0,1);
-        if(!empty($functions)) {
-            foreach ($functions as &$fun) {
-                $fun['sub'] = self::gets($fun['id'], 1);
+        if(!empty($rows)) {
+            foreach ($rows as $k=>$v) {
+                $rows[$k]['sub'] = self::gets($v['id']);
             }
         }
-        return $functions;
+        return $rows;
     }
 
     /**
@@ -44,12 +43,10 @@ class SysFuncSvc extends BaseSvc {
             $where = $where." and status=:status ";
         }
 
-        $field = [  
-                    'id','`name`','pid','icon','type',
+        $field = [ 'id','`name`','pid','icon','type',
                     'controller', 'action', '`desc`',
-                    'is_menu','`status`','`sort`'
-                 ];
-        return $dao->cache()->findAll($query, $where,0, $field,'','', '`sort` asc, id asc' );
+                    'is_menu','`status`','`sort`' ];
+        return $dao->findAll( $query, $where,0, $field,'','', '`sort` asc, id asc' );
     }
 
     /**
@@ -103,7 +100,7 @@ class SysFuncSvc extends BaseSvc {
         $func = $funcDao->findByPkey($id);
         if($func) {
             $vars['is_menu'] = $func['is_menu']== 1 ? 0 : 1;
-            return self::edit($id,$vars);
+            return $this->edit($id,$vars);
         }
         return false;
     }
@@ -123,7 +120,7 @@ class SysFuncSvc extends BaseSvc {
             } else {
                 $vars['sort'] = $func['sort'] + 1;
             }
-            return self::edit($id, $vars);
+            return $this->edit($id, $vars);
         }
         return false;
     }
@@ -138,7 +135,7 @@ class SysFuncSvc extends BaseSvc {
         $fun = $dao->findByPkey($id);
         if($fun) {
             $vars['status'] = $fun['status'] == 1 ? 0 : 1;
-            return $dao->edit($id,$vars);
+            return $this->edit($id,$vars);
         }
         return false;
     }
