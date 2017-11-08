@@ -19,6 +19,7 @@ class SysFuncSvc extends BaseSvc {
      * @return array
      */
     public function getMenu() {
+        $rows = self::gets(0);
         if(!empty($rows)) {
             foreach ($rows as $k=>$v) {
                 $rows[$k]['sub'] = self::gets($v['id']);
