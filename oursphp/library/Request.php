@@ -118,6 +118,8 @@ class Request {
         $name = str_replace('_', '-', strtolower($name));
         return isset($this->header[$name]) ? $this->header[$name] : $default;
     }
+
+    
     
 
     /**
@@ -278,6 +280,56 @@ class Request {
 
     public function isPost() {
         return isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST';
+    }
+
+
+    /**
+     * 递归过滤给定的值
+     * @param mixed     $value 键值
+     * @param mixed     $key 键名
+     * @param array     $filters 过滤方法+默认值
+     * @return mixed
+     */
+    private function filterValue(&$value, $key, $filters) {
+
+        $default = array_pop($filters);
+        foreach ($filters as $filter) {
+            if (is_callable($filter)) {
+                // 调用函数或者方法过滤
+                $value = call_user_func($filter, $value);
+            } elseif (is_scalar($value)) {
+                if (false !== strpos($filter, '/')) {
+                    // 正则过滤
+                    if (!preg_match($filter, $value)) {
+                        // 匹配不成功返回默认值
+                        $value = $default;
+                        break;
+                    }
+                } elseif (!empty($filter)) {
+                    // filter函数不存在时, 则使用filter_var进行过滤
+                    // filter为非整形值时, 调用filter_id取得过滤id
+                    $value = filter_var($value, is_int($filter) ? $filter : filter_id($filter));
+                    if (false === $value) {
+                        $value = $default;
+                        break;
+                    }
+                }
+            }
+        }
+        return $this->filterExp($value);
+    }
+
+    /**
+     * 过滤表单中的表达式
+     * @param string $value
+     * @return void
+     */
+    public function filterExp(&$value) {
+        // 过滤查询特殊字符
+        if (is_string($value) && preg_match('/^(EXP|NEQ|GT|EGT|LT|ELT|OR|XOR|LIKE|NOTLIKE|NOT LIKE|NOT BETWEEN|NOTBETWEEN|BETWEEN|NOTIN|NOT IN|IN)$/i', $value)) {
+            $value .= ' ';
+        }
+        // TODO 其他安全过滤
     }
 
     /**

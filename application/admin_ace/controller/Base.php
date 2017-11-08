@@ -41,15 +41,14 @@ class Base extends Controller {
      */
     public function __construct($request, $response) {
 
+        $response->me = $this->_user =  Cookie::get('info');
 
-
-        $cookie     = Cookie::getInstance();
-        $response->me = $this->_user = $cookie->get('info');
         if (!$this->_user || $this->_user['status'] == 0) {
             $this->redirect('/login');
         }
 
-         $ss = Session::set('user', $this->_user);
+
+        $ss = Session::set('user', $this->_user);
 
         $this->_controller = $_controller = $response->_controller = $request->controller();
         $this->_action = $_action = $response->_action = $request->action();

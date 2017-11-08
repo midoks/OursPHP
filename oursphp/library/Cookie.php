@@ -11,306 +11,203 @@
 namespace frame;
 
 class Cookie {
+    protected static $config = [
+        // cookie 名称前缀
+        'prefix'    => '',
+        // cookie 保存时间
+        'expire'    => 0,
+        // cookie 保存路径
+        'path'      => '/',
+        // cookie 有效域名
+        'domain'    => '',
+        //  cookie 启用安全传输
+        'secure'    => false,
+        // httponly设置
+        'httponly'  => '',
+        // 是否使用 setcookie
+        'setcookie' => true,
+    ];
 
-    private $_prefix    = '';                       // cookie prefix
-    private $_securekey = OURS_SECUREKEY;           // encrypt key
-    private $_expire    = 0;
-    private $_path      = '';
-    private $_domain    = '';
-    private $_secure    = false;
+    protected static $init;
 
-    private static $_instance  = NULL;
+    /**
+     * Cookie初始化
+     * @param array $config
+     * @return void
+     */
+    public static function init(array $config = []) {
+        if (empty($config)) {
+            $config = Config::get('cookie');
+        }
+        self::$config = array_merge(self::$config, array_change_key_case($config));
+        if (!empty(self::$config['httponly'])) {
+            ini_set('session.cookie_httponly', 1);
+        }
+        self::$init = true;
+    }
 
-    /** 初始化
-     * Cookie constructor.
+    /**
+     * 设置或者获取cookie作用域（前缀）
      * @param string $prefix
-     * @param int $expire
+     * @return string|void
      */
-    public function __construct($prefix='', $expire=0){
-
-        if(is_string($prefix) && $prefix!='' ){
-            $this->_prefix = $prefix;
+    public static function prefix($prefix = '') {
+        if (empty($prefix)) {
+            return self::$config['prefix'];
         }
-
-        if(is_int($expire)) {
-            $this->_expire = $expire;
-        }
+        self::$config['prefix'] = $prefix;
     }
 
     /**
-     * 单例
+     * Cookie 设置、获取、删除
+     *
+     * @param string $name  cookie名称
+     * @param mixed  $value cookie值
+     * @param mixed  $option 可选参数 可能会是 null|integer|string
+     *
+     * @return mixed
+     * @internal param mixed $options cookie参数
      */
-    public static function getInstance(){
-        if (!self::$_instance){
-            self::$_instance = new self();
+    public static function set($name, $value = '', $option = null) {
+        !isset(self::$init) && self::init();
+        // 参数设置(会覆盖黙认设置)
+        if (!is_null($option)) {
+            if (is_numeric($option)) {
+                $option = ['expire' => $option];
+            } elseif (is_string($option)) {
+                parse_str($option, $option);
+            }
+            $config = array_merge(self::$config, array_change_key_case($option));
+        } else {
+            $config = self::$config;
         }
-        return self::$_instance;
+        $name = $config['prefix'] . $name;
+        // 设置cookie
+        if (is_array($value)) {
+            array_walk_recursive($value, 'self::jsonFormatProtect', 'encode');
+            $value = 'frame:' . json_encode($value);
+        }
+        $expire = !empty($config['expire']) ? $_SERVER['REQUEST_TIME'] + intval($config['expire']) : 0;
+        if ($config['setcookie']) {
+            setcookie($name, $value, $expire, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+        }
+        $_COOKIE[$name] = $value;
     }
 
     /**
-     * 设置加密KEY
-     * @param string $securekey  加密字符串
-     * @return $this 返回类本身实现链式操作
+     * 永久保存Cookie数据
+     * @param string $name  cookie名称
+     * @param mixed  $value cookie值
+     * @param mixed  $option 可选参数 可能会是 null|integer|string
+     * @return void
      */
-    public function setSecureKey($securekey) {
-        if(is_string($securekey) && empty($securekey)){
-            $this->_securekey = $securekey;
+    public static function forever($name, $value = '', $option = null) {
+        if (is_null($option) || is_numeric($option)) {
+            $option = [];
         }
-        return $this;
+        $option['expire'] = 315360000;
+        self::set($name, $value, $option);
     }
 
     /**
-     * 是否强制启用https
-     * @param bool $secure  true | false
-     * @return $this 返回类本身实现链式操作
-     */
-    public function setSecure($secure) {
-        if(is_bool($secure)){
-            $this->_secure = $secure;
-        }
-        return $this;
-
-    }
-
-    /**
-     * 设置作用域
-     * @param string $domain 域名
-     * @return $this 返回类本身实现链式操作
-     */
-    public function setDomain($domain) {
-        if(is_string($domain) && empty($domain)){
-            $this->_domain = $domain;
-        }
-        return $this;
-    }
-    /**
-     * 设置作用路径
-     * @param string $path 路径
-     * @return $this 返回类本身实现链式操作
-     */
-    public function setPath($path) {
-        if(is_string($path) && empty($path)){
-            $this->_path = $path;
-        }
-        return $this;
-    }
-
-    /**
-     * 设置前缀
-     * @param string $prefix 前缀
-     * @return $this 返回类本身实现链式操作
-     */
-    public function setPrefix($prefix) {
-        if(is_string($prefix) && empty($prefix)){
-            $this->_prefix = $prefix;
-        }
-        return $this;
-    }
-
-    /**
-     * 设置过期时间
-     * @param int $expire 过期时间（秒）
-     * @return $this 返回类本身实现链式操作
-     */
-    public function setExpire($expire) {
-        if(is_int($expire)) {
-            $this->_expire = $expire;
-        }
-        return $this;
-    }
-
-    /**
-     * 设置cookie
-     * @param $name
-     * @param $value
-     * @param int $expire
+     * 判断Cookie数据
+     * @param string        $name cookie名称
+     * @param string|null   $prefix cookie前缀
      * @return bool
      */
-    public function set($name, $value, $expire=0){
-        $cookie_expire  = $expire;
-        $cookie_name    = $this->getName($name);
-
-        if($expire===0) {
-            $cookie_expire=($this->_expire)>0?time()+$this->_expire:0;
-        }
-
-        if($expire>0) {
-            $cookie_expire = time() + $expire;
-        }
-
-        $cookie_value = $this->pack($value, $cookie_expire);
-        $cookie_value = $this->authcode($cookie_value, 'ENCODE');
-
-        if($cookie_name && $cookie_value){
-            return setcookie($cookie_name, $cookie_value, $cookie_expire,$this->_path,$this->_domain,$this->_secure);
-        }
-        return false;
+    public static function has($name, $prefix = null) {
+        !isset(self::$init) && self::init();
+        $prefix = !is_null($prefix) ? $prefix : self::$config['prefix'];
+        $name   = $prefix . $name;
+        return isset($_COOKIE[$name]);
     }
 
-    /** 
-     * 读取cookie
-     * @param String $name  cookie name
-     * @return mixed     cookie value
+    /**
+     * Cookie获取
+     * @param string        $name cookie名称
+     * @param string|null   $prefix cookie前缀
+     * @return mixed
      */
-    public function get($name){
+    public static function get($name = '', $prefix = null) {
+        !isset(self::$init) && self::init();
+        $prefix = !is_null($prefix) ? $prefix : self::$config['prefix'];
+        $key    = $prefix . $name;
 
-        $cookie_name = $this->getName($name);
-
-        if( isset($_COOKIE[$cookie_name]) ){
-
-            $cookie_value = $this->authcode($_COOKIE[$cookie_name], 'DECODE');
-            $cookie_value = $this->unpack($cookie_value);
-
-            return isset($cookie_value[0])? $cookie_value[0] : null;
+        if ('' == $name) {
+            // 获取全部
+            if ($prefix) {
+                $value = [];
+                foreach ($_COOKIE as $k => $val) {
+                    if (0 === strpos($k, $prefix)) {
+                        $value[$k] = $val;
+                    }
+                }
+            } else {
+                $value = $_COOKIE;
+            }
+        } elseif (isset($_COOKIE[$key])) {
+            $value = $_COOKIE[$key];
+            if (0 === strpos($value, 'frame:')) {
+                $value = substr($value, 6);
+                $value = json_decode($value, true);
+                array_walk_recursive($value, 'self::jsonFormatProtect', 'decode');
+            }
         } else {
-            return null;
+            $value = null;
         }
-
+        return $value;
     }
 
-    /** 
-     * 更新cookie,只更新内容,如需要更新过期时间请使用set方法
-     * @param String $name  cookie name
-     * @param mixed $value cookie value
-     * @return boolean
+    /**
+     * Cookie删除
+     * @param string        $name cookie名称
+     * @param string|null   $prefix cookie前缀
+     * @return mixed
      */
-    public function update($name, $value){
+    public static function delete($name, $prefix = null) {
+        !isset(self::$init) && self::init();
+        $config = self::$config;
+        $prefix = !is_null($prefix) ? $prefix : $config['prefix'];
+        $name   = $prefix . $name;
+        if ($config['setcookie']) {
+            setcookie($name, '', $_SERVER['REQUEST_TIME'] - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+        }
+        // 删除指定cookie
+        unset($_COOKIE[$name]);
+    }
 
-        $cookie_name = $this->getName($name);
-
-        if(isset($_COOKIE[$cookie_name])){
-
-            $old_cookie_value = $this->authcode($_COOKIE[$cookie_name], 'DECODE');
-            $old_cookie_value = $this->unpack($old_cookie_value);
-
-            if(isset($old_cookie_value[1]) && $old_cookie_value[1]>0){ // 获取之前的过期时间
-
-                $cookie_expire = $old_cookie_value[1];
-
-                // 更新数据
-                $cookie_value = $this->pack($value, $cookie_expire);
-                $cookie_value = $this->authcode($cookie_value, 'ENCODE');
-
-                if($cookie_name && $cookie_value && $cookie_expire){
-                    return setcookie($cookie_name, $cookie_value, $cookie_expire,$this->_path,$this->_domain,$this->_secure);
+    /**
+     * Cookie清空
+     * @param string|null $prefix cookie前缀
+     * @return mixed
+     */
+    public static function clear($prefix = null) {
+        // 清除指定前缀的所有cookie
+        if (empty($_COOKIE)) {
+            return;
+        }
+        !isset(self::$init) && self::init();
+        // 要删除的cookie前缀，不指定则删除config设置的指定前缀
+        $config = self::$config;
+        $prefix = !is_null($prefix) ? $prefix : $config['prefix'];
+        if ($prefix) {
+            // 如果前缀为空字符串将不作处理直接返回
+            foreach ($_COOKIE as $key => $val) {
+                if (0 === strpos($key, $prefix)) {
+                    if ($config['setcookie']) {
+                        setcookie($key, '', $_SERVER['REQUEST_TIME'] - 3600, $config['path'], $config['domain'], $config['secure'], $config['httponly']);
+                    }
+                    unset($_COOKIE[$key]);
                 }
             }
         }
-        return false;
+        return;
     }
 
-    /**
-     * 清除cookie
-     * @param $name
-     * @return bool
-     */
-    public function clear($name){
-        $cookie_name = $this->getName($name);
-        return setcookie($cookie_name, null, -1,$this->_path,$this->_domain,$this->_secure);
-    }
-
-
-    /** 获取cookie name
-     * @param String $name
-     * @return String
-     */
-    private function getName($name){
-        return $this->_prefix ? $this->_prefix.'_'.$name : $name;
-    }
-
-    /** pack
-     * @param string $data
-     * @param $expire
-     * @return string
-     */
-    private function pack($data='', $expire){
-
-        if($data===''){
-            return '';
-        }
-
-        $cookie_data = array();
-        $cookie_data['value'] = $data;
-        $cookie_data['expire'] = $expire;
-        return json_encode($cookie_data);
-    }
-
-    /** unpack
-     * @param Mixed $data 数据
-     * @return       array(数据,过期时间)
-     */
-    private function unpack($data=''){
-
-        if($data===''){
-            return array('', 0);
-        }
-
-        $cookie_data = json_decode($data, true);
-
-        if(isset($cookie_data['value']) && isset($cookie_data['expire'])){
-
-            if(time()<$cookie_data['expire'] || $cookie_data['expire']==0){ // 未过期
-                return array($cookie_data['value'], $cookie_data['expire']);
-            }
-        }
-        return array('', 0);
-    }
-
-    /**
-     * 加密/解密数据
-     * @param string $string  原文或密文
-     * @param string $operation ENCODE or DECODE
-     * @return string 根据设置返回明文活密文
-     */
-    private function authcode($string, $operation = 'DECODE' ) {
-
-        $ckey_length = 4;  // 随机密钥长度 取值 0-32;
-
-        $key = $this->_securekey;
-
-        $key = md5($key);
-        $keya = md5(substr($key, 0, 16));
-        $keyb = md5(substr($key, 16, 16));
-        $keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : '';
-
-        $cryptkey = $keya.md5($keya.$keyc);
-        $key_length = strlen($cryptkey);
-
-        $string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', 0).substr(md5($string.$keyb), 0, 16).$string;
-        $string_length = strlen($string);
-
-        $result = '';
-        $box = range(0, 255);
-
-        $rndkey = array();
-        for($i = 0; $i <= 255; $i++) {
-            $rndkey[$i] = ord($cryptkey[$i % $key_length]);
-        }
-
-        for($j = $i = 0; $i < 256; $i++) {
-            $j = ($j + $box[$i] + $rndkey[$i]) % 256;
-            $tmp = $box[$i];
-            $box[$i] = $box[$j];
-            $box[$j] = $tmp;
-        }
-
-        for($a = $j = $i = 0; $i < $string_length; $i++) {
-            $a = ($a + 1) % 256;
-            $j = ($j + $box[$a]) % 256;
-            $tmp = $box[$a];
-            $box[$a] = $box[$j];
-            $box[$j] = $tmp;
-            $result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
-        }
-
-        if($operation == 'DECODE') {
-            if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
-                return substr($result, 26);
-            } else {
-                return '';
-            }
-        } else {
-            return $keyc.str_replace('=', '', base64_encode($result));
+    private static function jsonFormatProtect(&$val, $key, $type = 'encode') {
+        if (!empty($val) && true !== $val) {
+            $val = 'decode' == $type ? urldecode($val) : urlencode($val);
         }
     }
+
 }
