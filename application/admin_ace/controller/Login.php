@@ -12,7 +12,10 @@ namespace  app\controller;
 
 use frame\Controller;
 use frame\utils\Image;
+use \frame\Session;
+
 use frame\utils\Cookie;
+
 
 use common\dao\SysUserDao;
 

@@ -14,7 +14,9 @@
 namespace  app\controller;
 
 use \frame\Controller;
-use \frame\utils\Cookie;
+use \frame\Cookie;
+use \frame\Session;
+
 use \frame\utils\PageLink;
 
 use \common\service\SysFuncSvc;
@@ -47,6 +49,8 @@ class Base extends Controller {
             $this->redirect('/login');
         }
 
+         $ss = Session::set('user', $this->_user);
+
         $this->_controller = $_controller = $response->_controller = $request->controller();
         $this->_action = $_action = $response->_action = $request->action();
 
@@ -55,8 +59,8 @@ class Base extends Controller {
         $funcSvc    = new SysFuncSvc();
         $roleSvc    = new SysRoleSvc();
 
-        $_menu = $funcSvc->getMenu_with_cache('key=t&time=30');
-        //$_menu = $funcSvc->getMenu();
+        // $_menu = $funcSvc->getMenu_with_cache('key=t&time=30'); //ok
+        $_menu = $funcSvc->getMenu();
 
         $roleid     = $this->_user['roleid'];
         $_role = $roleSvc->get($roleid);

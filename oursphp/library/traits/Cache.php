@@ -11,6 +11,9 @@
 namespace frame\traits;
 
 use frame\Config;
+use frame\Logs;
+use frame\App;
+
 use frame\cache\driver\Memcache;
 use frame\cache\driver\Memcached;
 use frame\cache\driver\Redis;
@@ -30,20 +33,28 @@ trait Cache {
 
         $option = Config::get('cache');
         $name = strtolower($option['type']);
-        if (in_array($name, array('memcache', 'memcached','redis', 'none'))){
 
-            if ( 'memcache' == $name){
-                self::$__cacheInstance =  Memcache::getInstance();
-            } else if ('memcached' == $name) {
-                self::$__cacheInstance =  Memcached::getInstance();
-            } else if( 'redis' == $name){ //Redis
-                self::$__cacheInstance =  Redis::getInstance();
+        App::$debug && Logs::record('[ CACHE ] INIT ' . $name, 'info');
+
+        try {
+            if (in_array($name, array('memcache', 'memcached','redis'))){
+                if ( 'memcache' == $name){
+                    self::$__cacheInstance =  Memcache::getInstance();
+                } else if ('memcached' == $name) {
+                    self::$__cacheInstance =  Memcached::getInstance();
+                } else if( 'redis' == $name){ //Redis
+                    self::$__cacheInstance =  Redis::getInstance();
+                }
             } else {
                 self::$__cacheInstance =  None::getInstance();
-            }
-            return  self::$__cacheInstance;
+            }  
+        } catch (\Exception $e) {
+            $option['type'] = '';
+            Config::set( $option, 'cache' );
+            self::$__cacheInstance =  None::getInstance();
         }
-        throw new CommonException('cache配置错误!!!');
+
+        return  self::$__cacheInstance;
     }
 
     /**
@@ -197,8 +208,8 @@ trait Cache {
             //第一个参数不是原方法参数,去除
             array_shift($params);
 
-            if ( 'none' == $type ) {
-                $data = call_user_func_array(array($this, $relFunc), $params);            
+            if ( empty( $type ) ) {
+                $data = call_user_func_array(array($this, $relFunc), $params);
                 return $data;
             }
 
@@ -214,7 +225,7 @@ trait Cache {
                 $cacheObj->set($key, $data, $cacheTime);
             } else {
 
-                for( $i=0; $i< 5; $i++ ) { //5秒没有反应，就出白页吧，系统貌似已经不行了
+                for( $i=0; $i < 3; $i++ ) { //0.3秒没有反应，就出白页吧，系统貌似已经不行了
                     sleep(0.1);
                     $data = $cacheObj->get($key);
                     if ($data !== false){ break; }

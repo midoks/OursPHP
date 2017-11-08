@@ -68,7 +68,7 @@ class Redis extends Driver
         if (!isset(self::$_instance[$option])){
             self::$_instance[$option] = new self($op);
         }
-
+        
         return self::$_instance[$option];
     }
 

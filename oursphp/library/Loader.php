@@ -107,8 +107,7 @@ class Loader {
      * @param $class
      * @return bool
      */
-    private static function findFile($class)
-    {
+    private static function findFile($class) {
         // var_dump(self::$map, self::$prefixLengthsPsr4, self::$fallbackDirsPsr4, self::$prefixesPsr0, self::$fallbackDirsPsr0);
 
         if (!empty(self::$map[$class])) {

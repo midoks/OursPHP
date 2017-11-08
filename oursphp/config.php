@@ -131,8 +131,9 @@ return [
         'prefix'     => '',
     ],
 
-    'cache'                  => [
+    'cache'     => [
         // 驱动方式 支持redis memcache memcached
+        // none 不使用cache
         'type'   => 'memcache',
         // 缓存保存目录
         'path'   => '',
@@ -192,12 +193,12 @@ return [
     'show_error_msg'         => false,
     // 异常处理handle类 留空使用 \frame\exception\Handle
     'exception_handle'       => '',
-    'record_trace'          => true,
     
-
+    
     // +----------------------------------------------------------------------
     // | Trace设置 开启 app_trace 后 有效
     // +----------------------------------------------------------------------
+    'record_trace'          => true,
     'trace'                  => [
         // 内置Html Console 支持扩展
         'type' => 'Html',

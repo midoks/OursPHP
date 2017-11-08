@@ -56,8 +56,7 @@ class Handle {
         }
     }
 
-    protected function isIgnoreReport(Exception $exception)
-    {
+    protected function isIgnoreReport(Exception $exception) {
         foreach ($this->ignoreReport as $class) {
             if ($exception instanceof $class) {
                 return true;
@@ -81,24 +80,12 @@ class Handle {
         }
     }
 
-    /**
-     * @param Output    $output
-     * @param Exception $e
-     */
-    public function renderForConsole(Output $output, Exception $e)
-    {
-        if (App::$debug) {
-            $output->setVerbosity(Output::VERBOSITY_DEBUG);
-        }
-        $output->renderException($e);
-    }
 
     /**
      * @param HttpException $e
      * @return Response
      */
-    protected function renderHttpException(HttpException $e)
-    {
+    protected function renderHttpException(HttpException $e) {
         $status   = $e->getStatusCode();
         $template = Config::get('http_exception_template');
         if (!App::$debug && !empty($template[$status])) {
@@ -112,8 +99,7 @@ class Handle {
      * @param Exception $exception
      * @return Response
      */
-    protected function convertExceptionToResponse(Exception $exception)
-    {
+    protected function convertExceptionToResponse(Exception $exception) {
         // 收集异常数据
         if (App::$debug) {
             // 调试模式，获取详细的错误信息
@@ -182,8 +168,7 @@ class Handle {
      * @param  \Exception $exception
      * @return integer                错误编码
      */
-    protected function getCode(Exception $exception)
-    {
+    protected function getCode(Exception $exception) {
         $code = $exception->getCode();
         if (!$code && $exception instanceof ErrorException) {
             $code = $exception->getSeverity();
@@ -197,8 +182,7 @@ class Handle {
      * @param  \Exception $exception
      * @return string                错误信息
      */
-    protected function getMessage(Exception $exception)
-    {
+    protected function getMessage(Exception $exception) {
         $message = $exception->getMessage();
         // if (IS_CLI) {
         //     return $message;
@@ -245,8 +229,7 @@ class Handle {
      * @param  \Exception $exception
      * @return array  异常类定义的扩展数据
      */
-    protected function getExtendData(Exception $exception)
-    {
+    protected function getExtendData(Exception $exception) {
         $data = [];
         if ($exception instanceof \think\Exception) {
             $data = $exception->getData();

@@ -16,18 +16,16 @@ class Config {
 
     /**
      * 获取配置信息
-     * @param $name
-     * @param $value
+     * @param string $name 配置名
      * @return mixed
      */
-    public static function get($name = NULL, $range = '') {
-        //var_dump($name);
-        $range = $range ?: self::$range;
+    public static function get($name = null) {
 
-        if (empty($name) && isset(self::$_config[$range])) {
-            return self::$_config[$range];
+        if(empty($name) ) {
+            return self::$_config;
         }
-        return isset(self::$_config[$name])? self::$_config[$name] : NULL;
+
+        return isset(self::$_config[$name])? self::$_config[$name] : null;
     }
 
     /**
@@ -35,8 +33,12 @@ class Config {
      * @param array $config
      * @return array
      */
-    public static function merge($config){
-        self::$_config = array_merge(self::$_config, $config);
+    public static function merge($config, $name = null){
+        if (is_null($name)){
+            self::$_config = array_merge(self::$_config, $config);
+        } else {
+            self::$_config[$name] = array_merge(self::$_config[$name], $config);
+        }
         return self::$_config;
     }
 
@@ -45,7 +47,12 @@ class Config {
      * @param $config array
      * @return void
      */
-    public static function set($config){
-        self::$_config = $config;
+    public static function set($config, $name = null){
+        
+        if ( is_null($name) ){
+            self::$_config = $config;
+        } else {
+            self::$_config[$name] = $config;
+        }
     }
 }

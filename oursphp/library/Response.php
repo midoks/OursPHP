@@ -96,8 +96,7 @@ class Response {
      * @throws \InvalidArgumentException
      */
     public function send() {
-        // 监听response_send
-        Hook::listen('response_send', $this);
+     
 
         // 处理输出数据
         $data = $this->getContent();
@@ -136,9 +135,6 @@ class Response {
             // 提高页面响应
             fastcgi_finish_request();
         }
-
-        // 监听response_end
-        Hook::listen('response_end', $this);
 
         // 清空当次请求有效的数据
         // if (!($this instanceof RedirectResponse)) {
