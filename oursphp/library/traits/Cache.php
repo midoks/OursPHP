@@ -11,13 +11,8 @@
 namespace frame\traits;
 
 use frame\Config;
-use frame\Logs;
-use frame\App;
+use frame\Cache as CC;
 
-use frame\cache\driver\Memcache;
-use frame\cache\driver\Memcached;
-use frame\cache\driver\Redis;
-use frame\cache\driver\None;
 
 use frame\exception\CommonException;
 
@@ -26,32 +21,11 @@ trait Cache {
     public static $__cacheInstance = NULL;
 
     public static function getCacheObject(){
-        
-        if(isset(self::$__cacheInstance)){
-           return self::$__cacheInstance;
-        }
 
-        $option = Config::get('cache');
-        $name = strtolower($option['type']);
-        
-        App::$debug && Logs::record('[ CACHE ] INIT ' . $name, 'info');
-
-        try {
-            if (in_array($name, array('memcache', 'memcached','redis'))){
-                if ( 'memcache' == $name){
-                    self::$__cacheInstance =  Memcache::getInstance();
-                } else if ('memcached' == $name) {
-                    self::$__cacheInstance =  Memcached::getInstance();
-                } else if( 'redis' == $name){ //Redis
-                    self::$__cacheInstance =  Redis::getInstance();
-                }
-            } else {
-                self::$__cacheInstance =  None::getInstance();
-            }  
-        } catch (\Exception $e) {
-            $option['type'] = '';
-            Config::set( $option, 'cache' );
-            self::$__cacheInstance =  None::getInstance();
+        if (isset( $__cacheInstance ) ){
+            self::$__cacheInstance;
+        } else {
+             self::$__cacheInstance = CC::getInstance();
         }
 
         return  self::$__cacheInstance;
