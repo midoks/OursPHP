@@ -26,8 +26,9 @@ class Login extends Controller {
         $dao        = new SysUserDao();
 
         //检查是否已经登录
-        $this->_user = Cookie::get('info');
-        if ($this->_user){
+        $user = Cookie::get('info');
+
+        if ($user){
             $this->redirect('/index');
         }
 
@@ -46,6 +47,7 @@ class Login extends Controller {
                 $user   = $dao->findOne($query, $where);
  
                 if( $user && md5($password) === $user['password']) {
+                    unset($user['password']);
                     Cookie::set('info', $user, 1*24*60*60);
                     $this->redirect("/index");
                 }
