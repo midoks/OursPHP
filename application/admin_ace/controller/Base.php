@@ -14,8 +14,6 @@
 namespace  app\controller;
 
 use \frame\Controller;
-use \frame\Cookie;
-use \frame\Session;
 
 use \frame\utils\PageLink;
 
@@ -41,14 +39,11 @@ class Base extends Controller {
      */
     public function __construct($request, $response) {
 
-        $response->me = $this->_user =  Cookie::get('info');
+        $response->me = $this->_user =  cookie('info');
 
         if (!$this->_user || $this->_user['status'] == 0) {
             $this->redirect('/login');
         }
-
-
-        $ss = Session::set('user', $this->_user);
 
         $this->_controller = $_controller = $response->_controller = $request->controller();
         $this->_action = $_action = $response->_action = $request->action();

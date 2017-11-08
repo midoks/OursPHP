@@ -7,18 +7,32 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
+namespace app\controller;
 
-namespace  app\controller;
+use frame\Cookie;
 
-class Index extends Base {
-    	
-    //控制台页面
-	public function index($request, $response) {
-		
-		$response->title = '控制台';
-		$response->stitle = '首页';
-		return $this->renderLayout();
+class T {
+	
+	public function t($request, $response){
+
+		Cookie::init([
+			'path' 		=> '/',
+			'domain' 	=> '.oursphp.cn',
+ 			'secure'	=> false,
+		]);
+    	Cookie::set('t','123',111);
     }
+
+    public function t2($request, $response){
+
+		Cookie::init([
+			'path' => '/ddd',
+			'secure'=> true,
+		]);
+    	$t = Cookie::get('t');
+    	var_dump($t);
+    }
+
 
 
 }

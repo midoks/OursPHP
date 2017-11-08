@@ -186,12 +186,9 @@ class App {
         } else {
 
         }
-        
 
         return $data;
     }
-
-
 
     /**
      * 初始化应用
@@ -199,6 +196,9 @@ class App {
     public static function initCommon(){
         $app_config = APP_PATH.'config'.DS.'config'.EXT;
         $config = Config::merge(include $app_config);
+
+        //加载帮助函数
+        include(dirname(FRAME_PATH).DS.'helper.php');
 
         //版本配置文件
         $version_config = APP_PATH.'config'.DS.'version'.EXT;

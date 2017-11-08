@@ -14,9 +14,6 @@ use frame\Controller;
 use frame\utils\Image;
 use \frame\Session;
 
-use \frame\Cookie;
-
-
 use common\dao\SysUserDao;
 
 class Login extends Controller {
@@ -26,8 +23,7 @@ class Login extends Controller {
         $dao        = new SysUserDao();
 
         //检查是否已经登录
-        $user = Cookie::get('info');
-
+        $user = cookie('info');
         if ($user){
             $this->redirect('/index');
         }
@@ -37,7 +33,7 @@ class Login extends Controller {
 
             $password = $request->post('password');
             $vars = $request->post('vars');
-            $code = Cookie::get('admin_captcha');
+            $code = cookie('admin_captcha');
 
             if (strtolower($vars['code']) == strtolower($code)){
 
@@ -48,7 +44,8 @@ class Login extends Controller {
  
                 if( $user && md5($password) === $user['password']) {
                     unset($user['password']);
-                    Cookie::set('info', $user, 1*24*60*60);
+                    cookie('info', $user, 1*24*60*60,'domain=.yoka.com');
+                    cookie('admin_captcha', NULL);
                     $this->redirect("/index");
                 }
             }
@@ -60,7 +57,7 @@ class Login extends Controller {
     //登出
     public function out($request, $response) {
 
-        $ret    = Cookie::clear('info');
+        $ret    = cookie('info', NULL);
         //var_dump($ret);
         $this->redirect("/index");
         exit;
@@ -74,9 +71,9 @@ class Login extends Controller {
         $char = $im->getChar();
 
         //设置cookie
-        Cookie::set('admin_captcha',$char, 300);
+        cookie('admin_captcha',$char, 300);
 
-        $im->output();
+        $im->output();exit;
     }
 	
 }
