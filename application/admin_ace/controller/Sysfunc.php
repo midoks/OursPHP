@@ -25,7 +25,7 @@ class Sysfunc extends Base {
     // ];
 
     public $afterAction = [
-        'action'    => ['setMenu', 'sort' , 'add', 'del',  'lock'],
+        'action'    => ['setmenu', 'sort' , 'add', 'del',  'lock'],
         'callback'  => 'afterRun',
     ];
 
@@ -47,10 +47,10 @@ class Sysfunc extends Base {
 
     public function beforeRun($request, $response){
         echo "beforeRun";
-
     }
 
-    
+
+    //后执行方法
     public function afterRun($request, $response){
         $funcSvc    = new SysFuncSvc();
         $funcSvc->cacheClear('admin_func_list');
