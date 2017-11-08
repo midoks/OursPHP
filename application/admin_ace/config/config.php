@@ -92,7 +92,7 @@ return [
             'timeout'    => 0, // 超时时间（单位：毫秒） {以第一个为准}
             'username'   => '', //账号 {以第一个为准}
             'password'   => '', //密码  {以第一个为准}
-            'persistent' => true,
+            'persistent' => false,
         ]
     ],
 
@@ -109,7 +109,7 @@ return [
 
     'cache'                  => [
         // 驱动方式 支持 redis memcache memcached
-        'type'   => 'redis',
+        'type'   => 'memcache',
         // 缓存保存目录
         'path'   => '',
         // 缓存前缀
