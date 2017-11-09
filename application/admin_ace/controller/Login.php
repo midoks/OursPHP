@@ -12,7 +12,7 @@ namespace  app\controller;
 
 use frame\Controller;
 use frame\utils\Image;
-use \frame\Session;
+use frame\Session;
 
 use common\dao\SysUserDao;
 
@@ -46,6 +46,7 @@ class Login extends Controller {
                     unset($user['password']);
                     cookie('info', $user, 1*24*60*60,'domain=.yoka.com');
                     cookie('admin_captcha', NULL);
+                    $this->sysLog($user['id'], '登录成功');
                     $this->redirect("/index");
                 }
             }
@@ -74,6 +75,18 @@ class Login extends Controller {
         cookie('admin_captcha',$char, 300);
 
         $im->output();exit;
+    }
+
+    //系统操作日志
+    protected function sysLog($uid, $msg){
+        $_logsObj = new \common\service\SysLogsSvc();
+        $data = [
+            'uid'   => $uid,
+            'type'  => '1',
+            'msg'   => $msg,
+            'add_time' => time(),
+        ];
+        $_logsObj->add($data);
     }
 	
 }

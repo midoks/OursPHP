@@ -19,14 +19,17 @@ use \frame\utils\PageLink;
 
 use \common\service\SysFuncSvc;
 use \common\service\SysRoleSvc;
+use \common\service\SysLogsSvc;
 
 class Base extends Controller {
 
     const ADMIN_VERSION = '0.1.0';
 
-    protected $_user = [];
-    protected $_role = [];
-    protected $_menu = [];
+    protected $_user = []; //用户信息
+    protected $_role = []; //规则信息
+    protected $_menu = []; //菜单信息
+
+    private $_logsObj = NULL;//日志对象
 
     //超级权限(方便开发及维护)
     private $super_authority = [
@@ -38,6 +41,8 @@ class Base extends Controller {
      * 后台初始化检查,是否登录
      */
     public function __construct($request, $response) {
+
+        $this->_logsObj = new SysLogsSvc();
 
         $response->me = $this->_user =  cookie('info');
 
@@ -65,7 +70,7 @@ class Base extends Controller {
 
             //ajax请求特殊处理
             $reqWith = $request->header('X-Requested-With');
-            if ( 'XMLHttpRequest' == $reqWith || isset($_FILES) ){
+            if ( 'XMLHttpRequest' == $reqWith || !empty($_FILES) ){
                 echo "无权限使用!";
                 exit;
             }
@@ -148,9 +153,15 @@ class Base extends Controller {
         $this->assign('_sys_copyright', 'Copyright 2017 - ∞ oursphp. All Rights Reserved');
     }
 
-    //日志
-    protected function log($msg, $type = ''){
-
+    //系统操作日志
+    protected function sysLog($msg){
+        $data = [
+            'uid'   => $this->_user['id'],
+            'type'  => '1',
+            'msg'   => $msg,
+            'add_time' => time(),
+        ];
+        $this->_logsObj->add($data);
     }
 
     

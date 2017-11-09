@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50624
 File Encoding         : 65001
 
-Date: 2017-11-08 17:22:50
+Date: 2017-11-09 14:29:51
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -35,7 +35,7 @@ CREATE TABLE `sys_func` (
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `pid` (`pid`)
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COMMENT='权限列表';
+) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8 COMMENT='权限列表';
 
 -- ----------------------------
 -- Records of sys_func
@@ -55,13 +55,14 @@ INSERT INTO `sys_func` VALUES ('15', '添加角色', '1', 'sysrole', 'add', '1',
 INSERT INTO `sys_func` VALUES ('17', '删除角色', '1', 'sysrole', 'del', '1', '0', 'fa fa-users', '删除角色', '12', '1', '2017-03-14 02:28:03', '2017-11-05 23:40:21');
 INSERT INTO `sys_func` VALUES ('18', '锁定角色', '1', 'sysrole', 'lock', '1', '0', 'fa fa-users', '锁定角色', '13', '1', '2017-03-14 02:28:34', '2017-11-05 23:41:25');
 INSERT INTO `sys_func` VALUES ('19', '功能设置菜单', '1', 'sysfunc', 'setmenu', '1', '0', '', '功能设置菜单', '9', '1', '2017-03-14 02:50:05', '2017-11-08 16:55:13');
-INSERT INTO `sys_func` VALUES ('22', '加密相关', '0', 'mima', 'init', '0', '1', 'fa fa-bell', '', '1', '1', '2017-11-03 17:40:51', '2017-11-08 17:22:01');
+INSERT INTO `sys_func` VALUES ('22', '加密相关', '0', 'mima', 'init', '0', '1', 'fa fa-bell', '', '1', '1', '2017-11-03 17:40:51', '2017-11-09 11:22:20');
 INSERT INTO `sys_func` VALUES ('23', 'authcode', '22', 'encrypt', 'index', '1', '1', '', 'discuz加密解密方案', '0', '1', '2017-11-04 10:30:44', '2017-11-04 23:33:07');
 INSERT INTO `sys_func` VALUES ('30', '功能升降序', '1', 'sysfunc', 'sort', '1', '0', '', '功能升降序', '5', '1', '2017-11-05 21:05:54', '2017-11-05 23:38:34');
-INSERT INTO `sys_func` VALUES ('31', '后台模版事例', '0', 'tpl', 'index', '0', '1', 'glyphicon glyphicon-star-empty', '后台模版事例', '2', '1', '2017-11-05 21:11:36', '2017-11-08 17:22:07');
+INSERT INTO `sys_func` VALUES ('31', '后台模版事例', '0', 'tpl', 'index', '0', '1', 'glyphicon glyphicon-star-empty', '后台模版事例', '2', '1', '2017-11-05 21:11:36', '2017-11-09 11:42:25');
 INSERT INTO `sys_func` VALUES ('32', '异步上传', '31', 'tpl', 'index', '1', '1', '', '', '0', '1', '2017-11-05 21:12:17', '2017-11-05 21:12:41');
-INSERT INTO `sys_func` VALUES ('33', '监控', '0', 'monitor', 'index', '0', '1', 'fa fa-bullhorn', '', '3', '1', '2017-11-06 13:10:00', '2017-11-08 17:22:15');
+INSERT INTO `sys_func` VALUES ('33', '监控', '0', 'monitor', 'index', '0', '1', 'fa fa-bullhorn', '', '3', '1', '2017-11-06 13:10:00', '2017-11-09 11:22:14');
 INSERT INTO `sys_func` VALUES ('34', '列表', '33', 'monitor', 'index', '1', '1', '', '列表', '99', '1', '2017-11-06 13:26:35', '2017-11-08 17:13:44');
+INSERT INTO `sys_func` VALUES ('37', '日志管理', '1', 'syslog', 'index', '1', '1', '', '日志管理', '99', '1', '2017-11-09 13:48:16', '2017-11-09 13:48:16');
 
 -- ----------------------------
 -- Table structure for `sys_logs`
@@ -74,11 +75,13 @@ CREATE TABLE `sys_logs` (
   `msg` text NOT NULL,
   `add_time` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
 
 -- ----------------------------
 -- Records of sys_logs
 -- ----------------------------
+INSERT INTO `sys_logs` VALUES ('1', '1', '1', '1', '1510207207');
+INSERT INTO `sys_logs` VALUES ('2', '3', '1', '登录成功', '1510208513');
 
 -- ----------------------------
 -- Table structure for `sys_role`
@@ -98,8 +101,8 @@ CREATE TABLE `sys_role` (
 -- ----------------------------
 -- Records of sys_role
 -- ----------------------------
-INSERT INTO `sys_role` VALUES ('1', '系统管理员', '系统总管理员', '2,7,9,11,12,30,3,5,6,13,19,14,15,17,18,23,32,34', '1', '2017-03-15 15:39:20', '2017-11-06 13:26:43');
-INSERT INTO `sys_role` VALUES ('3', '编辑', '普通编辑人员', '2,15,17,18,23,32', '1', '2017-11-03 17:35:17', '2017-11-08 14:53:29');
+INSERT INTO `sys_role` VALUES ('1', '系统管理员', '系统总管理员', '2,7,9,11,12,30,3,5,6,13,19,14,15,17,18,37,23,32,34', '1', '2017-03-15 15:39:20', '2017-11-09 13:49:30');
+INSERT INTO `sys_role` VALUES ('3', '编辑', '普通编辑人员', '2,14,15,17,18,23,32', '1', '2017-11-03 17:35:17', '2017-11-08 18:51:20');
 
 -- ----------------------------
 -- Table structure for `sys_user`
