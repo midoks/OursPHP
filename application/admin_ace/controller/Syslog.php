@@ -29,7 +29,7 @@ class Syslog  extends Base {
         $pageSize           = 10;
 
         //字段关键字
-        $response->search_typ =  $searchType  = $request->search_type;
+        $response->search_type =  $searchType  = $request->search_type;
         $response->search_value = $searchValue = $request->search_value;
 
         $where = [];
