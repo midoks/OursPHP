@@ -75,6 +75,15 @@ class App {
 
         $path = $request->path();
         $result = Route::parseUrl($path);
+
+        //多模块下,亦可有自己的配置信息
+        if(defined('APP_MODULE_CALL')){
+            $moduleConf = APP_PATH.DS.APP_MODULE_CALL.DS.'config'.DS.'config'.EXT;
+            if (file_exists($moduleConf)){
+                Config::merge(include $moduleConf);
+            }
+        }
+        
         if ($config['app_multi_module']) {
 
             if (self::$version){ //版本控制 v3->v2->v1
