@@ -42,7 +42,7 @@ class Route {
             $action = !empty($action) ? $action : Config::get('action_value');
             Request::getInstance()->action($action);
 
-            define('APP_MODULE_CALL', $controller);
+            define('APP_MODULE_CALL', $module);
             define('APP_CONTROLLER_CALL', $controller);
             define('APP_METHOD_CALL', $action);
  
