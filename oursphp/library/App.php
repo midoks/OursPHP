@@ -144,6 +144,7 @@ class App {
 
         
         $action = $dispatch['action'];
+        $data = '';
 
         if (method_exists($instance, $action)){
 
