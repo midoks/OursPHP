@@ -25,7 +25,7 @@ class Login extends Controller {
         //检查是否已经登录
         $user = cookie('info');
         if ($user){
-            $this->redirect('/index');
+            $this->redirect('/index/index');
         }
 
         //登录操作
@@ -60,7 +60,7 @@ class Login extends Controller {
 
         $ret    = cookie('info', NULL);
         //var_dump($ret);
-        $this->redirect("/index");
+        $this->redirect("/index/index");
         exit;
     }
 

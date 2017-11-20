@@ -88,7 +88,7 @@ class Controller {
      * @param string $file 指定的模版文件
      */
     protected function render($view = NULL) {
-        $tplFile = self::parseView($view);
+        $tplFile = self::parsePath($view);
         $view = View::getInstance();
         
         $view->render(strtolower($tplFile));
@@ -101,7 +101,7 @@ class Controller {
      */
 	protected function renderLayout($view = NULL, $tplVarName = '_layout_content') {
 
-        $tplFile = self::parseView($view);
+        $tplFile = self::parsePath($view);
 
         $view = View::getInstance();
         $tplConf = Config::get('template');
@@ -116,7 +116,7 @@ class Controller {
      * @param string $view 模版名称
      * @return string | false
      */
-    private static function parseView($view = NULL){
+    private static function parsePath($view = NULL){
 
         $tplFile = '';
         if( !$view ){
@@ -146,6 +146,41 @@ class Controller {
         return $tplFile;
     }
 
+    /**
+     * 解析URL
+     * @param string $url 模版名称
+     * @return string | false
+     */
+    private static function parseUrl($url = NULL){
+
+        $resUrl = '';
+        if( !$url ){
+            $resUrl = APP_CONTROLLER_CALL.'/'.APP_METHOD_CALL;
+        } else {
+            $url = str_ireplace(array('.','/','|','>','>>','@'), '/', $url);
+            $resUrl = trim($url, '/');
+        }
+
+        $list = explode('/', $resUrl);
+        $listNum = count($list);
+
+        if ($listNum == 1) {
+            $resUrl = APP_CONTROLLER_CALL.'/'.$resUrl;
+
+            $multiModule = Config::get('app_multi_module');
+            if ($multiModule) {
+                $resUrl = APP_MODULE_CALL.'/'.$resUrl;
+            }
+        } else if ($listNum == 2){
+            $multiModule = Config::get('app_multi_module');
+            if ($multiModule) {
+                $resUrl = APP_MODULE_CALL.'/'.$resUrl;
+            }
+        }
+        
+        return $resUrl;
+    }
+
 
     /**
      * 跳转 $url
@@ -153,7 +188,17 @@ class Controller {
      * @return void
      */
     public function redirect($url) {
-        header("Location: {$url}");
+        if ($url == '/'){
+            header("Location: {$url}");exit;
+        } else {
+            $url = self::parseUrl($url);
+            $urlSuffix = Config::get('url_html_suffix');
+            if (!empty($urlSuffix)){
+                $url .= '.'.$urlSuffix;
+            }
+            header("Location: /{$url}");exit;
+        }
+        
     }
 
     /**

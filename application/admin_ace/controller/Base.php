@@ -47,7 +47,7 @@ class Base extends Controller {
         $response->me = $this->_user =  cookie('info');
 
         if (!$this->_user || $this->_user['status'] == 0) {
-            $this->redirect('/login');
+            $this->redirect('/login/index');
         }
 
         $this->_controller = $_controller = $response->_controller = $request->controller();
