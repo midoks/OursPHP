@@ -12,8 +12,11 @@ namespace frame\utils;
 
 class Curl {
 
+	private static $_instance = NULL;
+
 	public $curl = NULL;
 	private $post = array();
+
 
 	/**
 	 * 构造函数
@@ -22,6 +25,14 @@ class Curl {
 	public function __construct($url = ''){
 		$this->curl = curl_init($url);
 		curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, TRUE);
+	}
+
+	//单例
+	public static function getInstance($url = ''){
+		if (!self::$_instance){
+			self::$_instance = new self($url);
+		}
+		return self::$_instance;
 	}
 
 	/**
