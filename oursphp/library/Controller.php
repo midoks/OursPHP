@@ -107,7 +107,7 @@ class Controller {
         $tplConf = Config::get('template');
         $tplFile .= '.'.$tplConf['view_suffix'];
 
-        $view->assign($tplVarName, $tplFile);
+        $view->assign($tplVarName, strtolower($tplFile));
         $view->layout($this->_sys_layout);
     }
 
