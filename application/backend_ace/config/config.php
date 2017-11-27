@@ -1,4 +1,5 @@
 <?php
+
 // +----------------------------------------------------------------------
 // | oursphp [ simple and fast ]
 // +----------------------------------------------------------------------
@@ -6,28 +7,24 @@
 // +----------------------------------------------------------------------
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
-$app_debug = false;
-if (isset($_GET['debug']) && $_GET['debug'] == 'ok'){
-	$app_debug = true;
-}
+
+
+$commonConf = include(dirname(APP_PATH).DS.'common'.DS.'config'.DS.'config'.EXT);
 
 //默认配置文件
-return [
-	
-	//应用名称
-	'app_id'	=> 'oursphp_home',
-	'app_debug' => $app_debug,
-	'app_trace' => $app_debug,
+$appConfig = [
+	'app_id'           => 'backend',
 	
 	// +----------------------------------------------------------------------
     // | 应用设置
     // +----------------------------------------------------------------------
 
 	// 是否支持多模块
-    'app_multi_module'       => true,
-
-    'exception_handle' => "\\common\\exception\\Handle",
-    
+    'app_multi_module'       => false,
 ];
+
+$conf = array_merge($commonConf, $appConfig);
+
+return $conf;
 
 ?>

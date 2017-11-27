@@ -8,82 +8,41 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
+if (isset($_GET['phpinfo']) && $_GET['phpinfo'] == 'ok'){
+    phpinfo();exit;
+}
+
+
 $app_debug = false;
 if (isset($_GET['debug']) && $_GET['debug'] == 'ok'){
     $app_debug = true;
 }
 
-$trace = false;
+$app_trace = false;
 if (isset($_GET['trace']) && $_GET['trace'] == 'ok'){
-    $trace = true;
+    $app_trace = true;
 }
 
-//默认配置文件
-return [
-
-	'app_id'           => 'admin_ace',
-    'app_debug'         => $app_debug,
-    'app_trace'         => $trace,
-    'app_trace'         => true,
-    'app_debug'         => true,
-	// +----------------------------------------------------------------------
-    // | 应用设置
-    // +----------------------------------------------------------------------
-
-	// 是否支持多模块
-    'app_multi_module'       => false,
 
 
-    'db'                => [
-        'deploy' => 1, // 数据库部署方式:0 集中式(单一服务器),1 分布式(多主多从配置(write|read))
-        'driver' => 'mysql', //目前仅支持MySQL
-        'option' => [
-            'host'      => '127.0.0.1',
-            'port'      => '3306',
-            'database'  => 'test',
-            'username'  => 'root',
-            'password'  => 'root',
-            'charset'   => 'utf8',
-            'collation' => '',
-            'prefix'    => '',
-            'option'    => [],
-        ],
-        'write'=> [[
-            'host'      => '127.0.0.1',
-            'port'      => '3306',
-            'database'  => 'test',
-            'username'  => 'root',
-            'password'  => 'root',
-            'charset'   => 'utf8',
-            'collation' => '',
-            'prefix'    => '',
-            'option'    => [],
-            'weight'    => 3
-        ]],
-        'read'=> [[
-            'host'      => '127.0.0.1',
-            'port'      => '3306',
-            'database'  => 'test',
-            'username'  => 'root',
-            'password'  => 'root',
-            'charset'   => 'utf8',
-            'collation' => '',
-            'prefix'    => '',
-            'option'    => [],
-            'weight'    => 3
-        ],[
-            'host'      => '127.0.0.1',
-            'port'      => '3306',
-            'database'  => 'test',
-            'username'  => 'root',
-            'password'  => 'root',
-            'charset'   => 'utf8',
-            'collation' => '',
-            'prefix'    => '',
-            'option'    => [],
-            'weight'    => 6
-        ]],
-    ],
+$dbConfName = 'app_db_local';
+if (defined('SAE_ACCESSKEY')){
+    $dbConfName = 'app_db_sae';
+}
+
+$config = [
+
+    //第三放登录配置
+    'app_sdk' => include( dirname(__FILE__).DS.'app_sdk'.EXT),
+
+    
+    'url_html_suffix'        => 'html', // url后缀
+
+    'app_debug'         => true,//$app_debug, true
+    'app_trace'         => $app_trace,//$app_trace, true
+
+    'db'   => include( dirname(__FILE__).DS.$dbConfName.EXT),
+    
 
     'memcached' => [
         [
@@ -110,13 +69,33 @@ return [
 
     'cache'                  => [
         // 驱动方式 支持 redis memcache memcached
-        'type'   => 'redis',
+        'type'   => 'memcache',
         // 缓存保存目录
         'path'   => '',
         // 缓存前缀
         'prefix' => 'oursphp_',
         // 缓存有效期 0表示永久缓存
         'expire' => 30,
+    ],
+
+    // +----------------------------------------------------------------------
+    // | Cookie设置
+    // +----------------------------------------------------------------------
+    'cookie'                 => [
+        // cookie 名称前缀
+        'prefix'    => '',
+        // cookie 保存时间
+        'expire'    => 0,
+        // cookie 保存路径
+        'path'      => '/',
+        // cookie 有效域名
+        'domain'    => '',
+        //  cookie 启用安全传输
+        'secure'    => false,
+        // httponly设置
+        'httponly'  => '',
+        // 是否使用 setcookie
+        'setcookie' => true,
     ],
 
     // +----------------------------------------------------------------------
@@ -137,7 +116,14 @@ return [
         'httponly'       => true,
         'secure'         => false,
     ],
-    
 ];
 
+if (defined('SAE_TMP_PATH')){
+    $run = ['runtime_cache' => SAE_TMP_PATH];
+    $config = array_merge($config, $run);
+}
+
+return $config;
+
 ?>
+
