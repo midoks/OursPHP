@@ -103,11 +103,13 @@ class Memcache extends Driver {
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-        if ($expire instanceof \DateTime) {
-            $expire = $expire->getTimestamp() - time();
+
+        if ($expire > 2592000 ){
+            $expire = 2592000;
         }
   
         $key = $this->getCacheKey($name);
+
         if ($this->handler->set($key, $value, 0, $expire)) {
             return true;
         }
@@ -129,6 +131,11 @@ class Memcache extends Driver {
         }
     
         $key = $this->getCacheKey($name);
+
+        if ($expire > 2592000 ){
+            $expire = 2592000;
+        }
+
         if ($this->handler->add($key, $value, 0, $expire)) {
             return true;
         }

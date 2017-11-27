@@ -13,21 +13,21 @@ namespace  app\controller;
 
 use common\dao\SysFuncDao;
 
-use \common\service\SysSvc;
+use \common\service\SysRoleSvc;
 use \common\service\SysFuncSvc;
 
 class Sysfunc extends Base {
 
 
-    // public $beforeAction = [
-    //     'action'    => ['setMenu', 'sort' , 'add', 'del',  'lock'],
-    //     'callback'  => 'beforeRun',
-    // ];
-
-    public $afterAction = [
+    public $beforeAction = [
         'action'    => ['setmenu', 'sort' , 'add', 'del',  'lock'],
         'callback'  => 'afterRun',
     ];
+
+    // public $afterAction = [
+    //     'action'    => ['setmenu', 'sort' , 'add', 'del',  'lock'],
+    //     'callback'  => 'afterRun',
+    // ];
 
     //初始化
     public function __construct($request, $response){
@@ -54,6 +54,10 @@ class Sysfunc extends Base {
     public function afterRun($request, $response){
         $funcSvc    = new SysFuncSvc();
         $funcSvc->cacheClear('admin_func_list');
+
+        $roleSvc = new SysRoleSvc();
+        $roleid = $this->_user['roleid'];
+        $roleSvc->clearId($roleid);
     }
 
 

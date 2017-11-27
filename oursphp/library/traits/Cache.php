@@ -194,6 +194,8 @@ trait Cache {
                 return $data;
             }
 
+            
+
             //保存值
             if( $cacheObj->add($key, null, $cacheTime) ){
                 $data = call_user_func_array(array($this, $relFunc), $params);

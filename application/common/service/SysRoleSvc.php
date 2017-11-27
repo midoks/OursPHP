@@ -85,9 +85,18 @@ class SysRoleSvc extends BaseSvc {
     public function get($id) {
         if($id) {
             $dao = new SysRoleDao();
-            return $dao->cache(24*60*60, __CLASS__.'role_'.$id)->findByPkey($id);
+            return $dao->cache(24*60*60, __CLASS__.'_role_'.$id)->findByPkey($id);
         }
         return false;
+    }
+
+    /**
+     * 清空用户权限缓存
+     * @param int $id 用户ID
+     */
+    public function clearId($id){
+        $dao = new SysRoleDao();
+        return $dao->cacheClear(__CLASS__.'_role_'.$id);
     }
 
     /**

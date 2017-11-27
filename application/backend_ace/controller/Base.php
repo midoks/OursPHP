@@ -58,7 +58,7 @@ class Base extends Controller {
         $funcSvc    = new SysFuncSvc();
         $roleSvc    = new SysRoleSvc();
 
-        $this->_menu = $_menu = $funcSvc->getMenu_with_cache('key='.'admin_func_list'.'&time=1000'); //ok
+        $this->_menu = $_menu = $funcSvc->getMenu_with_cache('key=admin_func_list&time=1000'); //ok
         // $this->_menu = $_menu = $funcSvc->getMenu();
 
         $roleid     = $this->_user['roleid'];
