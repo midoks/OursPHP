@@ -39,8 +39,22 @@ class Sysfunc extends Base {
     public function index($request, $response) {
         $response->stitle = '列表';
 
-        $response->rootMenu = $this->_menu;
-        
+        $menu = $this->_menu;
+
+        //对一级栏目-(栏目名)填充内容,利于后台观看
+        if (!empty($menu)){
+            foreach ($menu as $key => $value) {
+                $name = $value['name'];
+                $nameLen = mb_strlen($name);
+                if ( $nameLen < 20){
+                    $name .= str_repeat("&nbsp;", 20 - $nameLen);
+                }
+                $menu[$key]['name'] = $name;
+                // var_dump($name, mb_strlen($name));
+            }
+        }
+
+        $response->rootMenu = $menu;
         $this->renderLayout();
     }
 

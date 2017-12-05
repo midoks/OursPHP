@@ -1,7 +1,7 @@
 <div class="row">
-    <div class="col-xs-12 col-sm-12">
+    <div class="col-xs-12">
         <div class="table-responsive">
-            <table  class="table table-bordered table-hover">
+            <table id="function-table" class="table table-bordered table-hover">
                 <thead>
                 <tr>
                     <th class="col-sm-1">序号</th>
@@ -25,9 +25,9 @@
                     <td>{{$root['id']}}</td>
                     <td>
                         <i class="{{$root['icon']}}"></i>
-                        {{str_replace('&nbsp;','',$root['name'])}}
+                        {{$root['name']}}
                         {{if count($root['sub'])>0}}—
-                            <a data-toggle="collapse" title="子菜单" href="#function_{{$root['id']}}">
+                            <a data-toggle="collapse" title="子菜单" data-parent="#function-table" href="#function-{{$root['id']}}">
                                 <i class="glyphicon glyphicon-plus"></i>
                             </a>
                         {{/if}}
@@ -93,30 +93,29 @@
                 </tr>
 
                 {{if count($root['sub'])>0}}
-                <tr style="padding:0px;margin:0px;">
+                <tr>
                 <td colspan="8" style="padding:0px;margin:0px;">
 
-                    <table id="function_{{$root['id']}}" class="table table-bordered table-hover collapse" style="margin-bottom:0px;">
-                        <thead>
-                        <tr>
-                            <th class="col-sm-1">子序号</th>
-                            <th class="col-sm-2">功能名称</th>
-                            <th class="col-sm-1">菜单显示</th>
-                            <th class="col-sm-2">链接地址</th>
-                            <th class="col-sm-1">隶属</th>
-                            <th class="col-sm-1">状态</th>
-                            <th class="col-sm-1">排序</th>
-                            <th class="col-sm-3">操作</th>
-                        </tr>
-                        </thead>
-                        <tbody>
+                    <div id="function-{{$root['id']}}" class="table table-bordered table-hover collapse" style="margin-bottom:0px;">
+                        <div>
+                            <div class="row">
+                                <div class="col-sm-1">子序号</div>
+                                <div class="col-sm-2">功能名称</div>
+                                <div class="col-sm-1">菜单显示</div>
+                                <div class="col-sm-2">链接地址</div>
+                                <div class="col-sm-1">隶属</div>
+                                <div class="col-sm-1">状态</div>
+                                <div class="col-sm-1">排序</div>
+                                <div class="col-sm-3">操作</div>
+                            </div>
+                        </div>
                         {{foreach $root['sub'] as $child}}
-                        <tr>
-                            <td>{{$child['id']}}</td>
-                            <td>
+                        <div class="row">
+                            <div class="col-sm-1">{{$child['id']}}</div>
+                            <div class="col-sm-2">
                                 <i class="glyphicon glyphicon-play-circle"></i>—{{$child['name']}}
-                            </td>
-                            <td>
+                            </div>
+                            <div class="col-sm-1">
                                 {{if $child['is_menu']==1}}
                                 <a class="blue" href="javascript:del('/{{$_controller}}/setmenu?id={{$child['id']}}')">
                                     <span title="点击取消菜单显示" class="badge badge-warning">是</span>
@@ -126,18 +125,18 @@
                                     <span class="badge" title="点击设置菜单显示">否</span>
                                 </a>
                                 {{/if}}
-                            </td>
-                            <td>/{{$child['controller']}}/{{$child['action']}}</td>
-                            <td>父：{{$root['name']}}</td>
-                            <td>{{if $child['status']==1}}
+                            </div>
+                            <div class="col-sm-2">/{{$child['controller']}}/{{$child['action']}}</div>
+                            <div class="col-sm-1">父：{{$root['name']}}</div>
+                            <div class="col-sm-1">{{if $child['status']==1}}
                                 <a class="blue" href="javascript:del('/{{$_controller}}/lock?id={{$child['id']}}')">
                                     <span title="点击锁定" class="badge badge-warning">正常</span></a>
                                 {{else}}
                                 <a class="blue" href="javascript:del('/{{$_controller}}/lock?id={{$child['id']}}')">
                                     <span title="点击解锁" class="badge">锁定</span></a> {{/if}}
-                            </td>
-                            <td>{{$child['sort']}}</td>
-                            <td>
+                            </div>
+                            <div class="col-sm-1">{{$child['sort']}}</div>
+                            <div class="col-sm-1">
                                 <div class="action-buttons">
                                     <a class="blue" title="功能编辑" href="/{{$_controller}}/add?id={{$child['id']}}">
                                         <i class="fa fa-pencil bigger-130"></i>
@@ -162,11 +161,10 @@
                                     <i class="ace-icon glyphicon glyphicon-download" title="排序下降"></i>
                                 </a>
                                 </div>
-                            </td>
-                        </tr>
+                            </div>
+                        </div>
                         {{/foreach}}
-                        </tbody>
-                    </table>
+                    </div>
                 </td>
                 </tr>
 
