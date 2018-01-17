@@ -9,11 +9,8 @@
 
 namespace frame\debug;
 
-use frame\Cache;
 use frame\Config;
-use frame\Db;
 use frame\Debug;
-use frame\Logs;
 use frame\Request;
 use frame\Response;
 
@@ -39,8 +36,7 @@ class Html {
      * @param array     $log 日志信息
      * @return bool
      */
-    public function output(Response $response, array $log = [])
-    {
+    public function output(Response $response, array $log = []) {
         $request     = Request::getInstance();
         $contentType = $response->getHeader('Content-Type');
         $accept      = $request->header('accept');
@@ -79,24 +75,24 @@ class Html {
         foreach ($this->config['trace_tabs'] as $name => $title) {
             $name = strtolower($name);
             switch ($name) {
-                case 'base': // 基本信息
-                    $trace[$title] = $base;
-                    break;
-                case 'file': // 文件信息
-                    $trace[$title] = $info;
-                    break;
-                default: // 调试信息
-                    if (strpos($name, '|')) {
-                        // 多组信息
-                        $names  = explode('|', $name);
-                        $result = [];
-                        foreach ($names as $name) {
-                            $result = array_merge($result, isset($log[$name]) ? $log[$name] : []);
-                        }
-                        $trace[$title] = $result;
-                    } else {
-                        $trace[$title] = isset($log[$name]) ? $log[$name] : '';
+            case 'base': // 基本信息
+                $trace[$title] = $base;
+                break;
+            case 'file': // 文件信息
+                $trace[$title] = $info;
+                break;
+            default: // 调试信息
+                if (strpos($name, '|')) {
+                    // 多组信息
+                    $names  = explode('|', $name);
+                    $result = [];
+                    foreach ($names as $name) {
+                        $result = array_merge($result, isset($log[$name]) ? $log[$name] : []);
                     }
+                    $trace[$title] = $result;
+                } else {
+                    $trace[$title] = isset($log[$name]) ? $log[$name] : '';
+                }
             }
         }
         // 调用Trace页面模板

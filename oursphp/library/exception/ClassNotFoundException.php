@@ -11,11 +11,9 @@
 
 namespace frame\exception;
 
-class ClassNotFoundException extends \RuntimeException
-{
+class ClassNotFoundException extends \RuntimeException {
     protected $class;
-    public function __construct($message, $class = '')
-    {
+    public function __construct($message, $class = '') {
         $this->message = $message;
         $this->class   = $class;
     }
@@ -25,8 +23,7 @@ class ClassNotFoundException extends \RuntimeException
      * @access public
      * @return string
      */
-    public function getClass()
-    {
+    public function getClass() {
         return $this->class;
     }
 }

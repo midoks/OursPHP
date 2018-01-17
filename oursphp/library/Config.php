@@ -21,11 +21,11 @@ class Config {
      */
     public static function get($name = null) {
 
-        if(empty($name) ) {
+        if (empty($name)) {
             return self::$_config;
         }
 
-        return isset(self::$_config[$name])? self::$_config[$name] : null;
+        return isset(self::$_config[$name]) ? self::$_config[$name] : null;
     }
 
     /**
@@ -33,8 +33,8 @@ class Config {
      * @param array $config
      * @return array
      */
-    public static function merge($config, $name = null){
-        if (is_null($name)){
+    public static function merge($config, $name = null) {
+        if (is_null($name)) {
             self::$_config = array_merge(self::$_config, $config);
         } else {
             self::$_config[$name] = array_merge(self::$_config[$name], $config);
@@ -47,9 +47,9 @@ class Config {
      * @param $config array
      * @return void
      */
-    public static function set($config, $name = null){
-        
-        if ( is_null($name) ){
+    public static function set($config, $name = null) {
+
+        if (is_null($name)) {
             self::$_config = $config;
         } else {
             self::$_config[$name] = $config;

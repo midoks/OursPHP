@@ -14,30 +14,29 @@ use common\dao\SysRoleDao;
 
 class SysRoleSvc extends BaseSvc {
 
-
-     /**
+    /**
      * 获取分页数列表
      * @param int $page 第几页
      * @param int $pageSize 每页数据
      * @param array $condtion 条件
      * @return array 二维数据
      */
-    public function getPageData($page = 1, $pageSize = 10, $condition = NULL){
-        $dao    = new SysRoleDao();
+    public function getPageData($page = 1, $pageSize = 10, $condition = NULL) {
+        $dao   = new SysRoleDao();
         $where = '1=1';
-        $bind = [];
-        if (!empty($condition)){
+        $bind  = [];
+        if (!empty($condition)) {
             $where = ' 1=1 ';
             foreach ($condition as $key => $value) {
-                $where .= 'and '.$key.'=:'.$key;
+                $where .= 'and ' . $key . '=:' . $key;
             }
             $bind = $condition;
         }
 
-        $offset = $pageSize * ( $page-1 );
-        $limit =  $offset < 0 ? '0,'.$pageSize : $offset.','.$pageSize;
+        $offset = $pageSize * ($page - 1);
+        $limit  = $offset < 0 ? '0,' . $pageSize : $offset . ',' . $pageSize;
 
-        return $dao->findAll( $bind, $where, $limit, [], '' , '' , 'id asc');
+        return $dao->findAll($bind, $where, $limit, [], '', '', 'id asc');
     }
 
     /**
@@ -45,15 +44,15 @@ class SysRoleSvc extends BaseSvc {
      * @param array $condtion 条件
      * @return int
      */
-    public function getCount($condition = NULL){
-        $dao    = new SysRoleDao();
+    public function getCount($condition = NULL) {
+        $dao = new SysRoleDao();
 
-        if (!empty($condition)){
+        if (!empty($condition)) {
             $where = ' 1=1 ';
             foreach ($condition as $key => $value) {
-                $where .= 'and '.$key.'=:'.$key;
+                $where .= 'and ' . $key . '=:' . $key;
             }
-            $total = $dao->countBy($condition,$where);
+            $total = $dao->countBy($condition, $where);
         } else {
             $total = $dao->countBy([], ' 1=1 ');
         }
@@ -67,14 +66,14 @@ class SysRoleSvc extends BaseSvc {
      * @return mixed
      */
     public function gets($status = null) {
-        $dao    = new SysRoleDao();
-        $where  = '';
-        $query  = [];
-        if($status !== null) {
+        $dao   = new SysRoleDao();
+        $where = '';
+        $query = [];
+        if ($status !== null) {
             $query['status'] = $status;
-            $where = "status=:status";
+            $where           = "status=:status";
         }
-        return $dao->findAll( $query, $where, 0, [], '', '', 'id asc');
+        return $dao->findAll($query, $where, 0, [], '', '', 'id asc');
     }
 
     /**
@@ -83,9 +82,9 @@ class SysRoleSvc extends BaseSvc {
      * @return array | bool
      */
     public function get($id) {
-        if($id) {
+        if ($id) {
             $dao = new SysRoleDao();
-            return $dao->cache(24*60*60, __CLASS__.'_role_'.$id)->findByPkey($id);
+            return $dao->cache(24 * 60 * 60, __CLASS__ . '_role_' . $id)->findByPkey($id);
         }
         return false;
     }
@@ -94,9 +93,9 @@ class SysRoleSvc extends BaseSvc {
      * 清空用户权限缓存
      * @param int $id 用户ID
      */
-    public function clearId($id){
+    public function clearId($id) {
         $dao = new SysRoleDao();
-        return $dao->cacheClear(__CLASS__.'_role_'.$id);
+        return $dao->cacheClear(__CLASS__ . '_role_' . $id);
     }
 
     /**
@@ -105,7 +104,7 @@ class SysRoleSvc extends BaseSvc {
      * @return bool
      */
     public function add($item) {
-        if(!empty($item)) {
+        if (!empty($item)) {
             $dao = new SysRoleDao();
             return $dao->add($item);
         }
@@ -118,10 +117,10 @@ class SysRoleSvc extends BaseSvc {
      * @param array $vars 一维数组
      * @return bool
      */
-    public function edit($id,$vars) {
-        if(!empty($vars)) {
+    public function edit($id, $vars) {
+        if (!empty($vars)) {
             $dao = new SysRoleDao();
-            return $dao->cacheClear(__CLASS__.'role_'.$id)->edit($id,$vars);
+            return $dao->cacheClear(__CLASS__ . 'role_' . $id)->edit($id, $vars);
         }
         return false;
     }
@@ -131,12 +130,12 @@ class SysRoleSvc extends BaseSvc {
      * @param int $id 主键ID
      * @return bool
      */
-    public function lock($id){
+    public function lock($id) {
         $dao = new SysRoleDao();
         $fun = $dao->findByPkey($id);
-        if($fun) {
+        if ($fun) {
             $vars['status'] = $fun['status'] == 1 ? 0 : 1;
-            return $this->edit($id,$vars);
+            return $this->edit($id, $vars);
         }
         return false;
     }
@@ -146,9 +145,9 @@ class SysRoleSvc extends BaseSvc {
      * @param int $id 主键ID
      * @return bool
      */
-    public function delete($id){
+    public function delete($id) {
         $dao = new SysRoleDao();
-        return $dao->cacheClear(__CLASS__.'role_'.$id)->delete($id);
+        return $dao->cacheClear(__CLASS__ . 'role_' . $id)->delete($id);
     }
 
 }

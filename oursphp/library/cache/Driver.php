@@ -14,11 +14,10 @@ namespace frame\cache;
  * 缓存基础类
  */
 abstract class Driver {
-    
+
     protected $handler = null;
 
     protected $options = [];
-
 
     /**
      * 判断缓存是否存在
@@ -47,7 +46,7 @@ abstract class Driver {
      */
     abstract public function set($name, $value, $expire = null);
 
-    /** 
+    /**
      * 写入缓存(如何已经存在返回false)
      * @access public
      * @param string    $name 缓存变量名
@@ -98,7 +97,7 @@ abstract class Driver {
      * @return string
      */
     protected function getCacheKey($name) {
-        return $this->prefix.$name;
+        return $this->prefix . $name;
     }
 
     /**

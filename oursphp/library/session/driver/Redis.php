@@ -11,14 +11,11 @@
 
 namespace frame\session\driver;
 
-use SessionHandler;
-use frame\Exception;
-
 use frame\cache\driver\Redis as RedisCache;
+use frame\Exception;
+use SessionHandler;
 
-
-class Redis extends SessionHandler
-{
+class Redis extends SessionHandler {
     /** @var \Redis */
     protected $handler = null;
     protected $config  = [
@@ -49,8 +46,7 @@ class Redis extends SessionHandler
      * 关闭Session
      * @access public
      */
-    public function close()
-    {
+    public function close() {
         $this->gc(ini_get('session.gc_maxlifetime'));
         $this->handler->close();
         $this->handler = null;

@@ -15,8 +15,8 @@ use frame\Config;
 
 //不使用任何缓存
 class None extends Driver {
-    
-    protected $options = [];
+
+    protected $options        = [];
     private static $_instance = [];
 
     /**
@@ -27,10 +27,10 @@ class None extends Driver {
     public function __construct($options = []) {
     }
 
-    public static function getInstance( $option = 'memcached' ){
+    public static function getInstance($option = 'memcached') {
         $op = Config::get($option);
 
-        if (!isset(self::$_instance[$option])){
+        if (!isset(self::$_instance[$option])) {
             self::$_instance[$option] = new static($op);
         }
 

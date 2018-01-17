@@ -12,7 +12,6 @@ namespace frame\cache\driver;
 use frame\cache\Driver;
 use frame\Config;
 
-
 class Memcache extends Driver {
 
     protected $options = [
@@ -22,11 +21,10 @@ class Memcache extends Driver {
             'expire'     => 0,
             'timeout'    => 0, // 超时时间（单位：毫秒）
             'persistent' => true,
-        ]
+        ],
     ];
 
     private static $_instance = [];
-
 
     /**
      * 构造函数
@@ -43,12 +41,12 @@ class Memcache extends Driver {
             $this->options = $options;
         }
 
-        $this->prefix = Config::get('cache')['prefix'];
+        $this->prefix  = Config::get('cache')['prefix'];
         $this->handler = new \Memcache;
 
         // 建立连接
         foreach ($this->options as $i => $m) {
-            $timeout = $m['timeout'] > 0 ? $m['timeout']  : 1;
+            $timeout = $m['timeout'] > 0 ? $m['timeout'] : 1;
             $this->handler->addServer($m['host'], $m['port'], $m['persistent'], 1, $timeout);
         }
     }
@@ -57,10 +55,10 @@ class Memcache extends Driver {
      * memcache 单例模式
      * @return class Memcache
      */
-    public static function getInstance( $option = 'memcached' ){
+    public static function getInstance($option = 'memcached') {
         $op = Config::get($option);
 
-        if (!isset(self::$_instance[$option])){
+        if (!isset(self::$_instance[$option])) {
             self::$_instance[$option] = new self($op);
         }
 
@@ -86,7 +84,7 @@ class Memcache extends Driver {
      * @return mixed
      */
     public function get($name, $default = false) {
-        $key = $this->getCacheKey($name);
+        $key    = $this->getCacheKey($name);
         $result = $this->handler->get($key);
         return false !== $result ? $result : $default;
     }
@@ -104,10 +102,10 @@ class Memcache extends Driver {
             $expire = $this->options['expire'];
         }
 
-        if ($expire > 2592000 ){
+        if ($expire > 2592000) {
             $expire = 2592000;
         }
-  
+
         $key = $this->getCacheKey($name);
 
         if ($this->handler->set($key, $value, 0, $expire)) {
@@ -129,10 +127,10 @@ class Memcache extends Driver {
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-    
+
         $key = $this->getCacheKey($name);
 
-        if ($expire > 2592000 ){
+        if ($expire > 2592000) {
             $expire = 2592000;
         }
 

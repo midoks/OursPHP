@@ -7,7 +7,6 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-
 namespace frame\exception;
 
 use frame\Exception;
@@ -18,8 +17,7 @@ use frame\Exception;
  * 除开从 think\Exception 继承的功能
  * 其他和PHP系统\ErrorException功能基本一样
  */
-class ErrorException extends Exception
-{
+class ErrorException extends Exception {
     /**
      * 用于保存错误级别
      * @var integer

@@ -8,39 +8,36 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-namespace  app\controller;
+namespace app\controller;
 
-use \common\service\AppDebugSvc;
 use \common\dao\AppDebugDao;
+use \common\service\AppDebugSvc;
 
-class Appdebug  extends Base {
+class Appdebug extends Base {
 
-    public function __construct($request, $response){
+    public function __construct($request, $response) {
         parent::__construct($request, $response);
         $response->title = '调式管理';
     }
 
     //列表展示
-    public function index( $request, $response ) {
-
+    public function index($request, $response) {
 
         $response->stitle = '列表';
 
-        $debugSvc    = new AppDebugSvc();
+        $debugSvc = new AppDebugSvc();
 
-        $debugDao = new AppDebugDao();
+        $debugDao           = new AppDebugDao();
         $response->log_type = $debugDao->logType;
 
-        // $debugSvc->write( json_encode($_COOKIE) );
+        $response->p = $p = $request->p ? $request->p : 1;
+        $pageSize    = 10;
 
-        $response->p        = $p = $request->p ? $request->p : 1;
-        $pageSize           = 10;
+        $rows  = $debugSvc->getPageData($p, $pageSize);
+        $total = $debugSvc->getCount();
 
-        $rows   = $debugSvc->getPageData($p, $pageSize);
-        $total  = $debugSvc->getCount();
-
-        $response->rows = $rows;
-        $response->pageLink = $this->pageLink->getPageLink("/{$this->_controller}/{$this->_action}?t=1", $p, $pageSize, $total,"");
+        $response->rows     = $rows;
+        $response->pageLink = $this->pageLink->getPageLink("/{$this->_controller}/{$this->_action}?t=1", $p, $pageSize, $total, "");
 
         $this->renderLayout();
     }

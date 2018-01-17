@@ -11,7 +11,7 @@ namespace frame;
 
 class Loader {
 
-	protected static $instance = [];
+    protected static $instance = [];
     // 类名映射
     protected static $map = [];
 
@@ -30,67 +30,64 @@ class Loader {
     // 自动加载的文件
     private static $autoloadFiles = [];
 
-    public static function autoload($class){
+    public static function autoload($class) {
 
-       	if ($file = self::findFile($class)) {
+        if ($file = self::findFile($class)) {
             // Win环境严格区分大小写
             if (IS_WIN && pathinfo($file, PATHINFO_FILENAME) != pathinfo(realpath($file), PATHINFO_FILENAME)) {
                 return false;
             }
-            
+
             __include_file($file);
             return true;
         }
     }
 
+    public static function register() {
+        spl_autoload_register('frame\\Loader::autoload', true, true);
 
-    public static function register(){
-    	spl_autoload_register('frame\\Loader::autoload', true, true);
-
-    	// 注册命名空间定义
+        // 注册命名空间定义
         self::addNamespace([
-            'frame'    => FRAME_PATH,
+            'frame' => FRAME_PATH,
         ]);
 
-    	// Composer自动加载支持
-        if (is_dir(VENDOR_PATH.'composer')) {
+        // Composer自动加载支持
+        if (is_dir(VENDOR_PATH . 'composer')) {
             self::registerComposer();
         }
-        
+
     }
 
-
     // 注册composer自动加载
-    public static function registerComposer(){
-    	if (is_file(VENDOR_PATH.'composer/autoload_namespaces.php')) {
-            $map = require VENDOR_PATH.'composer/autoload_namespaces.php';
-            var_dump('autoload_namespaces',$map);
+    public static function registerComposer() {
+        if (is_file(VENDOR_PATH . 'composer/autoload_namespaces.php')) {
+            $map = require VENDOR_PATH . 'composer/autoload_namespaces.php';
+            var_dump('autoload_namespaces', $map);
             foreach ($map as $namespace => $path) {
-                
+
                 self::addPsr0($namespace, $path);
             }
         }
 
-        if (is_file(VENDOR_PATH.'composer/autoload_psr4.php')) {
-            $map = require VENDOR_PATH.'composer/autoload_psr4.php';
+        if (is_file(VENDOR_PATH . 'composer/autoload_psr4.php')) {
+            $map = require VENDOR_PATH . 'composer/autoload_psr4.php';
             var_dump($map);
             foreach ($map as $namespace => $path) {
-                var_dump('autoload_psr4',$namespace,$path);
+                var_dump('autoload_psr4', $namespace, $path);
                 self::addPsr4($namespace, $path);
             }
         }
 
-
-        if (is_file(VENDOR_PATH.'composer/autoload_classmap.php')) {
-            $classMap = require VENDOR_PATH.'composer/autoload_classmap.php';
-            var_dump('autoload_classmap',$classMap);
+        if (is_file(VENDOR_PATH . 'composer/autoload_classmap.php')) {
+            $classMap = require VENDOR_PATH . 'composer/autoload_classmap.php';
+            var_dump('autoload_classmap', $classMap);
             if ($classMap) {
                 self::addClassMap($classMap);
             }
         }
 
-        if (is_file(VENDOR_PATH.'composer/autoload_files.php')) {
-            $includeFiles = require VENDOR_PATH.'composer/autoload_files.php';
+        if (is_file(VENDOR_PATH . 'composer/autoload_files.php')) {
+            $includeFiles = require VENDOR_PATH . 'composer/autoload_files.php';
             var_dump($includeFiles);
             foreach ($includeFiles as $fileIdentifier => $file) {
                 if (empty(self::$autoloadFiles[$fileIdentifier])) {
@@ -190,17 +187,17 @@ class Loader {
         }
     }
 
-    public static function addNamespaceOverride($namespace, $path = ''){
+    public static function addNamespaceOverride($namespace, $path = '') {
         if (is_array($namespace)) {
             foreach ($namespace as $prefix => $paths) {
-                $name = $prefix.'\\';
+                $name                        = $prefix . '\\';
                 self::$prefixDirsPsr4[$name] = NULL;
             }
         } else {
-            $name = $namespace.'\\';
+            $name                        = $namespace . '\\';
             self::$prefixDirsPsr4[$name] = NULL;
         }
-        
+
         self::addNamespace($namespace, $path = '');
     }
 
@@ -274,7 +271,7 @@ class Loader {
             // Append directories for an already registered namespace.
             self::$prefixDirsPsr4[$prefix] = array_merge(
                 self::$prefixDirsPsr4[$prefix],
-           		(array) $paths
+                (array) $paths
             );
         }
     }
@@ -286,12 +283,10 @@ class Loader {
  * @param $file
  * @return mixed
  */
-function __include_file($file)
-{
+function __include_file($file) {
     return include $file;
 }
 
-function __require_file($file)
-{
+function __require_file($file) {
     return require $file;
 }

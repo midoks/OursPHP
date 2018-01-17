@@ -10,8 +10,6 @@
 
 namespace frame;
 
-
-
 use frame\exception\ClassNotFoundException;
 
 class Session {
@@ -58,7 +56,7 @@ class Session {
         if (isset($config['prefix']) && ('' === self::$prefix || null === self::$prefix)) {
             self::$prefix = $config['prefix'];
         }
-        
+
         if (isset($config['id']) && !empty($config['id'])) {
             session_id($config['id']);
         }

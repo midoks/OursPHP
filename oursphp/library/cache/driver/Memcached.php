@@ -14,7 +14,7 @@ use frame\cache\Driver;
 use frame\Config;
 
 class Memcached extends Driver {
-    
+
     protected $options = [
         [
             'host'     => '127.0.0.1',
@@ -25,11 +25,10 @@ class Memcached extends Driver {
             'username' => '', //账号
             'password' => '', //密码
             'option'   => [],
-        ]
+        ],
     ];
 
     private static $_instance = [];
-
 
     /**
      * 构造函数
@@ -41,7 +40,7 @@ class Memcached extends Driver {
             throw new \BadFunctionCallException('not support: memcached');
         }
         if (!empty($options)) {
-            $this->options =  $options;
+            $this->options = $options;
         }
 
         $this->prefix = Config::get('cache')['prefix'];
@@ -67,10 +66,10 @@ class Memcached extends Driver {
         }
     }
 
-    public static function getInstance( $option = 'memcached' ){
+    public static function getInstance($option = 'memcached') {
         $op = Config::get($option);
 
-        if (!isset(self::$_instance[$option])){
+        if (!isset(self::$_instance[$option])) {
             self::$_instance[$option] = new static($op);
         }
 
@@ -134,8 +133,8 @@ class Memcached extends Driver {
         if (is_null($expire)) {
             $expire = $this->options['expire'];
         }
-    
-        $key = $this->getCacheKey($name);
+
+        $key    = $this->getCacheKey($name);
         $expire = 0 == $expire ? 0 : $_SERVER['REQUEST_TIME'] + $expire;
 
         if ($this->handler->add($key, $value, $expire)) {

@@ -7,7 +7,6 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-
 namespace frame;
 
 class Request {
@@ -21,9 +20,9 @@ class Request {
      * @var string pathinfo（不含后缀）
      */
     protected $path;
-    
+
     private static $_instance;
-    private static $filter   = "'|\\b(and|or)\\b.+?(>|<|=|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)";
+    private static $filter = "'|\\b(and|or)\\b.+?(>|<|=|\\bin\\b|\\blike\\b)|\\/\\*.+?\\*\\b|\\bEXEC\\b|UNION.+?SELECT|UPDATE.+?SET|INSERT\\s+INTO.+?VALUES|(SELECT|DELETE).+?FROM|(CREATE|ALTER|DROP|TRUNCATE)\\s+(TABLE|DATABASE)";
 
     const REPLACEMENT = '';
 
@@ -51,7 +50,7 @@ class Request {
      * @return \frame\Request
      */
     public static function getInstance() {
-        if (!self::$_instance){
+        if (!self::$_instance) {
             self::$_instance = new static();
         }
         return self::$_instance;
@@ -119,9 +118,6 @@ class Request {
         return isset($this->header[$name]) ? $this->header[$name] : $default;
     }
 
-    
-    
-
     /**
      * 返回 $_GET[$index] | default
      * @param string $index
@@ -130,8 +126,8 @@ class Request {
      */
     public function get($index, $default = '') {
         if (isset($_GET[$index])) {
-            $data=$this->filter_input($_GET[$index]);
-            return preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
+            $data = $this->filter_input($_GET[$index]);
+            return preg_replace("/" . self::$filter . "/is", self::REPLACEMENT, $data);
         } else {
             return $default;
         }
@@ -146,7 +142,7 @@ class Request {
     public function post($index, $default = '') {
         if (isset($_POST[$index])) {
             $data = $_REQUEST[$index];
-            return preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
+            return preg_replace("/" . self::$filter . "/is", self::REPLACEMENT, $data);
         } else {
             return $default;
         }
@@ -203,11 +199,11 @@ class Request {
      * @param string $default 没有取到的时候的默认值
      * @return string
      */
-    public function getRequest($index, $default='') {
+    public function getRequest($index, $default = '') {
         if (isset($_REQUEST[$index])) {
             $data = $_REQUEST[$index];
-            $data = preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
-            return preg_replace("/".self::$filter."/is", self::REPLACEMENT, $data);
+            $data = preg_replace("/" . self::$filter . "/is", self::REPLACEMENT, $data);
+            return preg_replace("/" . self::$filter . "/is", self::REPLACEMENT, $data);
         } else {
             return $default;
         }
@@ -221,7 +217,6 @@ class Request {
     public function getCookie($index) {
         return isset($_COOKIE[$index]) ? preg_replace("/" . self::$filter . "/is", self::REPLACEMENT, $_COOKIE[$index]) : null;
     }
-
 
     /**
      * 获取当前请求URL的pathinfo信息（含URL后缀）
@@ -281,7 +276,6 @@ class Request {
     public function isPost() {
         return isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST';
     }
-
 
     /**
      * 递归过滤给定的值

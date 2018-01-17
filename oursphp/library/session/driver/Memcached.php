@@ -12,8 +12,6 @@
 namespace frame\session\driver;
 
 use SessionHandler;
-use frame\Exception;
-
 use \frame\cache\driver\Memcache as Memd;
 
 class Memcached extends SessionHandler {

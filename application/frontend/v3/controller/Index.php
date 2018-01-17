@@ -11,15 +11,15 @@ namespace app\controller;
 
 use \frame\Controller;
 
-class Index extends Controller{
-	
-	public function index() {
-        return 'v3';
-	}
+class Index extends Controller {
 
-	public function v3(){
-		//sleep(1);
-		return 'v3 func';
-	}
+    public function index() {
+        return 'v3';
+    }
+
+    public function v3() {
+        //sleep(1);
+        return 'v3 func';
+    }
 
 }

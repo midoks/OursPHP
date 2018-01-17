@@ -13,7 +13,7 @@ use frame\Config;
 
 class Logs {
 
-	const LOG    = 'log';
+    const LOG    = 'log';
     const ERROR  = 'error';
     const INFO   = 'info';
     const SQL    = 'sql';
@@ -21,21 +21,20 @@ class Logs {
     const ALERT  = 'alert';
     const DEBUG  = 'debug';
 
-	// 日志信息
+    // 日志信息
     protected static $log = [];
     // 日志类型
     protected static $type = ['log', 'error', 'info', 'sql', 'notice', 'alert', 'debug'];
 
-
     // 配置参数
     protected static $config = [
         'time_format' => ' c ',
-        'file_size'   => 2097152
+        'file_size'   => 2097152,
     ];
 
     protected static $writed = [];
 
-	/**
+    /**
      * 获取日志信息
      * @param string $type 信息类型
      * @return array
@@ -70,18 +69,18 @@ class Logs {
      * 保存日志
      * @return void
      */
-	public static function save(){
-		$log = self::$log;
+    public static function save() {
+        $log = self::$log;
         unset($log['debug']);
         self::logSave($log);
         return true;
-	}
+    }
 
     //日志保存
-    public static function logSave($log = []){
-        $logPath = Config::get('runtime_cache').Config::get('app_id').'_logs'.DS;
+    public static function logSave($log = []) {
+        $logPath = Config::get('runtime_cache') . Config::get('app_id') . '_logs' . DS;
 
-        $cli         = IS_CLI ? '_cli' : '';
+        $cli  = IS_CLI ? '_cli' : '';
         $dest = $logPath . date('Ym') . DS . date('d') . $cli . '.log';
 
         $path = dirname($dest);
@@ -149,9 +148,6 @@ class Logs {
         return error_log($message, 3, $destination);
     }
 
-
 }
-
-
 
 ?>

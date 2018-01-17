@@ -10,9 +10,9 @@
 namespace app\controller;
 
 class Index {
-	
-	public function Index() {
+
+    public function Index() {
         return 'Home';
-	}
+    }
 
 }

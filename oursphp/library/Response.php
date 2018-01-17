@@ -8,10 +8,7 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-
 namespace frame;
-
-use frame\utils\Session;
 
 class Response {
     // 原始数据
@@ -62,7 +59,7 @@ class Response {
      * @return \frame\Request
      */
     public static function getInstance() {
-        if (!self::$_instance){
+        if (!self::$_instance) {
             self::$_instance = new static();
 
             self::$parseView = View::getInstance();
@@ -100,13 +97,12 @@ class Response {
      * @throws \InvalidArgumentException
      */
     public function send() {
-     
 
         // 处理输出数据
         $data = $this->getContent();
 
         // Trace调试注入
-        if ( Config::get('app_trace')) {
+        if (Config::get('app_trace')) {
             Debug::inject($this, $data);
         }
 
@@ -173,8 +169,7 @@ class Response {
      * @param mixed $data 输出数据
      * @return $this
      */
-    public function data($data)
-    {
+    public function data($data) {
         $this->data = $data;
         return $this;
     }
@@ -325,8 +320,7 @@ class Response {
         return $this->code;
     }
 
-    
-    public function __set($name, $value){
+    public function __set($name, $value) {
         self::$parseView->assign($name, $value);
     }
 }

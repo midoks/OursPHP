@@ -25,7 +25,7 @@ class Debug {
      * @param mixed     $value 标记值 留空则取当前 time 表示仅记录时间 否则同时记录时间和内存
      * @return mixed
      */
-    public static function remark($name, $value = ''){
+    public static function remark($name, $value = '') {
         // 记录时间和内存使用
         self::$info[$name] = is_float($value) ? $value : microtime(true);
         if ('time' != $value) {
@@ -162,7 +162,7 @@ class Debug {
             $output = '<pre>' . $label . $output . '</pre>';
         }
         if ($echo) {
-            echo($output);
+            echo ($output);
             return;
         } else {
             return $output;

@@ -10,25 +10,23 @@
 
 namespace frame\traits;
 
-use frame\Config;
 use frame\Cache as CC;
-
-
+use frame\Config;
 use frame\exception\CommonException;
 
 trait Cache {
 
     public static $__cacheInstance = NULL;
 
-    public static function getCacheObject(){
+    public static function getCacheObject() {
 
-        if (isset( $__cacheInstance ) ){
+        if (isset($__cacheInstance)) {
             self::$__cacheInstance;
         } else {
-             self::$__cacheInstance = CC::getInstance();
+            self::$__cacheInstance = CC::getInstance();
         }
 
-        return  self::$__cacheInstance;
+        return self::$__cacheInstance;
     }
 
     /**
@@ -37,7 +35,7 @@ trait Cache {
      * @param string $node 节点名称
      * @return bool
      */
-    public function cacheClear($key){
+    public function cacheClear($key) {
         $cacheObj = self::getCacheObject();
         $cacheObj->clear($key);
         return $this;
@@ -50,7 +48,7 @@ trait Cache {
      * @param mixed  $default 默认值
      * @return mixed
      */
-    public function cacheGet($name, $default = false){
+    public function cacheGet($name, $default = false) {
         $cacheObj = self::getCacheObject();
         return $cacheObj->get($name, $default);
     }
@@ -63,12 +61,12 @@ trait Cache {
      * @param int       $expire  有效时间 0为永久
      * @return boolean
      */
-    public function cacheSet($name, $value, $expire = null){
+    public function cacheSet($name, $value, $expire = null) {
         $cacheObj = self::getCacheObject();
         return $cacheObj->set($name, $value, $expire);
-    }   
+    }
 
-    /** 
+    /**
      * 写入缓存(如何已经存在返回false)
      * @access public
      * @param string    $name 缓存变量名
@@ -76,7 +74,7 @@ trait Cache {
      * @param int       $expire  有效时间 0为永久
      * @return boolean
      */
-    public function cacheAdd($name, $value, $expire = null){
+    public function cacheAdd($name, $value, $expire = null) {
         $cacheObj = self::getCacheObject();
         return $cacheObj->add($name, $value, $expire);
     }
@@ -88,11 +86,11 @@ trait Cache {
      * @param string $node 节点名称
      * @return bool
      */
-    public function cache($time = 30, $key = NULL){
+    public function cache($time = 30, $key = NULL) {
 
         $this->__cache_open = true;
 
-        $this->__cache_key = $key;
+        $this->__cache_key  = $key;
         $this->__cache_time = $time;
         return $this;
     }
@@ -102,24 +100,23 @@ trait Cache {
      * @param string $sql SQL语句
      * @param array $bind 数组
      */
-    private function cacheSqlStart($sql, $bind){
+    private function cacheSqlStart($sql, $bind) {
 
-        if (!isset($this->__cache_open) || !$this->__cache_open){
+        if (!isset($this->__cache_open) || !$this->__cache_open) {
             $this->__cache_open = false;
             return false;
         }
 
-        if ( !isset($this->__cache_key)){
-            $this->__cache_key = md5($sql.serialize($bind));
+        if (!isset($this->__cache_key)) {
+            $this->__cache_key = md5($sql . serialize($bind));
         }
 
         $key = $this->__cache_key;
 
-      
         $cacheObj = self::getCacheObject();
-        $cacheV = $cacheObj->get($key);
-        
-        if ($cacheV){
+        $cacheV   = $cacheObj->get($key);
+
+        if ($cacheV) {
             return $cacheV;
         }
 
@@ -132,16 +129,16 @@ trait Cache {
      * @param array $bind 数组
      * @param $mixed 结果集
      */
-    private function cacheSqlEnd($sql, $bind, $result){
+    private function cacheSqlEnd($sql, $bind, $result) {
 
-        if (!isset($this->__cache_open) || !$this->__cache_open){
+        if (!isset($this->__cache_open) || !$this->__cache_open) {
             $this->__cache_open = false;
             return false;
         }
 
-        if (isset($this->__cache_key)){
+        if (isset($this->__cache_key)) {
             $cacheObj = self::getCacheObject();
-            $cache = $cacheObj->add($this->__cache_key, $result, $this->__cache_time);
+            $cache    = $cacheObj->add($this->__cache_key, $result, $this->__cache_time);
         }
     }
 
@@ -157,33 +154,31 @@ trait Cache {
         if (substr($name, -11) == '_with_cache') {
 
             $cacheObj = self::getCacheObject();
-            $options = Config::get('cache');
-            $type = strtolower($options['type']);
+            $options  = Config::get('cache');
+            $type     = strtolower($options['type']);
 
+            $relFunc = substr($name, 0, strlen($name) - 11);
+            $key     = md5($name . serialize($params));
 
-            $relFunc = substr($name, 0, strlen($name)-11);
-            $key = md5($name.serialize($params));
+            $cacheParam = isset($params[0]) ? $params[0] : null;
+            $cacheTime  = $options['expire'];
 
+            if ($cacheParam) {
+                parse_str($cacheParam, $cacheParse);
 
-            $cacheParam = isset($params[0]) ? $params[0]: null;
-            $cacheTime = $options['expire'];
-
-            if ( $cacheParam ){
-                 parse_str($cacheParam, $cacheParse);
-
-                 if (isset($cacheParse['time'])){
+                if (isset($cacheParse['time'])) {
                     $cacheTime = $cacheParse['time'];
-                 }
+                }
 
-                 if (isset($cacheParse['key'])){
+                if (isset($cacheParse['key'])) {
                     $key = $cacheParse['key'];
-                 }
+                }
             }
 
             //第一个参数不是原方法参数,去除
             array_shift($params);
 
-            if ( empty( $type ) ) {
+            if (empty($type)) {
                 $data = call_user_func_array(array($this, $relFunc), $params);
                 return $data;
             }
@@ -194,28 +189,22 @@ trait Cache {
                 return $data;
             }
 
-            
-
             //保存值
-            if( $cacheObj->add($key, null, $cacheTime) ){
+            if ($cacheObj->add($key, null, $cacheTime)) {
                 $data = call_user_func_array(array($this, $relFunc), $params);
                 $cacheObj->set($key, $data, $cacheTime);
             } else {
 
-                for( $i=0; $i < 3; $i++ ) { //0.3秒没有反应，就出白页吧，系统貌似已经不行了
+                for ($i = 0; $i < 3; $i++) {
+                    //0.3秒没有反应，就出白页吧，系统貌似已经不行了
                     sleep(0.1);
                     $data = $cacheObj->get($key);
-                    if ($data !== false){ break; }
+                    if ($data !== false) {break;}
                 }
             }
 
             return $data;
         }
     }
-
-
-
-
-
 
 }

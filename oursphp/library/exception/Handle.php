@@ -11,8 +11,6 @@ namespace frame\exception;
 use Exception;
 use frame\App;
 use frame\Config;
-use frame\console\Output;
-use frame\Lang;
 use frame\Logs;
 use frame\Response;
 
@@ -28,8 +26,7 @@ class Handle {
      * @param  \Exception $exception
      * @return void
      */
-    public function report(Exception $exception)
-    {
+    public function report(Exception $exception) {
         if (!$this->isIgnoreReport($exception)) {
             // 收集异常数据
             if (App::$debug) {
@@ -71,15 +68,13 @@ class Handle {
      * @param  \Exception $e
      * @return Response
      */
-    public function render(Exception $e)
-    {
+    public function render(Exception $e) {
         if ($e instanceof HttpException) {
             return $this->renderHttpException($e);
         } else {
             return $this->convertExceptionToResponse($e);
         }
     }
-
 
     /**
      * @param HttpException $e
@@ -120,7 +115,7 @@ class Handle {
                     'Session'               => isset($_SESSION) ? $_SESSION : [],
                     'Server/Request Data'   => $_SERVER,
                     'Environment Variables' => $_ENV,
-                    'OURSPHP Constants'    => $this->getConst(),
+                    'OURSPHP Constants'     => $this->getConst(),
                 ],
             ];
         } else {

@@ -8,7 +8,6 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-
 namespace frame\exception;
 
 class ThrowableError extends \ErrorException {

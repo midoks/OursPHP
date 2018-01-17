@@ -11,14 +11,14 @@ namespace app\controller;
 
 use \frame\Controller;
 
-class Index extends Controller{
-	
-	public function index() {
-        return 'v1';
-	}
+class Index extends Controller {
 
-	public function v1(){
-		return 'v1 func';
-	}
+    public function index() {
+        return 'v1';
+    }
+
+    public function v1() {
+        return 'v1 func';
+    }
 
 }

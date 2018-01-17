@@ -21,22 +21,22 @@ class SysLogsSvc extends BaseSvc {
      * @param array $condtion 条件
      * @return array 二维数据
      */
-    public function getPageData($page = 1, $pageSize = 10, $condition = NULL){
-        $dao    = new SysLogsDao();
+    public function getPageData($page = 1, $pageSize = 10, $condition = NULL) {
+        $dao   = new SysLogsDao();
         $where = '1=1';
-        $bind = [];
-        if (!empty($condition)){
+        $bind  = [];
+        if (!empty($condition)) {
             $where = ' 1=1 ';
             foreach ($condition as $key => $value) {
-                $where .= 'and '.$key.'=:'.$key;
+                $where .= 'and ' . $key . '=:' . $key;
             }
             $bind = $condition;
         }
 
-        $offset = $pageSize * ( $page-1 );
-        $limit =  $offset < 0 ? '0,'.$pageSize : $offset.','.$pageSize;
+        $offset = $pageSize * ($page - 1);
+        $limit  = $offset < 0 ? '0,' . $pageSize : $offset . ',' . $pageSize;
 
-        return $dao->findAll( $bind, $where, $limit, [], '' , '' , 'id desc');
+        return $dao->findAll($bind, $where, $limit, [], '', '', 'id desc');
     }
 
     /**
@@ -44,15 +44,15 @@ class SysLogsSvc extends BaseSvc {
      * @param array $condtion 条件
      * @return int
      */
-    public function getCount($condition = NULL){
-        $dao    = new SysLogsDao();
+    public function getCount($condition = NULL) {
+        $dao = new SysLogsDao();
 
-        if (!empty($condition)){
+        if (!empty($condition)) {
             $where = ' 1=1 ';
             foreach ($condition as $key => $value) {
-                $where .= 'and '.$key.'=:'.$key;
+                $where .= 'and ' . $key . '=:' . $key;
             }
-            $total = $dao->countBy($condition,$where);
+            $total = $dao->countBy($condition, $where);
         } else {
             $total = $dao->countBy([], ' 1=1 ');
         }
@@ -66,7 +66,7 @@ class SysLogsSvc extends BaseSvc {
      * @return array | bool
      */
     public function get($id) {
-        if($id) {
+        if ($id) {
             $dao = new SysLogsDao();
             return $dao->findByPkey($id);
         }
@@ -79,7 +79,7 @@ class SysLogsSvc extends BaseSvc {
      * @return bool
      */
     public function add($item) {
-        if(!empty($item)) {
+        if (!empty($item)) {
             $dao = new SysLogsDao();
             return $dao->add($item);
         }
@@ -92,10 +92,10 @@ class SysLogsSvc extends BaseSvc {
      * @param array $vars 一维数组
      * @return bool
      */
-    public function edit($id,$vars) {
-        if(!empty($vars)) {
+    public function edit($id, $vars) {
+        if (!empty($vars)) {
             $dao = new SysLogsDao();
-            return $dao->edit($id,$vars);
+            return $dao->edit($id, $vars);
         }
         return false;
     }
@@ -105,12 +105,12 @@ class SysLogsSvc extends BaseSvc {
      * @param int $id 主键ID
      * @return bool
      */
-    public function lock($id){
+    public function lock($id) {
         $dao = new SysLogsDao();
         $fun = $dao->findByPkey($id);
-        if($fun) {
+        if ($fun) {
             $vars['status'] = $fun['status'] == 1 ? 0 : 1;
-            return $dao->edit($id,$vars);
+            return $dao->edit($id, $vars);
         }
         return false;
     }
@@ -120,9 +120,9 @@ class SysLogsSvc extends BaseSvc {
      * @param int $id 主键ID
      * @return bool
      */
-    public function delete($id){
+    public function delete($id) {
         $dao = new SysLogsDao();
         return $dao->delete($id);
     }
-    
+
 }

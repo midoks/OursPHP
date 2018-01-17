@@ -7,7 +7,6 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-
 namespace frame\exception;
 
 use frame\Exception;
@@ -16,7 +15,7 @@ use frame\Exception;
  * Database相关异常处理类
  */
 class DbException extends Exception {
-    
+
     /**
      * DbException constructor.
      * @param string    $message
@@ -24,7 +23,7 @@ class DbException extends Exception {
      * @param string    $sql
      * @param int       $code
      */
-    public function __construct($message, array $config, $sql, $code = 10500){
+    public function __construct($message, array $config, $sql, $code = 10500) {
         $this->message = $message;
         $this->code    = $code;
 

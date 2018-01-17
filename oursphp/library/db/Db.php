@@ -10,171 +10,170 @@
 
 namespace frame\db;
 
-use frame\db\driver\Mysql;
 use frame\Config;
+use frame\db\driver\Mysql;
 
 class Db {
 
-	private $instance = NULL;
+    private $instance = NULL;
 
-	//mysql 常用关键字
-	public static $keys = array(
-		'user',
-		'time',
-		'key',
-		'type',
-		'condition',
-		'div',
-		'status',
-		'order',
-		'name',
-		'desc',
-		'status'
-	);
+    //mysql 常用关键字
+    public static $keys = array(
+        'user',
+        'time',
+        'key',
+        'type',
+        'condition',
+        'div',
+        'status',
+        'order',
+        'name',
+        'desc',
+        'status',
+    );
 
-	public function __construct(){
-		
-	}
+    public function __construct() {
 
-	/**
-	 * 设置当前项目
-	 * @param string $name 项目名
-	 */
-	public function setProject(){
-		$this->instance = Mysql::getInstance();
-		$cfg = Config::get('db');
-		$this->instance->inject($cfg, 'db');
-	}
+    }
 
-	public function query($sql, $bind = array()){
-		return $this->instance->query($sql, $bind);
-	}
+    /**
+     * 设置当前项目
+     * @param string $name 项目名
+     */
+    public function setProject() {
+        $this->instance = Mysql::getInstance();
+        $cfg            = Config::get('db');
+        $this->instance->inject($cfg, 'db');
+    }
 
-	/**
-	 * 插入数据
-	 * @param $table string 表名
-	 * @param $data array 数据
-	 * @return int 最后插入ID
-	 */
-	public function insert($table, $data){
-		$ks = array();
-		foreach (array_keys($data) as $k) {
-			if (in_array($k, self::$keys)){
-				$k = "`$k`";
-			}
-			$ks[] = $k;
-		}
-		$sqlK = implode(', ', $ks);
-		$sqlV = ':'.implode(', :', array_keys($data));
-		
-		$sql = "insert into $table ($sqlK) values ($sqlV)";
+    public function query($sql, $bind = array()) {
+        return $this->instance->query($sql, $bind);
+    }
 
-		$_data = array();
-		foreach ($data as $key => $value) {
-			$_data[':'.$key] = $value;
-		}
+    /**
+     * 插入数据
+     * @param $table string 表名
+     * @param $data array 数据
+     * @return int 最后插入ID
+     */
+    public function insert($table, $data) {
+        $ks = array();
+        foreach (array_keys($data) as $k) {
+            if (in_array($k, self::$keys)) {
+                $k = "`$k`";
+            }
+            $ks[] = $k;
+        }
+        $sqlK = implode(', ', $ks);
+        $sqlV = ':' . implode(', :', array_keys($data));
 
-		return $this->instance->query($sql, $_data);
-	}
+        $sql = "insert into $table ($sqlK) values ($sqlV)";
 
-	/**
-	 * 插入多条数据 
-	 * @param string $table
-	 * @param array $datas
-	 * @return boolean
-	 */
-	public function inserts($table, array $datas) {
-		$ks = array();
-		foreach (array_keys($datas[0]) as $k) {
-			if (in_array($k, self::$keys)){
-				$k = "`$k`";
-			}
-			$ks[] = $k;
-		}
-		$sqlK 	= implode(', ', $ks);
-		$i 		= 0;
-		$sqlV 	= '';
-		$newdata= [];
+        $_data = array();
+        foreach ($data as $key => $value) {
+            $_data[':' . $key] = $value;
+        }
 
-		foreach ($datas as &$item) {
-			$keys 	= array_keys($item);
-			$_sqlV 	= ':'.implode($i.', :', $keys).$i;
-			$sqlV 	= $sqlV.(',('.$_sqlV.')');
-			$sqlV 	= ltrim($sqlV, ",");
-			
-			foreach ($keys as $key) {
-				$newdata[$key.$i] = $item[$key];
-			}
-			$i++;
-		}
+        return $this->instance->query($sql, $_data);
+    }
 
-		$sql = "insert into $table ($sqlK) values $sqlV";
+    /**
+     * 插入多条数据
+     * @param string $table
+     * @param array $datas
+     * @return boolean
+     */
+    public function inserts($table, array $datas) {
+        $ks = array();
+        foreach (array_keys($datas[0]) as $k) {
+            if (in_array($k, self::$keys)) {
+                $k = "`$k`";
+            }
+            $ks[] = $k;
+        }
+        $sqlK    = implode(', ', $ks);
+        $i       = 0;
+        $sqlV    = '';
+        $newdata = [];
 
-		$_datas = array();
-		foreach ($datas as $key1 => $keyData) {
-			foreach ($keyData as $key2=>$data) {
-				$_datas[':'.$key2.$key1] = $data;
-			}
-		}
-		
-		return $this->instance->query($sql, $_datas);
-	}
+        foreach ($datas as &$item) {
+            $keys  = array_keys($item);
+            $_sqlV = ':' . implode($i . ', :', $keys) . $i;
+            $sqlV  = $sqlV . (',(' . $_sqlV . ')');
+            $sqlV  = ltrim($sqlV, ",");
 
-	/**
-	 * 删除数据
-	 * @param $table string 表名
-	 * @param $where mixed  删除条件
-	 * @return int 返回影响行数
-	 */
-	public function delete($table, $where){
-		$sql = "delete from $table where $where";
-		return $this->instance->query($sql);
-	}
+            foreach ($keys as $key) {
+                $newdata[$key . $i] = $item[$key];
+            }
+            $i++;
+        }
 
-	/**
-	 * 更新数据
-	 * @param $table string 表名
-	 * @param $where mixed  删除条件
-	 * @return int 返回影响行数
-	 */
-	public function update($table, $data, $where){
-		if (strlen($where) == 0){
-			return false;
-		}
-			
-		$sqlU = 'set ';
-		foreach ($data as $v=>$v2) {
-			if ($v[0] == ':'){
-				$v[0] = '';
-			}
+        $sql = "insert into $table ($sqlK) values $sqlV";
 
-			if (in_array($v, self::$keys)){
-				$k = "`$v`";
-			} else {
-				$k = $v;
-			}
-			$sqlU .= "$k=:$v, ";
-		}
-		$sqlU = trim(trim($sqlU, ' '), ',');
-		$sql = "update $table $sqlU where $where";
+        $_datas = array();
+        foreach ($datas as $key1 => $keyData) {
+            foreach ($keyData as $key2 => $data) {
+                $_datas[':' . $key2 . $key1] = $data;
+            }
+        }
 
-		$_data = array();
-		foreach ($data as $key => $value) {
-			$_data[':'.$key] = $value;
-		}
-		
-		return $this->instance->query($sql, $_data);
-	}
+        return $this->instance->query($sql, $_datas);
+    }
 
-	public function __call($method, $args){
+    /**
+     * 删除数据
+     * @param $table string 表名
+     * @param $where mixed  删除条件
+     * @return int 返回影响行数
+     */
+    public function delete($table, $where) {
+        $sql = "delete from $table where $where";
+        return $this->instance->query($sql);
+    }
+
+    /**
+     * 更新数据
+     * @param $table string 表名
+     * @param $where mixed  删除条件
+     * @return int 返回影响行数
+     */
+    public function update($table, $data, $where) {
+        if (strlen($where) == 0) {
+            return false;
+        }
+
+        $sqlU = 'set ';
+        foreach ($data as $v => $v2) {
+            if ($v[0] == ':') {
+                $v[0] = '';
+            }
+
+            if (in_array($v, self::$keys)) {
+                $k = "`$v`";
+            } else {
+                $k = $v;
+            }
+            $sqlU .= "$k=:$v, ";
+        }
+        $sqlU = trim(trim($sqlU, ' '), ',');
+        $sql  = "update $table $sqlU where $where";
+
+        $_data = array();
+        foreach ($data as $key => $value) {
+            $_data[':' . $key] = $value;
+        }
+
+        return $this->instance->query($sql, $_data);
+    }
+
+    public function __call($method, $args) {
         //var_dump($method, $args);exit;
-        if (method_exists($this->instance, $method)){
+        if (method_exists($this->instance, $method)) {
             return call_user_func_array(array($this->instance, $method), $args);
         }
         return false;
     }
 
-	
 }
 
 ?>

@@ -8,18 +8,15 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-
 //ace:http://ace.jeka.by/
 
-namespace  app\controller;
-
-use \frame\Controller;
-
-use \frame\utils\PageLink;
+namespace app\controller;
 
 use \common\service\SysFuncSvc;
-use \common\service\SysRoleSvc;
 use \common\service\SysLogsSvc;
+use \common\service\SysRoleSvc;
+use \frame\Controller;
+use \frame\utils\PageLink;
 
 class Base extends Controller {
 
@@ -29,12 +26,12 @@ class Base extends Controller {
     protected $_role = []; //规则信息
     protected $_menu = []; //菜单信息
 
-    private $_logsObj = NULL;//日志对象
+    private $_logsObj = NULL; //日志对象
 
     //超级权限(方便开发及维护)
     private $super_authority = [
-        'user'      => 'root',
-        'password'  => 'root',
+        'user'     => 'root',
+        'password' => 'root',
     ];
 
     /**
@@ -44,50 +41,48 @@ class Base extends Controller {
 
         $this->_logsObj = new SysLogsSvc();
 
-        $response->me = $this->_user =  cookie('info');
+        $response->me = $this->_user = cookie('info');
 
         if (!$this->_user || $this->_user['status'] == 0) {
             $this->redirect('/login/index');
         }
 
         $this->_controller = $_controller = $response->_controller = $request->controller();
-        $this->_action = $_action = $response->_action = $request->action();
+        $this->_action     = $_action     = $response->_action     = $request->action();
 
         $this->initTplVar();
 
-        $funcSvc    = new SysFuncSvc();
-        $roleSvc    = new SysRoleSvc();
+        $funcSvc = new SysFuncSvc();
+        $roleSvc = new SysRoleSvc();
 
         $this->_menu = $_menu = $funcSvc->getMenu_with_cache('key=admin_func_list&time=1000'); //ok
         // $this->_menu = $_menu = $funcSvc->getMenu();
 
-        $roleid     = $this->_user['roleid'];
-        $_role = $roleSvc->get($roleid);
-
+        $roleid = $this->_user['roleid'];
+        $_role  = $roleSvc->get($roleid);
 
         $_menu = $this->checkAuth($_menu, $_role);
-        if(!$_menu){
+        if (!$_menu) {
 
             //ajax请求特殊处理
             $reqWith = $request->header('X-Requested-With');
-            if ( 'XMLHttpRequest' == $reqWith || !empty($_FILES) ){
+            if ('XMLHttpRequest' == $reqWith || !empty($_FILES)) {
                 echo "无权限使用!";
                 exit;
             }
 
-            $response->title    = "权限验证";
-            $response->stitle   = "未授权";
+            $response->title  = "权限验证";
+            $response->stitle = "未授权";
             $this->renderLayout('layout/nopower');
             exit;
         }
 
-
         //子菜单是否在父菜单内,父菜单便于打开
         foreach ($_menu as $key => $value) {
-            $sub = $value['sub'];
+            $sub                      = $value['sub'];
             $_menu[$key]['open_menu'] = false;
             foreach ($sub as $subKey => $subVal) {
-                if ($subVal['controller'] == $_controller && $subVal['action'] == $_action){
+                if ($subVal['controller'] == $_controller && $subVal['action'] == $_action) {
                     $_menu[$key]['open_menu'] = true;
                 }
             }
@@ -99,28 +94,28 @@ class Base extends Controller {
     }
 
     //权限检查
-    private function checkAuth($menu, $role){
-        
+    private function checkAuth($menu, $role) {
+
         //获取用户所有权限
         $role['list'] = explode(',', $role['list']);
-        $roleMenu = [];
-        
+        $roleMenu     = [];
+
         foreach ($menu as $key => $value) {
-            $sub = $value['sub'];
+            $sub  = $value['sub'];
             $_sub = array();
             foreach ($sub as $subKey => $subVal) {
-                if (in_array($subVal['id'], $role['list']) ){
-                   $_sub[] = $subVal; 
+                if (in_array($subVal['id'], $role['list'])) {
+                    $_sub[] = $subVal;
                 }
             }
 
-            if (!empty($_sub)){
-                $value['sub'] = $_sub;
+            if (!empty($_sub)) {
+                $value['sub']   = $_sub;
                 $roleMenu[$key] = $value;
             }
         }
 
-        if (empty($roleMenu)){
+        if (empty($roleMenu)) {
             return false;
         }
 
@@ -129,8 +124,8 @@ class Base extends Controller {
         foreach ($roleMenu as $kr => $vr) {
             $sub = $vr['sub'];
             foreach ($sub as $subKey => $subVal) {
-                if ($subVal['controller'] == $this->_controller 
-                    && $subVal['action'] == $this->_action){
+                if ($subVal['controller'] == $this->_controller
+                    && $subVal['action'] == $this->_action) {
                     $_hasAuth = true;
                 }
             }
@@ -138,15 +133,15 @@ class Base extends Controller {
 
         //return($roleMenu);
         //var_dump($this->_controller,$this->_action);
-        if ($_hasAuth || 
-            (strtolower($this->_controller) == 'index' && strtolower($this->_action) == 'index') ) {
+        if ($_hasAuth ||
+            (strtolower($this->_controller) == 'index' && strtolower($this->_action) == 'index')) {
             return $roleMenu;
         }
         return false;
     }
 
     //初始化基本变量
-    private function initTplVar(){
+    private function initTplVar() {
 
         $this->assign('_sys_name', 'ACE后台管理系统');
         $this->assign('_sys_version', self::ADMIN_VERSION);
@@ -154,15 +149,14 @@ class Base extends Controller {
     }
 
     //系统操作日志
-    protected function sysLog($msg){
+    protected function sysLog($msg) {
         $data = [
-            'uid'   => $this->_user['id'],
-            'type'  => '1',
-            'msg'   => $msg,
+            'uid'      => $this->_user['id'],
+            'type'     => '1',
+            'msg'      => $msg,
             'add_time' => time(),
         ];
         $this->_logsObj->add($data);
     }
 
-    
 }

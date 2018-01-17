@@ -7,8 +7,8 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
-if (isset($_GET['debug']) && $_GET['debug'] == 'ok'){
-	define('OURS_DEBUG', true);
+if (isset($_GET['debug']) && $_GET['debug'] == 'ok') {
+    define('OURS_DEBUG', true);
 }
 
-require dirname(dirname(__DIR__)).'/bootstrap.php';
+require dirname(dirname(__DIR__)) . '/bootstrap.php';

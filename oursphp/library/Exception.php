@@ -10,8 +10,7 @@
 
 namespace frame;
 
-class Exception extends \Exception
-{
+class Exception extends \Exception {
 
     /**
      * 保存异常页面显示的额外Debug数据
@@ -47,5 +46,5 @@ class Exception extends \Exception
     final public function getData() {
         return $this->data;
     }
-    
+
 }

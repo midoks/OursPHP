@@ -12,14 +12,12 @@
 namespace frame\session\driver;
 
 use SessionHandler;
-use frame\Exception;
-
 use \frame\cache\driver\Memcache as Mem;
 
 class Memcache extends SessionHandler {
     protected $handler = null;
 
-    protected $config  = [
+    protected $config = [
         'expire'       => 3600, // session有效期
         'session_name' => '', // memcache key前缀
     ];
@@ -55,7 +53,7 @@ class Memcache extends SessionHandler {
      * @access public
      * @param string $sessID
      */
-    public function read($sessID){
+    public function read($sessID) {
         $key = $this->config['session_name'] . $sessID;
         return (string) $this->handler->get($key);
     }

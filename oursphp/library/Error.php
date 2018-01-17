@@ -16,7 +16,7 @@ use frame\exception\ThrowableError;
 
 class Error {
 
-	/**
+    /**
      * 注册异常处理
      * @return void
      */
@@ -38,7 +38,7 @@ class Error {
         }
 
         self::getExceptionHandler()->report($e);
-        
+
         if (IS_CLI) {
             self::getExceptionHandler()->renderForConsole(new ConsoleOutput, $e);
         } else {

@@ -13,7 +13,6 @@ use frame\Request;
 
 class Route {
 
-
     /**
      * 解析模块的URL地址 [模块/控制器/操作?]参数1=值1&参数2=值2...
      * @access public
@@ -21,14 +20,14 @@ class Route {
      * @param string    $depr URL分隔符
      * @return array
      */
-    public static function parseUrl($url, $depr = '/'){
+    public static function parseUrl($url, $depr = '/') {
 
         $url              = str_replace($depr, '|', $url);
         list($path, $var) = self::parseUrlPath($url);
 
-        $route            = [null, null, null];
+        $route = [null, null, null];
 
-        if ( Config::get('app_multi_module') ){
+        if (Config::get('app_multi_module')) {
 
             $module = array_shift($path);
             $module = !empty($module) ? $module : Config::get('module_value');
@@ -45,9 +44,9 @@ class Route {
             define('APP_MODULE_CALL', $module);
             define('APP_CONTROLLER_CALL', $controller);
             define('APP_METHOD_CALL', $action);
- 
-            $route  = [strtolower($module), ucfirst($controller), strtolower($action)];
-            $data   =  ['type' => 'module', 'route' => $route];
+
+            $route = [strtolower($module), ucfirst($controller), strtolower($action)];
+            $data  = ['type' => 'module', 'route' => $route];
         } else {
 
             $controller = array_shift($path);
@@ -61,11 +60,11 @@ class Route {
             define('APP_CONTROLLER_CALL', $controller);
             define('APP_METHOD_CALL', $action);
 
-            $route  = [ucfirst($controller), strtolower($action)];
-            $data   = ['type' => 'mvc', 'route' => $route];
+            $route = [ucfirst($controller), strtolower($action)];
+            $data  = ['type' => 'mvc', 'route' => $route];
         }
 
-        return $data;    
+        return $data;
     }
 
     /**
@@ -80,7 +79,6 @@ class Route {
         $url = str_replace('|', '/', $url);
         $url = trim($url, '/');
         $var = [];
-
 
         if (false !== strpos($url, '?')) {
             // [模块/控制器/操作?]参数1=值1&参数2=值2...

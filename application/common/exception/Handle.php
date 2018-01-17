@@ -10,15 +10,13 @@
 
 namespace common\exception;
 
+use Exception;
 use frame\exception\Handle as BaseHandle;
 use frame\Response;
-use Exception;
 
 class Handle extends BaseHandle {
 
-
     public function render(Exception $e) {
-        //echo "123123";
 
         $response = new Response('123123', 'html');
         $response->code(200);

@@ -14,9 +14,9 @@ use frame\Exception;
 
 class CommonException extends Exception {
 
-    public function __construct( $message, $type = 'common'){
-        
-        $this->setData($type, ['msg'=>$message ]);
+    public function __construct($message, $type = 'common') {
+
+        $this->setData($type, ['msg' => $message]);
 
         parent::__construct($message, 404);
     }

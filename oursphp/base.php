@@ -22,16 +22,16 @@ define('IS_CLI', PHP_SAPI == 'cli' ? true : false);
 define('IS_WIN', strpos(PHP_OS, 'WIN') !== false);
 
 //框架密钥,cookie等涉及到安全的东西都使用这个key一旦设置切勿更改,验证码等需要从中取值
-define('OURS_SECUREKEY','dfkasldkfjslakdfjeiwhfiwwioi23432kladf');
-define('OURS_CHARSET','abcdefghkmnprstuvwxyzABCDEFGHKMNPRSTUVWXYZ23456789');
+define('OURS_SECUREKEY', 'dfkasldkfjslakdfjeiwhfiwwioi23432kladf');
+define('OURS_CHARSET', 'abcdefghkmnprstuvwxyzABCDEFGHKMNPRSTUVWXYZ23456789');
 
 //目录设置
-defined('OURS_PATH')	or define('OURS_PATH', __DIR__.DS);
-defined('FRAME_PATH') 	or define('FRAME_PATH',OURS_PATH.'library'.DS);
-defined('VENDOR_PATH') 	or define('VENDOR_PATH', dirname(OURS_PATH).DS.'vendor'.DS);
+defined('OURS_PATH') or define('OURS_PATH', __DIR__ . DS);
+defined('FRAME_PATH') or define('FRAME_PATH', OURS_PATH . 'library' . DS);
+defined('VENDOR_PATH') or define('VENDOR_PATH', dirname(OURS_PATH) . DS . 'vendor' . DS);
 
-defined('ROOT_PATH')    or define('ROOT_PATH', dirname($_SERVER['SCRIPT_FILENAME']).DS);
-defined('APP_PATH')		or define('APP_PATH', dirname(ROOT_PATH).DS);
+defined('ROOT_PATH') or define('ROOT_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . DS);
+defined('APP_PATH') or define('APP_PATH', dirname(ROOT_PATH) . DS);
 
 require FRAME_PATH . 'Loader.php';
 // 注册自动加载

@@ -7,6 +7,6 @@
 // | Author: midoks <627293072@qq.com>
 // +----------------------------------------------------------------------
 
+include dirname(__DIR__) . '/oursphp/start.php';
 
-include dirname(__DIR__).'/oursphp/start.php';
 ?>
